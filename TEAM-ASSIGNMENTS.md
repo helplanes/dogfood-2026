@@ -1,6 +1,6 @@
 # Named team assignments and first-session instructions
 
-**Read this after `AGENTS.md`.** These assignments are based on the human team member's name, regardless of whether their coding agent is Claude, Codex, Antigravity, or another tool. `TEAM-WORKFLOW.md` gives the exact branch/PR steps; `TEAM-PLAN.md` has the schedule. The backend lead is Krish; Prajwal, Nihal, and Shriyash own frontend work only.
+**Read this after `AGENTS.md` and `SPEC-NOTES.md`.** Note: the official spec puts Figma/mockups out of scope, so Figma steps below are optional sketches; keep them short and spend the time on working, data-backed screens. These assignments are based on the human team member's name, regardless of whether their coding agent is Claude, Codex, Antigravity, or another tool. `TEAM-WORKFLOW.md` gives the exact branch/PR steps; `TEAM-PLAN.md` has the schedule. The backend lead is Krish; Prajwal, Nihal, and Shriyash own frontend work only.
 
 ## When someone introduces themselves
 
