@@ -1,4 +1,21 @@
 @import "tailwindcss";
 
-/* PLACEHOLDER from backend scaffold. Shriyash owns this file: replace with the design tokens. */
-:root { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+@theme {
+  --color-border: #e2e8f0;
+  --color-card: #ffffff;
+  --color-card-foreground: #020817;
+  --color-primary: #0f172a;
+  --color-primary-foreground: #f8fafc;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-background: #ffffff;
+  --color-foreground: #020817;
+}
+
+:root { 
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif; 
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}

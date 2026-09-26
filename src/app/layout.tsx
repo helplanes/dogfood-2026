@@ -1,13 +1,25 @@
 import type { ReactNode } from "react";
 import "./globals.css";
 
-// PLACEHOLDER from backend scaffold. Shriyash owns this file: replace with the app shell.
 export const metadata = { title: "DOGFOOD Portal" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen bg-background text-foreground flex flex-col">
+        <header className="border-b border-border py-4 px-6 bg-card">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="text-xl font-bold">DOGFOOD 2026</div>
+            <nav className="space-x-4">
+              <a href="/projects" className="text-sm font-medium hover:underline">Gallery</a>
+              {/* Other nav items will go here */}
+            </nav>
+          </div>
+        </header>
+        <div className="flex-1">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
