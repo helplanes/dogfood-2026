@@ -8,6 +8,7 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
 
 - Own all backend, contracts, policy, data, judging, infrastructure, APIs, tests, and checker integration.
 - Provide frontend contracts and typed page-data functions before teammates connect real data.
+- **Request from Shriyash:** Please scaffold the Next.js App Router and define the frontend contracts and types for the gallery card data, so that I can implement the design tokens and base components.
 
 ## Shriyash
 
