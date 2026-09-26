@@ -1,6 +1,6 @@
 # AGENTS.md: Shared Rules for Every AI Agent
 
-Read this fully before touching anything. Human-friendly overview: `PROJECT-GUIDE.md`. **Current person-based ownership and first tasks: `TEAM-ASSIGNMENTS.md`.** Git branches and PR flow: `TEAM-WORKFLOW.md`. Schedule and prompts: `TEAM-PLAN.md`. Tool-specific notes: `CLAUDE.md`, `CODEX.md`, `ANTIGRAVITY.md`.
+Read this fully before touching anything. **Read `SPEC-NOTES.md` too: it holds verified facts from the official spec/fixtures and corrects this file where they differ (e.g. 41 projects, 1-5 integer scores, track isolation, Figma out of scope).** Human-friendly overview: `PROJECT-GUIDE.md`. **Current person-based ownership and first tasks: `TEAM-ASSIGNMENTS.md`.** Git branches and PR flow: `TEAM-WORKFLOW.md`. Schedule and prompts: `TEAM-PLAN.md`. Tool-specific notes: `CLAUDE.md`, `CODEX.md`, `ANTIGRAVITY.md`.
 
 ## 0. Identify the human before choosing work
 
