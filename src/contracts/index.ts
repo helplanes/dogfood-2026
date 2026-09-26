@@ -29,10 +29,14 @@ export type ProjectInput = z.infer<typeof ProjectInput>;
 export const LoginInput = z.object({ email: z.string().email(), password: z.string().min(1) });
 export type LoginInput = z.infer<typeof LoginInput>;
 
+// Official fixtures: 3 criteria (functionality, quality, innovation), integer 1-5 scale.
+export const Criterion = z.enum(["functionality", "quality", "innovation"]);
+export type Criterion = z.infer<typeof Criterion>;
+
 export const ScoreInput = z.object({
   projectId: z.string(),
-  criterionId: z.string(),
-  value: z.number().min(0).max(10),
+  criterion: Criterion,
+  value: z.number().int().min(1).max(5),
 });
 export type ScoreInput = z.infer<typeof ScoreInput>;
 

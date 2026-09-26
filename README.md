@@ -6,6 +6,7 @@ Status: app scaffold (Next.js + contracts v0 + policy stub). Backend, seed and C
 `docker compose up` (to be added) launches a fully seeded, offline portal.
 
 ## Docs
+- [SPEC-NOTES.md](SPEC-NOTES.md) (verified official-spec facts, read first)
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [DATA-MODEL.md](DATA-MODEL.md)
 - [JUDGING.md](JUDGING.md)
