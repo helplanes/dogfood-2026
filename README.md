@@ -1,6 +1,6 @@
 # DogFood 2026 — Hackathon Submission & Judging Portal
 
-Status: app scaffold (Next.js + contracts v0 + policy stub). Backend, seed and Compose seeding are not implemented yet. All application code is written during the 72-hour event window.
+Status: app scaffold (Next.js, contracts v0, policy stub, migration and fixtures seed). Auth, API routes and Compose seeding are not implemented yet. All application code is written during the 72-hour event window.
 
 ## Run
 `docker compose up` (to be added) launches a fully seeded, offline portal.
