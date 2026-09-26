@@ -8,6 +8,7 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
 
 - Own all backend, contracts, policy, data, judging, infrastructure, APIs, tests, and checker integration.
 - Provide frontend contracts and typed page-data functions before teammates connect real data.
+- 27 Sep: scaffold on `team/backend` (npm, Next 16, Tailwind 4, Drizzle, Vitest). `src/contracts/index.ts` is contract v0; `/api/health` works. Placeholder `layout.tsx`, `globals.css`, `(public)/page.tsx`, `(public)/projects/page.tsx` exist only so routes build; their owners replace them wholesale. Package changes go through Krish.
 
 ## Shriyash
 
