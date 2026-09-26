@@ -1,46 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  --color-surface: #f9f9ff;
-  --color-surface-dim: #d3daef;
-  --color-surface-bright: #f9f9ff;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f1f3ff;
-  --color-surface-container: #e9edff;
-  --color-surface-container-high: #e1e7fa;
-  --color-surface-container-highest: #d9e1f5;
-  --color-surface-variant: #e1e2ec;
-  --color-on-surface: #111827;
-  --color-on-surface-variant: #43474e;
+  --color-surface: #111318;
+  --color-surface-dim: #111318;
+  --color-surface-bright: #37393e;
+  --color-surface-container-lowest: #0c0e13;
+  --color-surface-container-low: #191c20;
+  --color-surface-container: #1d2024;
+  --color-surface-container-high: #282a2f;
+  --color-surface-container-highest: #33353a;
   
-  --color-outline: #74777f;
-  --color-border: #c4c6d0; /* outline-variant */
+  --color-surface-light: #ffffff;
+  --color-surface-light-muted: #f8f9fc;
+  --color-surface-light-border: #e2e8f0;
 
-  --color-primary: #ff4d26;
-  --color-primary-foreground: #ffffff;
+  --color-primary: #fe330a;
+  --color-primary-container: #ff4d26;
+  --color-on-primary: #ffffff;
   
-  --color-secondary: #5c5d72;
-  --color-secondary-foreground: #ffffff;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-info: #00f0ff;
   
-  --color-muted: #e9edff; /* surface-container */
-  --color-muted-foreground: #43474e; /* on-surface-variant */
-
-  --color-card: #ffffff; /* lowest */
-  --color-card-foreground: #111827;
+  --color-background: #111318;
+  --color-foreground: #f8f9fc;
   
-  --color-error: #ba1a1a;
-  --color-error-foreground: #ffffff;
-  
-  --color-background: #f9f9ff; /* surface */
-  --color-foreground: #111827; /* on-surface */
+  --color-card: #ffffff;
+  --color-card-foreground: #111318;
+  --color-border: #e2e8f0;
 }
 
 :root { 
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; 
+  font-family: Geist, "DM Sans", system-ui, -apple-system, sans-serif; 
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: Syne, system-ui, -apple-system, sans-serif;
+  font-family: Syne, Geist, system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.035em;
 }
