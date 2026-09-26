@@ -1,21 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-border: #e2e8f0;
-  --color-card: #ffffff;
-  --color-card-foreground: #020817;
-  --color-primary: #0f172a;
-  --color-primary-foreground: #f8fafc;
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
-  --color-background: #ffffff;
-  --color-foreground: #020817;
+  --color-surface: #f9f9ff;
+  --color-surface-dim: #d3daef;
+  --color-surface-bright: #f9f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f3ff;
+  --color-surface-container: #e9edff;
+  --color-surface-container-high: #e1e7fa;
+  --color-surface-container-highest: #d9e1f5;
+  --color-surface-variant: #e1e2ec;
+  --color-on-surface: #111827;
+  --color-on-surface-variant: #43474e;
+  
+  --color-outline: #74777f;
+  --color-border: #c4c6d0; /* outline-variant */
+
+  --color-primary: #ff4d26;
+  --color-primary-foreground: #ffffff;
+  
+  --color-secondary: #5c5d72;
+  --color-secondary-foreground: #ffffff;
+  
+  --color-muted: #e9edff; /* surface-container */
+  --color-muted-foreground: #43474e; /* on-surface-variant */
+
+  --color-card: #ffffff; /* lowest */
+  --color-card-foreground: #111827;
+  
+  --color-error: #ba1a1a;
+  --color-error-foreground: #ffffff;
+  
+  --color-background: #f9f9ff; /* surface */
+  --color-foreground: #111827; /* on-surface */
 }
 
 :root { 
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif; 
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; 
   background-color: var(--color-background);
   color: var(--color-foreground);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Syne, system-ui, -apple-system, sans-serif;
 }
