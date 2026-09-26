@@ -12,8 +12,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Variant styles mapping to the Obsidian Kinetic tokens
     const variants = {
       primary: "bg-[#fe330a] text-white shadow-[0_0_15px_rgba(254,51,10,0.4)] hover:scale-[1.02] active:scale-[0.98]",
-      secondary: "bg-[#1d2024] text-white hover:bg-[#282a2f]",
-      outline: "bg-transparent border border-[#40484d] text-white hover:bg-[#191c20]"
+      secondary: "bg-[#191c20] text-white hover:bg-[#282a2f]",
+      outline: "bg-transparent border border-current text-current hover:opacity-70"
     }
 
     const classes = `${baseStyles} ${variants[variant]} px-4 py-2 ${className}`
