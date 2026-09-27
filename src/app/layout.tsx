@@ -26,7 +26,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               >
                 Gallery
               </a>
-              {/* Future nav items: /dashboard, /judge, /organizer */}
+              <a
+                href="/judge/dashboard"
+                className="text-xs font-mono uppercase tracking-widest text-white hover:text-[#fe330a] transition-colors"
+              >
+                Judge
+              </a>
+              {/* Future nav items: /dashboard, /organizer */}
             </nav>
           </div>
         </header>

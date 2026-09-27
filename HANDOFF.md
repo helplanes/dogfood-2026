@@ -14,6 +14,11 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
 
 - Ownership change requested by the backend lead: own the largest frontend scope—design system, shared UI, public gallery/project pages, judge console, and organizer views. Do not take backend files.
 - The old tool-based lanes have been replaced with person-based routing in `AGENTS.md`, `TEAM-ASSIGNMENTS.md`, `CLAUDE.md`, `CODEX.md`, and `ANTIGRAVITY.md`.
+- **REQUEST FOR KRISH (27 Sep):** Judge console (Task 3) is scaffolded with mock data at `src/app/(judge)/dashboard/`. Need two typed page-data functions from `src/repo` or `src/server`:
+  1. `getAssignedProjects(judgeId: string): Promise<AssignedProject[]>` — returns only projects assigned to this judge, with existing scores per criterion.
+  2. `getAssignedProject(judgeId: string, projectId: string): Promise<AssignedProject | null>` — returns a single assigned project or null if not assigned (frontend shows 404 on null).
+  - `AssignedProject` needs: `id`, `title`, `summary`, `repoUrl`, `track`, `teamName`, `existingScores: Partial<Record<Criterion, number>>`.
+  - These must be assignment-scoped — must never return another judge's score data.
 
 ## Nihal
 
