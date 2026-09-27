@@ -18,6 +18,7 @@ export default function CreateTeamPage() {
     }
 
     // Static success simulation
+    localStorage.setItem('mock_team', teamName);
     setSuccess(true);
   };
 

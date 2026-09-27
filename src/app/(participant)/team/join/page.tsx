@@ -23,6 +23,7 @@ export default function JoinTeamPage() {
     }
 
     // Static success simulation
+    localStorage.setItem('mock_team', 'Joined Team');
     setSuccess(true);
   };
 

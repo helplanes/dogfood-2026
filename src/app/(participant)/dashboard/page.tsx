@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PublicProject } from "@/contracts";
 
@@ -12,6 +12,13 @@ export default function ParticipantDashboard() {
   });
   
   const [team, setTeam] = useState<{ id: string; name: string } | null>(null);
+
+  useEffect(() => {
+    const mockTeam = localStorage.getItem('mock_team');
+    if (mockTeam) {
+      setTeam({ id: 'tm_mock', name: mockTeam });
+    }
+  }, []);
   
   return (
     <div className="min-h-screen bg-[#111318] text-[#ffffff]">
