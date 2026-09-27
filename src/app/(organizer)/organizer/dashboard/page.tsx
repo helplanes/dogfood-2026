@@ -1,287 +1,105 @@
+"use client";
+
+import React from "react";
 import Link from "next/link";
 
-/**
- * Organizer Progress Dashboard — /organizer/dashboard
- * Shows review counts, zero-variance judge flags, per-track completion, duplicate flag.
- * TODO: replace MOCK_* with Krish's typed server functions from src/repo.
- *
- * Fixture facts (SPEC-NOTES.md):
- *  - 41 projects, 30 judges, 126 score records
- *  - 8 projects have 2 reviews, 26 have 3, 3 have 4, 4 have 5
- *  - Zero-variance: jdg_01 (1 review, all 2s), jdg_07 (all 4s)
- *  - prj_41 duplicates prj_07 — must show flag, never delete
- */
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-
-const EVENT = { name: "Sample Hack 2026", deadline: "2026-03-01T18:00:00Z" };
-
-const TRACKS = [
-  { id: "trk_01", name: "Developer Tools",   projectCount: 5,  reviewedCount: 4  },
-  { id: "trk_02", name: "Data & Analytics",  projectCount: 5,  reviewedCount: 5  },
-  { id: "trk_03", name: "Accessibility",     projectCount: 6,  reviewedCount: 6  },
-  { id: "trk_04", name: "Security",          projectCount: 7,  reviewedCount: 5  },
-  { id: "trk_05", name: "Climate",           projectCount: 5,  reviewedCount: 4  },
-  { id: "trk_06", name: "Health",            projectCount: 5,  reviewedCount: 4  },
-  { id: "trk_07", name: "Education",         projectCount: 5,  reviewedCount: 5  },
-  { id: "trk_08", name: "Open Hardware",     projectCount: 3,  reviewedCount: 2  },
-];
-
-const ZERO_VARIANCE_FLAGS = [
-  { judgeId: "jdg_01", name: "Tomas Varga",  reviewCount: 1, note: "Only 1 review, all scores = 2. Weight reduced." },
-  { judgeId: "jdg_07", name: "Iva Petrova",  reviewCount: 5, note: "All scores = 4 across all criteria. Zero variance — mean-centred." },
-];
-
-const DUPLICATE_FLAG = {
-  projectId: "prj_41",
-  title: "Dry Harbour (duplicate)",
-  duplicateOf: "prj_07",
-  duplicateTitle: "Dry Harbour",
-  repoUrl: "https://example.org/repo/07",
-};
-
-const REVIEW_DIST = [
-  { label: "2 reviews", count: 8,  color: "#ba1a1a" },
-  { label: "3 reviews", count: 26, color: "#22c55e" },
-  { label: "4 reviews", count: 3,  color: "#00f0ff" },
-  { label: "5 reviews", count: 4,  color: "#a855f7" },
-];
-
-const TOTAL_PROJECTS = 41;
-const TOTAL_SCORES   = 126;
-const TOTAL_JUDGES   = 30;
-const FULLY_REVIEWED = 26 + 3 + 4; // ≥3 reviews
-
 export default function OrganizerDashboardPage() {
-  const pct = Math.round((FULLY_REVIEWED / TOTAL_PROJECTS) * 100);
-
   return (
-    <div className="min-h-screen bg-[#111318]">
-      {/* Hero */}
-      <div className="border-b border-white/[0.08] py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <p className="text-[#a855f7] font-mono text-xs uppercase tracking-widest mb-2">
-              {EVENT.name}
-            </p>
-            <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white"
-                style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}>
-              Progress Dashboard
-            </h1>
-            <p className="text-slate-500 font-mono text-xs uppercase tracking-widest mt-2">
-              Deadline closed — 1 Mar 2026 18:00 UTC
-            </p>
+    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white px-4 py-8 md:px-12 md:py-12 flex flex-col font-sans">
+      
+      <div className="max-w-7xl mx-auto space-y-10 w-full">
+        
+        {/* Top Command Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 py-3 px-5 rounded-xl bg-[#11141c]/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
+          <div className="flex items-center gap-3">
+            <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+            <span className="text-stone-300 font-semibold">ORGANIZER COMMAND CENTER</span>
+            <span className="text-stone-600">//</span>
+            <span>SYSTEM METRICS</span>
           </div>
-          <Link href="/organizer/results"
-            className="px-5 py-2.5 bg-[#a855f7] text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-[#9333ea] transition-colors shrink-0">
-            View Results →
+          <div className="flex items-center gap-5 text-[11px]">
+            <span className="text-emerald-400">ALL SYSTEMS NOMINAL</span>
+            <span className="text-stone-500">SYNC: 18:42</span>
+          </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="space-y-4 pb-6 border-b border-stone-800/50">
+          <h1 className="text-4xl md:text-5xl font-serif text-white tracking-tight leading-tight">
+            Event Orchestration. <br />
+            <span className="italic text-[#fe330a] font-normal">Real-Time Telemetry.</span>
+          </h1>
+          <p className="text-stone-400 text-sm md:text-base max-w-2xl leading-relaxed">
+            Monitor hackathon throughput, track juror quorum, adjust normalization rubrics, and audit systemic logs from the global command interface.
+          </p>
+        </div>
+
+        {/* Global Metrics Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-5 rounded-2xl bg-[#11141c] border border-stone-800 flex flex-col justify-between h-32 shadow-lg">
+            <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest block">TOTAL SUBMISSIONS</span>
+            <span className="text-4xl font-mono font-bold text-white">42</span>
+          </div>
+          <div className="p-5 rounded-2xl bg-[#11141c] border border-stone-800 flex flex-col justify-between h-32 shadow-lg">
+            <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest block">JURORS ACTIVE</span>
+            <span className="text-4xl font-mono font-bold text-white">12</span>
+          </div>
+          <div className="p-5 rounded-2xl bg-[#11141c] border border-stone-800 flex flex-col justify-between h-32 shadow-lg col-span-2 lg:col-span-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">EVALUATION QUORUM</span>
+              <span className="text-xs font-mono font-bold text-[#fe330a]">84% COMPLETE</span>
+            </div>
+            <div className="w-full h-3 rounded-full bg-stone-900 overflow-hidden border border-stone-800 mt-auto">
+              <div className="h-full bg-[#fe330a] w-[84%] rounded-full shadow-[0_0_8px_#fe330a]" />
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
+          
+          <Link href="/organizer/results" className="group p-6 rounded-2xl bg-[#11141c] hover:bg-[#141824] border border-stone-800 hover:border-[#fe330a]/50 transition-all flex flex-col gap-4">
+            <div className="w-10 h-10 rounded-full bg-[#fe330a]/10 border border-[#fe330a]/30 flex items-center justify-center text-[#fe330a]">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-serif text-white group-hover:text-[#fe330a] transition-colors">Results & Rankings</h3>
+              <p className="text-xs text-stone-400 font-sans mt-1">Normalized leaderboards and CSV exports.</p>
+            </div>
           </Link>
+
+          <Link href="/organizer/assignments" className="group p-6 rounded-2xl bg-[#11141c] hover:bg-[#141824] border border-stone-800 hover:border-stone-600 transition-all flex flex-col gap-4">
+            <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-700 flex items-center justify-center text-stone-300">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-serif text-white">Juror Assignments</h3>
+              <p className="text-xs text-stone-400 font-sans mt-1">Manage load balancing and conflict overrides.</p>
+            </div>
+          </Link>
+
+          <Link href="/organizer/rubric" className="group p-6 rounded-2xl bg-[#11141c] hover:bg-[#141824] border border-stone-800 hover:border-stone-600 transition-all flex flex-col gap-4">
+            <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-700 flex items-center justify-center text-stone-300">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-serif text-white">Scoring Rubric</h3>
+              <p className="text-xs text-stone-400 font-sans mt-1">Edit weights, criteria, and normalization rules.</p>
+            </div>
+          </Link>
+
+          <Link href="/organizer/audit" className="group p-6 rounded-2xl bg-[#11141c] hover:bg-[#141824] border border-stone-800 hover:border-stone-600 transition-all flex flex-col gap-4">
+            <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-700 flex items-center justify-center text-stone-300">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-serif text-white">Append-Only Audit Log</h3>
+              <p className="text-xs text-stone-400 font-sans mt-1">View cryptographic hash chains for data integrity.</p>
+            </div>
+          </Link>
+
         </div>
       </div>
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-10">
-
-        {/* ── Top KPI strip ── */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {[
-            { label: "Projects",     value: TOTAL_PROJECTS, sub: "41 submitted",     color: "text-white",      accent: "#fe330a" },
-            { label: "Judges",       value: TOTAL_JUDGES,   sub: "30 active",        color: "text-[#00f0ff]",  accent: "#00f0ff" },
-            { label: "Score Records",value: TOTAL_SCORES,   sub: "126 total",        color: "text-[#22c55e]",  accent: "#22c55e" },
-            { label: "≥3 Reviews",   value: `${pct}%`,      sub: `${FULLY_REVIEWED}/${TOTAL_PROJECTS} projects`, color: "text-[#a855f7]", accent: "#a855f7" },
-          ].map(({ label, value, sub, color, accent }) => (
-            <div key={label}
-              className="bg-[#191c20] border border-white/[0.08] rounded-xl p-5 flex flex-col gap-1"
-              style={{ borderTopColor: accent, borderTopWidth: 2 }}>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-slate-500">{label}</p>
-              <p className={`text-3xl font-black tabular-nums ${color}`}>{value}</p>
-              <p className="text-xs font-mono text-slate-600">{sub}</p>
-            </div>
-          ))}
-        </section>
-
-        {/* ── Review distribution + overall bar ── */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Review distribution */}
-          <div className="bg-[#191c20] border border-white/[0.08] rounded-xl p-6">
-            <h2 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-5">
-              Reviews per Project
-            </h2>
-            <div className="flex flex-col gap-4">
-              {REVIEW_DIST.map(({ label, count, color }) => (
-                <div key={label} className="flex items-center gap-4">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 w-20 shrink-0">{label}</span>
-                  <div className="flex-1 bg-white/[0.06] rounded-full h-2.5 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${(count / TOTAL_PROJECTS) * 100}%`, backgroundColor: color }} />
-                  </div>
-                  <span className="text-sm font-black tabular-nums text-white w-6 text-right">{count}</span>
-                </div>
-              ))}
-            </div>
-            {/* Legend */}
-            <p className="text-[10px] font-mono text-slate-600 mt-4 uppercase tracking-wider">
-              Minimum 3 reviews required for ranking
-            </p>
-          </div>
-
-          {/* Overall progress */}
-          <div className="bg-[#191c20] border border-white/[0.08] rounded-xl p-6 flex flex-col justify-between">
-            <h2 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-5">
-              Overall Completion
-            </h2>
-            <div className="flex-1 flex flex-col justify-center gap-6">
-              {/* Giant donut-ish number */}
-              <div className="text-center">
-                <p className="text-7xl font-black text-[#a855f7] tabular-nums">{pct}%</p>
-                <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-2">
-                  projects with ≥3 reviews
-                </p>
-              </div>
-              {/* Segmented bar */}
-              <div className="flex rounded-full overflow-hidden h-3">
-                {REVIEW_DIST.map(({ label, count, color }) => (
-                  <div key={label} className="h-full transition-all duration-500"
-                    style={{ width: `${(count / TOTAL_PROJECTS) * 100}%`, backgroundColor: color }} />
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {REVIEW_DIST.map(({ label, color }) => (
-                  <div key={label} className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: color }} />
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Per-track completion ── */}
-        <section>
-          <h2 className="text-lg font-black uppercase tracking-tight text-white mb-5"
-              style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}>
-            Track Completion
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {TRACKS.map((t) => {
-              const tPct = Math.round((t.reviewedCount / t.projectCount) * 100);
-              const done = t.reviewedCount === t.projectCount;
-              return (
-                <div key={t.id}
-                  className={[
-                    "bg-[#191c20] border rounded-xl p-4 flex flex-col gap-3",
-                    done ? "border-[#22c55e]/40" : "border-white/[0.08]",
-                  ].join(" ")}>
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs font-bold uppercase tracking-tight text-white leading-tight">{t.name}</p>
-                    {done && (
-                      <span className="text-[9px] font-mono uppercase tracking-widest bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/30 px-1.5 py-0.5 rounded-full shrink-0">
-                        ✓ Done
-                      </span>
-                    )}
-                  </div>
-                  <div className="bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${tPct}%`, backgroundColor: done ? "#22c55e" : "#a855f7" }} />
-                  </div>
-                  <p className="text-[10px] font-mono text-slate-500">
-                    <span className={done ? "text-[#22c55e]" : "text-white"}>{t.reviewedCount}</span>
-                    /{t.projectCount} reviewed — {tPct}%
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ── Zero-variance flags ── */}
-        <section>
-          <div className="flex items-center gap-3 mb-5">
-            <h2 className="text-lg font-black uppercase tracking-tight text-white"
-                style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}>
-              Zero-Variance Flags
-            </h2>
-            <span className="text-xs font-mono bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/30 px-2 py-0.5 rounded-full">
-              {ZERO_VARIANCE_FLAGS.length} flagged
-            </span>
-          </div>
-          <div className="flex flex-col gap-3">
-            {ZERO_VARIANCE_FLAGS.map((f) => (
-              <div key={f.judgeId}
-                className="bg-[#191c20] border border-[#f59e0b]/30 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {/* Avatar initials */}
-                  <div className="w-9 h-9 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/30 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-black text-[#f59e0b]">
-                      {f.name.split(" ").map(n => n[0]).join("")}
-                    </span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-white">{f.name}</p>
-                    <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{f.judgeId} · {f.reviewCount} review{f.reviewCount !== 1 ? "s" : ""}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 bg-[#f59e0b]/5 border border-[#f59e0b]/20 rounded-lg px-3 py-2 sm:max-w-xs">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="shrink-0" aria-hidden="true">
-                    <path d="M6 1L11 10.5H1L6 1Z" stroke="#f59e0b" strokeWidth="1.2" strokeLinejoin="round" />
-                    <path d="M6 5v2.5" stroke="#f59e0b" strokeWidth="1.2" strokeLinecap="round" />
-                    <circle cx="6" cy="9" r="0.6" fill="#f59e0b" />
-                  </svg>
-                  <p className="text-[10px] text-[#f59e0b] leading-relaxed">{f.note}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Duplicate flag ── */}
-        <section>
-          <div className="flex items-center gap-3 mb-5">
-            <h2 className="text-lg font-black uppercase tracking-tight text-white"
-                style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}>
-              Duplicate Submissions
-            </h2>
-            <span className="text-xs font-mono bg-[#ba1a1a]/10 text-[#ba1a1a] border border-[#ba1a1a]/30 px-2 py-0.5 rounded-full">
-              1 flagged
-            </span>
-          </div>
-          <div className="bg-[#191c20] border border-[#ba1a1a]/30 rounded-xl px-5 py-5 flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <p className="text-sm font-bold text-white">{DUPLICATE_FLAG.title}</p>
-                <span className="text-[9px] font-mono uppercase tracking-widest bg-[#ba1a1a]/10 text-[#ba1a1a] border border-[#ba1a1a]/30 px-1.5 py-0.5 rounded-full">
-                  Duplicate
-                </span>
-              </div>
-              <p className="text-xs font-mono text-slate-500">
-                {DUPLICATE_FLAG.projectId} — same repo URL as{" "}
-                <strong className="text-slate-300">{DUPLICATE_FLAG.duplicateTitle}</strong>{" "}
-                ({DUPLICATE_FLAG.duplicateOf})
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
-                Flagged for review · not deleted
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* Quick links */}
-        <div className="border-t border-white/[0.08] pt-6 flex flex-wrap gap-4">
-          {[
-            { href: "/organizer/results",     label: "Results & Scores"   },
-            { href: "/organizer/assignments", label: "Judge Assignments"  },
-            { href: "/organizer/rubric",      label: "Rubric Editor"      },
-            { href: "/organizer/audit",       label: "Audit Log"          },
-          ].map(({ href, label }) => (
-            <Link key={href} href={href}
-              className="text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-[#a855f7] transition-colors">
-              {label} →
-            </Link>
-          ))}
-        </div>
-      </main>
     </div>
   );
 }

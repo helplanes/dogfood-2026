@@ -1,127 +1,185 @@
-import fs from "fs";
-import path from "path";
-import { notFound } from "next/navigation";
-import { PublicProject } from "@/contracts";
-import { Button } from "@/components/ui/Button";
+"use client";
 
-export const dynamic = "force-dynamic";
+import React from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
-// Temporary data fetcher — replace with Krish's typed getProjectById() from src/repo
-function getProjectById(id: string): PublicProject | null {
-  const filePath = path.join(process.cwd(), "fixtures.json");
-  const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+// Mock Data for the Detail Page (In real app, fetch via ID)
+const projectDetail = {
+  id: "01",
+  tag: "01 // AETHER.CORE",
+  category: "GenAI & Autonomous",
+  rating: "9.8 / 10",
+  title: "AetherMesh",
+  subtitle: "Autonomous Multi-Agent Consensus",
+  description:
+    "AetherMesh is a fault-tolerant agent quorum coordinating micro-transactions and real-time state synchronization over libp2p. By distributing the consensus mechanisms directly to edge nodes, it achieves sub-millisecond latency. This project removes the necessity for centralized order sequencers in high-frequency trading bots.",
+  techStack: ["Rust", "LangGraph", "libp2p", "Wasm"],
+  team: {
+    name: "Nova Labs",
+    members: ["@alice_nova", "@bob_mesh"]
+  },
+  repoUrl: "https://github.com/example/aethermesh",
+  metrics: {
+    latency: "0.8ms p99",
+    coverage: "98.2%",
+    commits: 142
+  },
+  imageUrl:
+    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+};
 
-  const trackMap: Record<string, string> = {};
-  for (const t of data.tracks) trackMap[t.id] = t.name;
-
-  const teamMap: Record<string, string> = {};
-  for (const t of data.teams) teamMap[t.id] = t.name;
-
-  const p = data.projects.find((proj: any) => proj.id === id);
-  if (!p) return null;
-
-  return {
-    id: p.id,
-    title: p.title,
-    summary: p.summary,
-    repoUrl: p.repo_url || null,
-    track: p.track ? (trackMap[p.track] ?? p.track) : null,
-    teamName: p.team ? (teamMap[p.team] ?? p.team) : null,
-  };
-}
-
-export default async function ProjectDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = await params;
-  const project = getProjectById(resolvedParams.id);
-
-  if (!project) {
-    notFound();
-  }
-
+export default function ProjectDetailPage() {
+  const params = useParams();
+  
   return (
-    <div className="min-h-screen bg-[#111318]">
-      {/* Page hero — dark canvas breadcrumb + title per DESIGN-4-HYBRID §4 */}
-      <div className="bg-[#111318] border-b border-white/[0.08] py-8 px-4">
-        <div className="max-w-5xl mx-auto">
-          {/* Back link */}
-          <a
-            href="/projects"
-            className="inline-flex items-center gap-1 text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-[#fe330a] transition-colors mb-5"
-          >
-            ← Back to Gallery
-          </a>
+    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
+      
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-50 bg-[#0c0e13]/90 backdrop-blur-md border-b border-stone-800/80 px-4 md:px-8 py-4 flex items-center justify-between">
+        <Link href="/projects" className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-400 hover:text-[#fe330a] transition-colors">
+          &larr; BACK TO GALLERY
+        </Link>
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-mono text-stone-500 border border-stone-800 px-2.5 py-1 rounded-md bg-[#11141c]">
+            VERIFICATION ID: <span className="text-stone-300">#AM-9942</span>
+          </span>
+        </div>
+      </header>
 
-          {/* Title + live status dot */}
-          <div className="flex items-start justify-between gap-4">
-            <h1
-              className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white"
-              style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
-            >
-              {project.title}
-            </h1>
-            {/* Telemetry pulse — reserved for detail page per DESIGN-4-HYBRID §5 */}
-            <div className="relative flex h-3 w-3 mt-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fe330a] opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#fe330a]" />
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-10 space-y-12">
+
+        {/* Hero Section */}
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-[#fe330a]/15 text-[#fe330a] border border-[#fe330a]/30">
+              {projectDetail.category}
+            </span>
+            <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-stone-800 text-stone-300 border border-stone-700">
+              {projectDetail.tag}
+            </span>
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight leading-[1.05]">
+            {projectDetail.title}. <br/>
+            <span className="italic font-serif text-[#fe330a]">{projectDetail.subtitle}</span>
+          </h1>
+        </div>
+
+        {/* Hero Image */}
+        <div className="w-full h-64 md:h-96 bg-stone-900 rounded-3xl overflow-hidden border border-stone-800 relative">
+          <img
+            src={projectDetail.imageUrl}
+            alt={projectDetail.title}
+            className="w-full h-full object-cover opacity-80"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0e13] via-transparent to-transparent" />
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* Left Column: Description & Details */}
+          <div className="lg:col-span-8 space-y-10">
+            
+            <section className="space-y-4">
+              <h2 className="text-2xl font-serif text-white flex items-center gap-3">
+                <span className="text-[#fe330a] font-mono text-sm">01</span>
+                Architecture Overview
+              </h2>
+              <div className="p-6 rounded-2xl bg-[#11141c] border border-stone-800/80 text-sm text-stone-300 leading-relaxed font-sans">
+                {projectDetail.description}
+                <br/><br/>
+                Built entirely during the 48-hour sprint, the team utilized parallel processing to ensure thread safety without compromising on the rapid throughput required for live order matching.
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-2xl font-serif text-white flex items-center gap-3">
+                <span className="text-[#fe330a] font-mono text-sm">02</span>
+                Technology Stack
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {projectDetail.techStack.map((tech) => (
+                  <span
+                    key={tech}
+                    className="px-4 py-2 rounded-xl bg-[#11141c] text-xs font-mono text-stone-200 border border-stone-800 shadow-sm"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </section>
+            
+          </div>
+
+          {/* Right Column: Sticky Meta Data & Actions */}
+          <div className="lg:col-span-4 lg:sticky lg:top-24 h-fit space-y-6">
+            
+            {/* Primary Action Card */}
+            <div className="p-6 rounded-2xl bg-[#11141c] border border-stone-800 shadow-2xl space-y-6">
+              
+              <div className="space-y-1">
+                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-widest">
+                  TEAM REGISTRY
+                </div>
+                <div className="text-lg font-serif text-white">
+                  {projectDetail.team.name}
+                </div>
+                <div className="flex gap-2 pt-1 text-xs font-mono text-[#fe330a]">
+                  {projectDetail.team.members.map(m => <span key={m}>{m}</span>)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 py-4 border-y border-stone-800/80 text-xs font-mono">
+                <div>
+                  <div className="text-stone-500 mb-1">LATENCY</div>
+                  <div className="text-stone-200 font-bold">{projectDetail.metrics.latency}</div>
+                </div>
+                <div>
+                  <div className="text-stone-500 mb-1">COVERAGE</div>
+                  <div className="text-emerald-400 font-bold">{projectDetail.metrics.coverage}</div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <a
+                  href={projectDetail.repoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-mono font-bold border border-stone-700 flex items-center justify-between transition-colors"
+                >
+                  View Source Code <span className="text-[#fe330a]">&nearr;</span>
+                </a>
+                <button
+                  className="w-full py-3 px-4 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-[#fe330a]/25 flex items-center justify-center gap-2"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  Launch Sandbox Enclave
+                </button>
+              </div>
+
             </div>
-          </div>
 
-          {/* Meta badges */}
-          <div className="flex flex-wrap gap-3 mt-4">
-            {project.track && (
-              <span className="inline-flex items-center gap-1 text-xs font-mono uppercase tracking-wider bg-[#191c20] border border-[#00f0ff]/20 text-[#00f0ff] px-3 py-1.5 rounded-sm">
-                Track: {project.track}
+            {/* Escrow Hash Card */}
+            <div className="p-4 rounded-xl bg-[#0a0d13] border border-stone-800 flex items-start gap-3">
+              <span className="text-[#fe330a] mt-0.5">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </span>
-            )}
-            {project.teamName && (
-              <span className="inline-flex items-center gap-1 text-xs font-mono uppercase tracking-wider bg-[#191c20] border border-white/10 text-white px-3 py-1.5 rounded-sm">
-                Team: {project.teamName}
-              </span>
-            )}
+              <div className="space-y-1">
+                <div className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">
+                  CRYPTOGRAPHIC SNAPSHOT
+                </div>
+                <div className="text-xs font-mono text-stone-300 break-all">
+                  0x9a8f22b7c4d3...e8a2
+                </div>
+              </div>
+            </div>
+
           </div>
-        </div>
-      </div>
 
-      {/* Main content — white card on dark world */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Project summary card — white bg, clean border per DESIGN-4-HYBRID §3 */}
-        <div className="bg-white border border-[#e2e8f0] rounded-lg p-8 mb-6">
-          <h2 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">
-            Project Specification
-          </h2>
-          <p className="text-[#111318] text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-            {project.summary}
-          </p>
         </div>
 
-        {/* Repo link */}
-        {project.repoUrl && (
-          <div className="flex items-center gap-4">
-            <a
-              href={project.repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="primary" className="px-6 py-3 text-base">
-                Access Repository →
-              </Button>
-            </a>
-          </div>
-        )}
-
-        {/* Divider + back */}
-        <div className="border-t border-white/[0.08] mt-10 pt-6">
-          <a
-            href="/projects"
-            className="text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-[#fe330a] transition-colors"
-          >
-            ← All Projects
-          </a>
-        </div>
       </main>
     </div>
   );

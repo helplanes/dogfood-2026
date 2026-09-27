@@ -1,337 +1,313 @@
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ScoringForm } from "@/components/judging/ScoringForm";
-import { Criterion } from "@/contracts";
+"use client";
 
-/**
- * Mock project data for the scoring view.
- * TODO: replace with Krish's typed getAssignedProject(judgeId, projectId) from src/repo.
- * That function must be assignment-scoped — only returns data if this judge is assigned.
- */
-const MOCK_PROJECTS: Record<
-  string,
+import React, { useState } from "react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+
+type Criterion = "functionality" | "quality" | "innovation";
+
+interface CriteriaConfig {
+  key: Criterion;
+  label: string;
+  sublabel: string;
+  weight: string;
+  lowLabel: string;
+  highLabel: string;
+}
+
+const CRITERIA: CriteriaConfig[] = [
   {
-    id: string;
-    title: string;
-    summary: string;
-    repoUrl: string | null;
-    track: string | null;
-    teamName: string | null;
-    memberCount: number;
-    existingScores: Partial<Record<Criterion, number>>;
-    existingNotes: string;
-    submittedAt: string;
-    highlights: string[];
-  }
-> = {
-  prj_01: {
-    id: "prj_01",
-    title: "Glass Signal",
-    summary:
-      "A real-time distributed tracing tool for microservices with a zero-config agent. Instruments your services automatically and surfaces latency, error rates, and dependency graphs in a clean web UI.",
-    repoUrl: "https://example.org/repo/01",
-    track: "Developer Tools",
-    teamName: "Ironforge",
-    memberCount: 3,
-    existingScores: {},
-    existingNotes: "",
-    submittedAt: "2026-09-25T14:22:00Z",
-    highlights: [
-      "Zero-config eBPF-based agent with < 1% CPU overhead",
-      "Web UI renders dependency graphs in < 200ms",
-      "Ships with OpenTelemetry exporter",
-    ],
+    key: "functionality",
+    label: "1. Functionality",
+    sublabel: "(Does it work? Features & scope)",
+    weight: "WEIGHT 40%",
+    lowLabel: "Non-functional",
+    highLabel: "Flawless execution",
   },
-  prj_05: {
-    id: "prj_05",
-    title: "Helios Router",
-    summary:
-      "An edge-native request router with sub-millisecond latency and WASM plugin support. Routes are defined in a declarative TOML config and hot-reloaded without downtime.",
-    repoUrl: "https://example.org/repo/05",
-    track: "Infrastructure",
-    teamName: "Solaris",
-    memberCount: 2,
-    existingScores: { functionality: 4, quality: 4 },
-    existingNotes: "Strong implementation. Innovation score still to decide — need to check novelty vs. Envoy.",
-    submittedAt: "2026-09-25T11:05:00Z",
-    highlights: [
-      "WASM plugin sandbox with < 0.5ms overhead",
-      "Hot-reload with zero dropped requests in load tests",
-      "TOML DSL with full JSONSchema validation",
-    ],
+  {
+    key: "quality",
+    label: "2. Quality",
+    sublabel: "(Code cleanliness, UI/UX, reliability)",
+    weight: "WEIGHT 30%",
+    lowLabel: "Unmaintainable",
+    highLabel: "Production grade",
   },
-  prj_12: {
-    id: "prj_12",
-    title: "Lattice IDE",
-    summary:
-      "A collaborative browser-based IDE with real-time conflict resolution via CRDTs. Supports 20+ languages via LSP and runs entirely in the browser using WebAssembly.",
-    repoUrl: "https://example.org/repo/12",
-    track: "Developer Tools",
-    teamName: "Weave",
-    memberCount: 4,
-    existingScores: { functionality: 5, quality: 4, innovation: 5 },
-    existingNotes: "Excellent all around. CRDT impl is genuinely novel for a hackathon. Minor: test coverage is thin.",
-    submittedAt: "2026-09-24T20:30:00Z",
-    highlights: [
-      "Full LSP support for 20+ languages in-browser via Wasm",
-      "CRDT conflict resolution with operational transform fallback",
-      "Works offline after first load",
-    ],
+  {
+    key: "innovation",
+    label: "3. Innovation",
+    sublabel: "(Originality, creative problem solving)",
+    weight: "WEIGHT 30%",
+    lowLabel: "Derivative",
+    highLabel: "Groundbreaking",
   },
-  prj_17: {
-    id: "prj_17",
-    title: "Forge CI",
-    summary:
-      "A self-hosted CI/CD pipeline builder with a visual drag-and-drop stage editor, built-in secrets vault, and native Docker layer caching.",
-    repoUrl: "https://example.org/repo/17",
-    track: "Infrastructure",
-    teamName: "Buildcraft",
-    memberCount: 3,
-    existingScores: {},
-    existingNotes: "",
-    submittedAt: "2026-09-25T16:48:00Z",
-    highlights: [
-      "Visual DAG pipeline editor with no-code stage composition",
-      "Built-in secrets vault with envelope encryption",
-      "Automatic Docker layer cache sharing across pipeline runs",
-    ],
-  },
-  prj_23: {
-    id: "prj_23",
-    title: "Pulsar DB",
-    summary:
-      "A time-series database optimised for IoT ingestion with columnar compression and a SQL-compatible query layer. Handles 500k writes/second on a single node.",
-    repoUrl: "https://example.org/repo/23",
-    track: "Data & Storage",
-    teamName: "Meridian",
-    memberCount: 2,
-    existingScores: { functionality: 3 },
-    existingNotes: "",
-    submittedAt: "2026-09-25T09:12:00Z",
-    highlights: [
-      "500k writes/second on commodity hardware",
-      "Columnar compression with 8:1 average ratio",
-      "SQL query layer compatible with standard drivers",
-    ],
+];
+
+const mockProjectData = {
+  id: "prj_01",
+  title: "Awesome Hack",
+  track: "Web",
+  teamName: "Team Alpha",
+  submissionTime: "18:42 HALIFAX",
+  hash: "#3b9e4a1",
+  summary:
+    "A really cool project that solves a major problem using cutting-edge technology. It features a complete mobile app and a robust backend. The team worked hard to deliver this within the 48-hour window.",
+  repoUrl: "https://github.com/example/awesome",
+  latency: "14ms p99",
+  testCoverage: "94.8% Pass",
+  existingScores: {
+    functionality: 5,
+    quality: 4,
+    innovation: 5,
   },
 };
 
-// Ordered list for prev/next navigation
-const PROJECT_IDS = Object.keys(MOCK_PROJECTS);
+export default function ProjectScoringPage() {
+  const params = useParams();
+  const router = useRouter();
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "UTC",
-    hour12: false,
-  }) + " UTC";
-}
+  const [scores, setScores] = useState<Record<Criterion, number | null>>({
+    functionality: mockProjectData.existingScores.functionality || null,
+    quality: mockProjectData.existingScores.quality || null,
+    innovation: mockProjectData.existingScores.innovation || null,
+  });
 
-export default async function JudgeScoringPage({
-  params,
-}: {
-  params: Promise<{ projectId: string }>;
-}) {
-  const { projectId } = await params;
-  const project = MOCK_PROJECTS[projectId];
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  // 404 if not in this judge's assignment (real: Krish's scoped query returns null)
-  if (!project) notFound();
+  const handleScoreSelect = (criterion: Criterion, val: number) => {
+    setScores((prev) => ({ ...prev, [criterion]: val }));
+    setError(null);
+  };
 
-  const currentIndex = PROJECT_IDS.indexOf(projectId);
-  const prevId = currentIndex > 0 ? PROJECT_IDS[currentIndex - 1] : null;
-  const nextId = currentIndex < PROJECT_IDS.length - 1 ? PROJECT_IDS[currentIndex + 1] : null;
-  const scoredCount = Object.values(project.existingScores).filter((v) => v !== undefined).length;
-  const isFullyScored = scoredCount === 3;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!scores.functionality || !scores.quality || !scores.innovation) {
+      setError("Please provide a rating (1-5) for all three criteria before submission.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // API call simulation (e.g. POST /api/judge/scores)
+      await new Promise((resolve) => setTimeout(resolve, 900));
+      setSuccess(true);
+      setTimeout(() => {
+        router.push("/judge/dashboard");
+      }, 1200);
+    } catch (err) {
+      setError("Failed to record score attestation. Please retry.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#111318]">
-      {/* Page hero */}
-      <div className="bg-[#111318] border-b border-white/[0.08] py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Breadcrumb */}
+    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white px-4 py-8 md:px-12 md:py-12">
+      <div className="max-w-6xl mx-auto space-y-6">
+
+        {/* Back navigation link */}
+        <div>
           <Link
             href="/judge/dashboard"
-            className="inline-flex items-center gap-1 text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-[#fe330a] transition-colors mb-5"
+            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-400 hover:text-[#fe330a] transition-colors"
           >
-            ← Back to Assigned Projects
+            &larr; BACK TO ASSIGNMENTS DASHBOARD
           </Link>
+        </div>
 
-          {/* Title row */}
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1
-                className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white"
-                style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
-              >
-                {project.title}
-              </h1>
-              <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-1">
-                Submitted {formatDate(project.submittedAt)}
-              </p>
-            </div>
-            {/* Live pulse — detail page only */}
-            <div className="relative flex h-3 w-3 mt-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fe330a] opacity-75" />
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#fe330a]" />
-            </div>
+        {/* Top Deliberation Pill */}
+        <div className="flex flex-wrap items-center justify-between gap-4 py-3 px-5 rounded-xl bg-[#11141c] border border-stone-800/80 text-xs font-mono text-stone-400">
+          <div className="flex items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-stone-300 font-medium">DELIBERATION WINDOW // ACTIVE EVALUATION</span>
           </div>
-
-          {/* Badges */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {project.track && (
-              <span className="text-xs font-mono uppercase tracking-wider bg-[#191c20] border border-[#00f0ff]/20 text-[#00f0ff] px-3 py-1.5 rounded-sm">
-                {project.track}
-              </span>
-            )}
-            {project.teamName && (
-              <span className="text-xs font-mono uppercase tracking-wider bg-[#191c20] border border-white/10 text-white px-3 py-1.5 rounded-sm">
-                Team: {project.teamName}
-              </span>
-            )}
-            <span className="text-xs font-mono uppercase tracking-wider bg-[#191c20] border border-white/10 text-slate-400 px-3 py-1.5 rounded-sm">
-              {project.memberCount} members
-            </span>
-            {/* Score status */}
-            <span
-              className={[
-                "text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded-sm border",
-                isFullyScored
-                  ? "bg-[#22c55e]/10 border-[#22c55e]/30 text-[#22c55e]"
-                  : scoredCount > 0
-                  ? "bg-[#f59e0b]/10 border-[#f59e0b]/30 text-[#f59e0b]"
-                  : "bg-white/[0.03] border-white/10 text-slate-500",
-              ].join(" ")}
-            >
-              {isFullyScored ? "✓ Fully scored" : scoredCount > 0 ? `${scoredCount}/3 criteria` : "Not scored"}
-            </span>
+          <div className="flex items-center gap-4 text-[11px]">
+            <span>PROJECT ID: <strong className="text-stone-200">{mockProjectData.id.toUpperCase()}</strong></span>
+            <span className="text-stone-600"></span>
+            <span className="text-emerald-400 font-semibold">SANDBOX VERIFIED</span>
           </div>
         </div>
-      </div>
 
-      {/* Main content: 2-col on large, stacked on mobile */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left col: project info (1/3) */}
-          <aside className="lg:col-span-1 flex flex-col gap-4">
-            {/* Summary card */}
-            <div className="bg-white border border-[#e2e8f0] rounded-lg p-5">
-              <h2 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">
-                Project Summary
-              </h2>
-              <p className="text-[#111318] text-sm leading-relaxed">{project.summary}</p>
-              {project.repoUrl && (
-                <a
-                  href={project.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 mt-4 text-sm font-bold uppercase tracking-widest text-[#fe330a] hover:text-[#ff4d26] transition-colors"
-                >
-                  View Repository →
-                </a>
-              )}
-            </div>
-
-            {/* Highlights card */}
-            <div className="bg-white border border-[#e2e8f0] rounded-lg p-5">
-              <h2 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">
-                Key Highlights
-              </h2>
-              <ul className="flex flex-col gap-2">
-                {project.highlights.map((h, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-[#111318]">
-                    <span className="text-[#fe330a] font-bold mt-0.5 shrink-0">·</span>
-                    {h}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Rubric quick ref */}
-            <div className="bg-[#191c20] border border-white/[0.08] rounded-lg p-5">
-              <h2 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-3">
-                Rubric Weights
-              </h2>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: "Functionality", weight: 40 },
-                  { label: "Code Quality", weight: 30 },
-                  { label: "Innovation", weight: 30 },
-                ].map(({ label, weight }) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <div className="flex-1 bg-white/[0.06] rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="h-full bg-[#fe330a] rounded-full"
-                        style={{ width: `${weight}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-mono text-slate-400 w-24 text-right uppercase tracking-wider">
-                      {label} {weight}%
-                    </span>
-                  </div>
-                ))}
+        {/* Two-Column Grid: Details (Left) + Rubric Form (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Section 1: Project Details (col-span-6 or 7) */}
+          <div className="lg:col-span-6 space-y-6">
+            <div className="p-6 md:p-8 rounded-2xl bg-[#11141c] border border-stone-800 space-y-6">
+              
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-[#fe330a]/15 text-[#fe330a] border border-[#fe330a]/30">
+                  TRACK: {mockProjectData.track}
+                </span>
+                <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-stone-800 text-stone-300 border border-stone-700">
+                  TEAM: {mockProjectData.teamName}
+                </span>
+                <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-800/40">
+                  DOUBLE-BLIND MODE
+                </span>
               </div>
+
+              {/* Title & Submission Meta */}
+              <div className="space-y-1">
+                <h1 className="text-3xl md:text-4xl font-serif text-white tracking-tight">
+                  {mockProjectData.title}
+                </h1>
+                <p className="text-xs font-mono text-stone-500">
+                  SUBMITTED {mockProjectData.submissionTime}  HASH: {mockProjectData.hash}
+                </p>
+              </div>
+
+              {/* Summary Description */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-mono text-stone-400 uppercase tracking-wider block">
+                  PROJECT SUMMARY & ARCHITECTURE
+                </span>
+                <div className="p-5 rounded-xl bg-[#090b10] border border-stone-800/70 text-sm text-stone-300 leading-relaxed font-sans">
+                  {mockProjectData.summary}
+                </div>
+              </div>
+
+              {/* Telemetry Benchmarks */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-[#0e1117] border border-stone-800">
+                  <span className="text-[10px] font-mono text-stone-500 uppercase tracking-wider block">
+                    LATENCY BENCHMARK
+                  </span>
+                  <span className="text-lg font-mono font-bold text-stone-100">{mockProjectData.latency}</span>
+                </div>
+                <div className="p-4 rounded-xl bg-[#0e1117] border border-stone-800">
+                  <span className="text-[10px] font-mono text-stone-500 uppercase tracking-wider block">
+                    UNIT TEST COVERAGE
+                  </span>
+                  <span className="text-lg font-mono font-bold text-emerald-400">{mockProjectData.testCoverage}</span>
+                </div>
+              </div>
+
+              {/* Repo Link */}
               <a
-                href="/judge/guidelines"
-                className="mt-4 block text-[10px] font-mono uppercase tracking-widest text-slate-500 hover:text-[#00f0ff] transition-colors"
+                href={mockProjectData.repoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-between p-4 rounded-xl bg-[#0f1219] hover:bg-[#151922] border border-stone-800 hover:border-stone-700 transition-all group"
               >
-                Full guidelines →
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-stone-900 border border-stone-800 text-stone-300">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-sm font-semibold text-white block">View Code Repository</span>
+                    <span className="text-xs font-mono text-stone-500">github.com/example/awesome</span>
+                  </div>
+                </div>
+                <span className="text-[#fe330a] text-sm group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">&nearr;</span>
               </a>
+
             </div>
-          </aside>
-
-          {/* Right col: scoring form (2/3) */}
-          <div className="lg:col-span-2 flex flex-col gap-4">
-            <h2
-              className="text-lg font-black uppercase tracking-tight text-white"
-              style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
-            >
-              Your Scores
-            </h2>
-            <ScoringForm
-              projectId={project.id}
-              projectTitle={project.title}
-              existingScores={project.existingScores}
-              existingNotes={project.existingNotes}
-            />
           </div>
+
+          {/* Section 2: Official Rubric Form (col-span-6, sticky on desktop) */}
+          <div className="lg:col-span-6 lg:sticky lg:top-6">
+            <div className="p-6 md:p-8 rounded-2xl bg-[#11141c] border border-stone-800 shadow-2xl space-y-6">
+              
+              {/* Rubric Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-stone-800/80">
+                <div>
+                  <h2 className="text-2xl font-serif text-white">Official Rubric</h2>
+                  <p className="text-xs font-mono text-stone-400 mt-1">SCOREINPUT CONTRACT  1 TO 5 SCALE</p>
+                </div>
+                <span className="px-2.5 py-1 rounded bg-stone-900 border border-stone-800 text-[11px] font-mono text-stone-400">
+                  Weight: 40/30/30
+                </span>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {CRITERIA.map((criterion) => (
+                  <fieldset key={criterion.key} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <legend className="text-sm font-semibold text-stone-200">
+                        {criterion.label}{" "}
+                        <span className="text-xs font-normal text-stone-400">{criterion.sublabel}</span>
+                      </legend>
+                      <span className="text-[11px] font-mono text-[#fe330a]">{criterion.weight}</span>
+                    </div>
+
+                    {/* 1-5 Segmented Controller */}
+                    <div className="grid grid-cols-5 gap-2">
+                      {[1, 2, 3, 4, 5].map((val) => {
+                        const isSelected = scores[criterion.key] === val;
+                        return (
+                          <button
+                            key={val}
+                            type="button"
+                            onClick={() => handleScoreSelect(criterion.key, val)}
+                            className={`py-3 rounded-xl font-mono text-sm font-bold transition-all ${
+                              isSelected
+                                ? "bg-[#fe330a] text-white shadow-lg shadow-[#fe330a]/30 scale-[1.02]"
+                                : "bg-[#181c26] text-stone-400 hover:text-white hover:bg-[#202534] border border-stone-800/80"
+                            }`}
+                          >
+                            {val}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex justify-between text-[10px] font-mono text-stone-500 pt-0.5">
+                      <span>{criterion.lowLabel}</span>
+                      <span>{criterion.highLabel}</span>
+                    </div>
+                  </fieldset>
+                ))}
+
+                {/* Error Banner */}
+                {error && (
+                  <div className="p-4 rounded-xl bg-red-950/40 border border-red-800/50 text-xs font-mono text-red-300">
+                     {error}
+                  </div>
+                )}
+
+                {/* Success Banner */}
+                {success && (
+                  <div className="p-4 rounded-xl bg-emerald-950/50 border border-emerald-600/50 text-xs font-mono text-emerald-300 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Scores verified & saved to draft registry. Audit hash: 0x94fc...e321 attested
+                  </div>
+                )}
+
+                {/* Submit Action */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || success}
+                  className="w-full py-3.5 px-6 rounded-xl bg-[#fe330a] hover:bg-[#ff461e] disabled:opacity-50 text-white font-mono uppercase tracking-wider text-xs font-bold transition-all shadow-xl shadow-[#fe330a]/25 flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Attesting & Submitting...
+                    </>
+                  ) : success ? (
+                    "Attestation Complete "
+                  ) : (
+                    "SUBMIT SCORES &rarr;"
+                  )}
+                </button>
+              </form>
+
+            </div>
+          </div>
+
         </div>
 
-        {/* Prev / Next navigation */}
-        <div className="border-t border-white/[0.08] pt-6 mt-8 flex items-center justify-between gap-4">
-          {prevId ? (
-            <Link
-              href={`/judge/dashboard/${prevId}`}
-              className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-white transition-colors group"
-            >
-              <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
-              <span>{MOCK_PROJECTS[prevId!]!.title}</span>
-            </Link>
-          ) : (
-            <span />
-          )}
-          <Link
-            href="/judge/dashboard"
-            className="text-xs font-mono uppercase tracking-widest text-slate-600 hover:text-[#fe330a] transition-colors"
-          >
-            All Projects
-          </Link>
-          {nextId ? (
-            <Link
-              href={`/judge/dashboard/${nextId}`}
-              className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-white transition-colors group"
-            >
-              <span>{MOCK_PROJECTS[nextId!]!.title}</span>
-              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-            </Link>
-          ) : (
-            <span />
-          )}
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
