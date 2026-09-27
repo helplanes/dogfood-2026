@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @theme {
+  /* === DESIGN-4-HYBRID: Obsidian Kinetic — Simplified Hybrid === */
+
+  /* Canvas (dark world) */
+  --color-background: #111318;
+  --color-surface-low: #191c20;
+  --color-border-dark: rgba(255, 255, 255, 0.08);
+
+  /* Legacy surface scale (kept for compatibility) */
   --color-surface: #111318;
   --color-surface-dim: #111318;
   --color-surface-bright: #37393e;
@@ -9,29 +17,37 @@
   --color-surface-container: #1d2024;
   --color-surface-container-high: #282a2f;
   --color-surface-container-highest: #33353a;
-  
+
+  /* Cards (light — content lives here) */
+  --color-card: #ffffff;
+  --color-card-foreground: #111318;
+  --color-card-border: #e2e8f0;
+  --color-card-muted: #64748b;
+
+  /* Light surface helpers */
   --color-surface-light: #ffffff;
   --color-surface-light-muted: #f8f9fc;
   --color-surface-light-border: #e2e8f0;
 
+  /* Brand accent */
   --color-primary: #fe330a;
+  --color-primary-hover: #ff4d26;
   --color-primary-container: #ff4d26;
   --color-on-primary: #ffffff;
-  
+
+  /* Semantic */
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-info: #00f0ff;
-  
-  --color-background: #111318;
+  --color-error: #ba1a1a;
+
+  /* Foreground */
   --color-foreground: #f8f9fc;
-  
-  --color-card: #ffffff;
-  --color-card-foreground: #111318;
   --color-border: #e2e8f0;
 }
 
-:root { 
-  font-family: Geist, "DM Sans", system-ui, -apple-system, sans-serif; 
+:root {
+  font-family: Geist, "DM Sans", system-ui, -apple-system, sans-serif;
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
@@ -40,3 +56,4 @@ h1, h2, h3, h4, h5, h6 {
   font-family: Syne, Geist, system-ui, -apple-system, sans-serif;
   letter-spacing: -0.035em;
 }
+
