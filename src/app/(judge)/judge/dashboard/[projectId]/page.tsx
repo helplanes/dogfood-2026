@@ -206,7 +206,7 @@ export default function ProjectScoringPage() {
                   </div>
                 </div>
                 <span className="text-[#fe330a] text-sm group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">&nearr;</span>
-              </a>
+              </Link>
 
             </div>
           </div>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import "./globals.css";
 
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
             >
               DOGFOOD 2026
-            </a>
+            </Link>
             {/* Nav: JetBrains Mono, small, uppercase, white → orange-red on hover */}
             <nav className="flex items-center gap-6">
               <a
@@ -25,13 +26,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 className="text-xs font-mono uppercase tracking-widest text-white hover:text-[#fe330a] transition-colors"
               >
                 Gallery
-              </a>
+              </Link>
               <a
                 href="/judge/dashboard"
                 className="text-xs font-mono uppercase tracking-widest text-white hover:text-[#fe330a] transition-colors"
               >
                 Judge
-              </a>
+              </Link>
               {/* Future nav items: /dashboard, /organizer */}
             </nav>
           </div>

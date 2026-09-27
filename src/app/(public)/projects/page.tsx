@@ -376,12 +376,12 @@ export default function PublicProjectGalleryPage() {
 
                 {/* Action Buttons */}
                 <div className="pt-4 border-t border-stone-800/80 flex items-center gap-2">
-                  <a href={`/projects/${proj.id}`} className="flex-1 py-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-stone-300 text-xs font-mono font-medium border border-stone-800 flex items-center justify-center gap-1.5 transition-colors">
+                  <Link href={`/projects/${proj.id}`} className="flex-1 py-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-stone-300 text-xs font-mono font-medium border border-stone-800 flex items-center justify-center gap-1.5 transition-colors">
                     View Specs
-                  </a>
-                  <a href={`/projects/${proj.id}`} className="flex-1 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-md shadow-[#fe330a]/20 flex items-center justify-center gap-1">
+                  </Link>
+                  <Link href={`/projects/${proj.id}`} className="flex-1 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-md shadow-[#fe330a]/20 flex items-center justify-center gap-1">
                     Enter Project &rarr;
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

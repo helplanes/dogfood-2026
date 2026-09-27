@@ -150,7 +150,7 @@ export default function ProjectDetailPage() {
                   className="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-mono font-bold border border-stone-700 flex items-center justify-between transition-colors"
                 >
                   View Source Code <span className="text-[#fe330a]">&nearr;</span>
-                </a>
+                </Link>
                 <button
                   className="w-full py-3 px-4 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-[#fe330a]/25 flex items-center justify-center gap-2"
                 >
