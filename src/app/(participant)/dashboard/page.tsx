@@ -36,14 +36,14 @@ export default function ParticipantDashboard() {
             {team ? (
               <div className="mt-4">
                 <p className="text-sm text-slate-600">You are on team: <strong className="font-mono">{team.name}</strong></p>
-                <button className="mt-4 bg-[#191c20] text-white px-4 py-2 rounded-md text-sm font-bold">Manage Team</button>
+                <Link href="/team/invite" className="mt-4 inline-block bg-[#191c20] text-white px-4 py-2 rounded-md text-sm font-bold">Manage Team</Link>
               </div>
             ) : (
               <div className="mt-4">
                 <p className="text-sm text-slate-600">You are not in a team yet. Create or join a team to participate.</p>
                 <div className="mt-4 space-x-4">
-                  <button className="bg-[#fe330a] hover:bg-[#ff4d26] text-white px-4 py-2 rounded-md text-sm font-bold transition-colors">Create Team</button>
-                  <button className="border border-[#191c20] text-[#191c20] px-4 py-2 rounded-md text-sm font-bold transition-colors hover:bg-slate-50">Join Team</button>
+                  <Link href="/team/create" className="inline-block bg-[#fe330a] hover:bg-[#ff4d26] text-white px-4 py-2 rounded-md text-sm font-bold transition-colors">Create Team</Link>
+                  <Link href="/team/join" className="inline-block border border-[#191c20] text-[#191c20] px-4 py-2 rounded-md text-sm font-bold transition-colors hover:bg-slate-50">Join Team</Link>
                 </div>
               </div>
             )}
