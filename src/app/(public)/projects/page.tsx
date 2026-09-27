@@ -155,7 +155,7 @@ export default function PublicProjectGalleryPage() {
                 Judge Console
               </Link>
               <Link
-                href="/organizer"
+                href="/organizer/dashboard"
                 className="px-3.5 py-1.5 rounded-lg text-stone-400 hover:text-white transition-colors"
               >
                 Organizer Dashboard
