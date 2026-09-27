@@ -34,69 +34,68 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#111318] p-4">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-[#ffffff] p-8 border border-[#e2e8f0]">
-        <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#111318] font-['Syne']">Sign In</h2>
+    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white font-sans flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md p-6 md:p-8 rounded-2xl bg-[#11141c] border border-stone-800 shadow-xl">
+        <div className="text-center mb-8">
+          <h2 className="text-4xl font-serif text-white tracking-tight leading-tight">
+            Sign In
+          </h2>
+          <p className="mt-2 text-sm md:text-base font-sans text-stone-400 leading-relaxed">
+            Access the DOGFOOD 2026 participant portal.
+          </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 p-4 text-sm text-[#ba1a1a] border border-[#ba1a1a]">
-              {error}
+            <div className="p-4 rounded-xl bg-red-900/20 border border-red-500/30">
+              <p className="text-sm font-mono text-red-400">{error}</p>
             </div>
           )}
           
           <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-600">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
                 Email address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`block w-full rounded-md border bg-white py-1.5 px-3 text-[#111318] placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm sm:leading-6 ${error ? 'border-[#ba1a1a]' : 'border-[#e2e8f0]'}`}
-                  placeholder="participant@example.com"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full px-4 py-3 bg-[#0c0e13] border ${error ? 'border-red-500/50' : 'border-stone-800/80'} rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a] transition-colors`}
+                placeholder="participant@example.com"
+              />
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-600">
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
                 Password
               </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`block w-full rounded-md border bg-white py-1.5 px-3 text-[#111318] placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm sm:leading-6 ${error ? 'border-[#ba1a1a]' : 'border-[#e2e8f0]'}`}
-                />
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full px-4 py-3 bg-[#0c0e13] border ${error ? 'border-red-500/50' : 'border-stone-800/80'} rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a] transition-colors`}
+              />
             </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              className="flex w-full justify-center rounded-md bg-[#fe330a] px-3 py-2 text-sm font-bold leading-6 text-white transition-colors hover:bg-[#ff4d26] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#fe330a]"
-            >
-              SIGN IN
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full px-5 py-3 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#fe330a]/25 flex items-center justify-center gap-2"
+          >
+            Sign In &rarr;
+          </button>
           
-          <div className="text-center mt-4">
-            <Link href="/signup" className="text-sm text-slate-600 hover:text-[#fe330a] transition-colors">
+          <div className="text-center mt-6">
+            <Link href="/signup" className="text-sm font-sans text-stone-500 hover:text-stone-300 transition-colors">
               Don't have an account? Sign up
             </Link>
           </div>
