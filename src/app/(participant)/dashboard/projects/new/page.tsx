@@ -70,7 +70,7 @@ export default function SubmitProjectPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight font-serif tracking-tight">Submit Project</h2>
-          <p className="mt-2 font-mono text-sm text-stone-500">Draft and submit your team's project.</p>
+          <p className="mt-2 font-mono text-sm text-stone-500">Draft and submit your team&apos;s project.</p>
         </div>
 
         {success ? (

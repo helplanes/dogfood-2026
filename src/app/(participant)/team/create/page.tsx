@@ -31,7 +31,7 @@ export default function CreateTeamPage() {
         {success ? (
           <div className="text-center">
             <div className="rounded-xl bg-green-50 p-4 text-sm text-[#22c55e] border border-[#22c55e] mb-6">
-              Team "{teamName}" created successfully!
+              Team &quot;{teamName}&quot; created successfully!
             </div>
             <Link href="/dashboard" className="bg-[#fe330a] hover:bg-[#ff4922] text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors inline-block">
               Return to Dashboard

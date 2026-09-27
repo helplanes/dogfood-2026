@@ -18,6 +18,7 @@ export default function ParticipantDashboard() {
   useEffect(() => {
     const mockTeam = localStorage.getItem('mock_team');
     if (mockTeam) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTeam({ id: 'tm_mock', name: mockTeam });
     }
   }, []);
