@@ -23,7 +23,6 @@ export default function LoginPage() {
     }
 
     // Static implementation (Wait for Krish to wire the real API)
-    // Simulating a 401 error as per the "server-error states" requirement
     if (email === "error@example.com") {
       setError("Invalid credentials (simulated 401).");
       return;
@@ -34,77 +33,82 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#111318] p-4">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-[#ffffff] p-8 border border-[#e2e8f0] shadow-sm">
-        <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#111318] font-['Syne']">Sign In</h2>
-          <p className="mt-2 text-sm text-slate-600 font-['Geist']">
-            Enter your details to access your dashboard
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0c0e13] p-4 text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white font-sans">
+      
+      <div className="w-full max-w-md space-y-8 rounded-2xl bg-[#11141c] p-8 border border-stone-800 shadow-xl">
+        <div className="text-center space-y-2">
+          <div className="flex justify-center mb-6">
+            <span className="flex h-3 w-3 rounded-full bg-[#fe330a] shadow-[0_0_12px_#fe330a] animate-pulse" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-serif text-white tracking-tight">
+            Authenticate. <span className="italic text-[#fe330a]">Access.</span>
+          </h2>
+          <p className="text-sm font-mono text-stone-500 uppercase tracking-widest">
+            Identity Verification Required
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-50 p-4 text-sm text-[#ba1a1a] border border-[#ba1a1a]">
+            <div className="rounded-xl bg-red-950/40 p-4 text-xs font-mono text-red-300 border border-red-800/50 flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-red-500" />
               {error}
             </div>
           )}
           
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-600">
-                Email address
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
+                Email Address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`block w-full rounded-md border bg-white py-2 px-3 text-[#111318] placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm sm:leading-6 transition-colors ${error ? 'border-[#ba1a1a]' : 'border-[#e2e8f0]'}`}
-                  placeholder="participant@example.com"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full px-4 py-3 bg-[#0c0e13] border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
+                placeholder="participant@example.com"
+              />
             </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-600">
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
                 Password
               </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`block w-full rounded-md border bg-white py-2 px-3 text-[#111318] placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm sm:leading-6 transition-colors ${error ? 'border-[#ba1a1a]' : 'border-[#e2e8f0]'}`}
-                />
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full px-4 py-3 bg-[#0c0e13] border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
+                placeholder="••••••••"
+              />
             </div>
           </div>
 
-          <div>
+          <div className="pt-2">
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-[#fe330a] px-3 py-2.5 text-sm font-bold leading-6 text-white transition-colors hover:bg-[#ff4d26] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#fe330a] shadow-sm"
+              className="flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#fe330a]/25 focus:outline-none focus:border-white"
             >
-              SIGN IN
+              Initialize Session &rarr;
             </button>
           </div>
           
-          <div className="text-center mt-4">
-            <Link href="/signup" className="text-sm text-slate-600 hover:text-[#fe330a] transition-colors">
-              Don't have an account? Sign up
+          <div className="text-center pt-2">
+            <Link href="/signup" className="text-xs font-mono text-stone-500 hover:text-[#fe330a] transition-colors">
+              NO IDENTITY? REGISTER HERE
             </Link>
           </div>
         </form>
       </div>
+      
     </div>
   );
 }
