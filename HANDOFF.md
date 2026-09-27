@@ -20,6 +20,12 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
   - `AssignedProject` needs: `id`, `title`, `summary`, `repoUrl`, `track`, `teamName`, `existingScores: Partial<Record<Criterion, number>>`.
   - These must be assignment-scoped — must never return another judge's score data.
 
+- **REQUEST FOR KRISH (27 Sep):** Organizer console (Task 4) and Public Gallery (Task 2) are scaffolded visually. Need the following typed accessors:
+  1. `getPublicProjects(filter?: string): Promise<PublicProject[]>` — for the gallery.
+  2. `getOrganizerLeaderboard(): Promise<LeaderboardEntry[]>` — needs `rank`, `id`, `title`, `track`, `n_reviews`, `rawScore`, `normalizedScore`, and `hasVarianceWarning`.
+  3. `getAuditLogs(limit?: number): Promise<AuditLog[]>` — for the append-only audit viewer.
+  4. `/api/export.csv` — Route handler needs to be wired up for the CSV export button.
+
 ## Nihal
 
 - Ownership change requested by the backend lead: own the medium frontend scope—auth and participant/team/project editing flows. Do not take backend files.
