@@ -1,16 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { PublicProject } from "@/contracts";
+import { getAllSavedScores, type StoredProjectEntry } from "@/components/judging/scoreStore";
 
 /**
- * Mock assigned-project data for judge_a (session: jdg_a_91bc → maps to jdg_01 in fixtures).
+ * Base mock assigned-project data for judge_a (session: jdg_a_91bc → maps to jdg_01 in fixtures).
  * TODO: replace with Krish's typed getAssignedProjects(judgeId) from src/repo.
  * Requested in HANDOFF.md under Shriyash heading.
  *
- * Shape follows PublicProject + scores per criterion + notes.
+ * The "scored" and "scores" fields are overridden at runtime by the client-side
+ * score store (localStorage) so the dashboard reflects real saves immediately.
+ * When Krish's backend is wired, this override layer is deleted entirely.
  */
-const MOCK_ASSIGNED_PROJECTS: (PublicProject & {
-  scored: { functionality: boolean; quality: boolean; innovation: boolean };
-  scores: { functionality: number | null; quality: number | null; innovation: number | null };
+const BASE_PROJECTS: (PublicProject & {
+  defaultScores: { functionality: number | null; quality: number | null; innovation: number | null };
   lastUpdated: string | null;
 })[] = [
   {
@@ -21,8 +26,7 @@ const MOCK_ASSIGNED_PROJECTS: (PublicProject & {
     repoUrl: "https://example.org/repo/01",
     track: "Developer Tools",
     teamName: "Ironforge",
-    scored: { functionality: false, quality: false, innovation: false },
-    scores: { functionality: null, quality: null, innovation: null },
+    defaultScores: { functionality: null, quality: null, innovation: null },
     lastUpdated: null,
   },
   {
@@ -33,8 +37,7 @@ const MOCK_ASSIGNED_PROJECTS: (PublicProject & {
     repoUrl: "https://example.org/repo/05",
     track: "Infrastructure",
     teamName: "Solaris",
-    scored: { functionality: true, quality: true, innovation: false },
-    scores: { functionality: 4, quality: 4, innovation: null },
+    defaultScores: { functionality: 4, quality: 4, innovation: null },
     lastUpdated: "2026-09-27T08:30:00Z",
   },
   {
@@ -45,8 +48,7 @@ const MOCK_ASSIGNED_PROJECTS: (PublicProject & {
     repoUrl: "https://example.org/repo/12",
     track: "Developer Tools",
     teamName: "Weave",
-    scored: { functionality: true, quality: true, innovation: true },
-    scores: { functionality: 5, quality: 4, innovation: 5 },
+    defaultScores: { functionality: 5, quality: 4, innovation: 5 },
     lastUpdated: "2026-09-27T09:15:00Z",
   },
   {
@@ -57,8 +59,7 @@ const MOCK_ASSIGNED_PROJECTS: (PublicProject & {
     repoUrl: "https://example.org/repo/17",
     track: "Infrastructure",
     teamName: "Buildcraft",
-    scored: { functionality: false, quality: false, innovation: false },
-    scores: { functionality: null, quality: null, innovation: null },
+    defaultScores: { functionality: null, quality: null, innovation: null },
     lastUpdated: null,
   },
   {
@@ -69,27 +70,26 @@ const MOCK_ASSIGNED_PROJECTS: (PublicProject & {
     repoUrl: "https://example.org/repo/23",
     track: "Data & Storage",
     teamName: "Meridian",
-    scored: { functionality: true, quality: false, innovation: false },
-    scores: { functionality: 3, quality: null, innovation: null },
+    defaultScores: { functionality: 3, quality: null, innovation: null },
     lastUpdated: "2026-09-26T17:45:00Z",
   },
 ];
 
-function scoredCount(scored: { functionality: boolean; quality: boolean; innovation: boolean }) {
-  return Object.values(scored).filter(Boolean).length;
+type LiveScores = { functionality: number | null; quality: number | null; innovation: number | null };
+
+const CRITERIA_KEYS = ["functionality", "quality", "innovation"] as const;
+const CRITERIA_LABELS = ["Func.", "Quality", "Innovation"] as const;
+
+function scoredCount(scores: LiveScores) {
+  return CRITERIA_KEYS.filter((k) => scores[k] !== null).length;
 }
 
-function weightedAvg(scores: {
-  functionality: number | null;
-  quality: number | null;
-  innovation: number | null;
-}): number | null {
+function weightedAvg(scores: LiveScores): number | null {
   const weights = { functionality: 40, quality: 30, innovation: 30 };
-  const entries = Object.entries(scores) as [keyof typeof scores, number | null][];
-  const filled = entries.filter(([, v]) => v !== null) as [keyof typeof scores, number][];
+  const filled = CRITERIA_KEYS.filter((k) => scores[k] !== null);
   if (filled.length === 0) return null;
-  const totalWeight = filled.reduce((s, [k]) => s + weights[k], 0);
-  const weighted = filled.reduce((s, [k, v]) => s + v * weights[k], 0);
+  const totalWeight = filled.reduce((s, k) => s + weights[k], 0);
+  const weighted = filled.reduce((s, k) => s + (scores[k] as number) * weights[k], 0);
   return Math.round((weighted / totalWeight) * 10) / 10;
 }
 
@@ -101,16 +101,43 @@ function formatRelativeTime(iso: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-export default function JudgeDashboardPage() {
-  const total = MOCK_ASSIGNED_PROJECTS.length;
-  const fullyScored = MOCK_ASSIGNED_PROJECTS.filter((p) => scoredCount(p.scored) === 3).length;
-  const inProgress = MOCK_ASSIGNED_PROJECTS.filter(
-    (p) => scoredCount(p.scored) > 0 && scoredCount(p.scored) < 3
-  ).length;
-  const pending = MOCK_ASSIGNED_PROJECTS.filter((p) => scoredCount(p.scored) === 0).length;
+/** Merge base project scores with anything saved in the local store. */
+function mergeWithStore(
+  base: LiveScores,
+  stored: StoredProjectEntry | undefined
+): LiveScores {
+  if (!stored) return base;
+  return {
+    functionality: (stored.scores.functionality ?? base.functionality),
+    quality: (stored.scores.quality ?? base.quality),
+    innovation: (stored.scores.innovation ?? base.innovation),
+  };
+}
 
-  const CRITERIA_LABELS = ["Func.", "Quality", "Innovation"] as const;
-  const CRITERIA_KEYS = ["functionality", "quality", "innovation"] as const;
+export default function JudgeDashboardPage() {
+  // savedStore starts empty (SSR-safe); populated after mount
+  const [savedStore, setSavedStore] = useState<Record<string, StoredProjectEntry>>({});
+
+  useEffect(() => {
+    // Read once on mount — covers the "came back from scoring page" case
+    setSavedStore(getAllSavedScores());
+  }, []);
+
+  // Merge base data with live store overrides
+  const projects = BASE_PROJECTS.map((p) => {
+    const stored = savedStore[p.id];
+    const liveScores = mergeWithStore(p.defaultScores, stored);
+    const liveLastUpdated = stored ? stored.savedAt : p.lastUpdated;
+    return { ...p, liveScores, liveLastUpdated };
+  });
+
+  const total = projects.length;
+  const fullyScored = projects.filter((p) => scoredCount(p.liveScores) === 3).length;
+  const inProgress = projects.filter((p) => {
+    const done = scoredCount(p.liveScores);
+    return done > 0 && done < 3;
+  }).length;
+  const pending = projects.filter((p) => scoredCount(p.liveScores) === 0).length;
 
   return (
     <div className="min-h-screen bg-[#111318]">
@@ -134,39 +161,14 @@ export default function JudgeDashboardPage() {
         <div className="max-w-5xl mx-auto px-4 py-4">
           {/* Stat pills */}
           <div className="flex items-center gap-3 flex-wrap mb-3">
-            <StatPill
-              value={total}
-              label="Assigned"
-              color="text-white"
-              bg="bg-white/[0.06]"
-              border="border-white/10"
-            />
-            <StatPill
-              value={fullyScored}
-              label="Complete"
-              color="text-[#22c55e]"
-              bg="bg-[#22c55e]/10"
-              border="border-[#22c55e]/30"
-            />
-            <StatPill
-              value={inProgress}
-              label="In Progress"
-              color="text-[#f59e0b]"
-              bg="bg-[#f59e0b]/10"
-              border="border-[#f59e0b]/30"
-            />
-            <StatPill
-              value={pending}
-              label="Pending"
-              color="text-slate-400"
-              bg="bg-white/[0.03]"
-              border="border-white/10"
-            />
+            <StatPill value={total} label="Assigned" color="text-white" bg="bg-white/[0.06]" border="border-white/10" />
+            <StatPill value={fullyScored} label="Complete" color="text-[#22c55e]" bg="bg-[#22c55e]/10" border="border-[#22c55e]/30" />
+            <StatPill value={inProgress} label="In Progress" color="text-[#f59e0b]" bg="bg-[#f59e0b]/10" border="border-[#f59e0b]/30" />
+            <StatPill value={pending} label="Pending" color="text-slate-400" bg="bg-white/[0.03]" border="border-white/10" />
           </div>
-          {/* Progress bar */}
+          {/* Two-color progress bar */}
           <div className="flex items-center gap-4">
             <div className="flex-1 bg-[#282a2f] rounded-full h-2 overflow-hidden">
-              {/* Green = fully scored */}
               <div className="h-full flex">
                 <div
                   className="h-full bg-[#22c55e] transition-all duration-500"
@@ -201,14 +203,15 @@ export default function JudgeDashboardPage() {
           </span>
           <p className="text-slate-400 text-xs leading-relaxed">
             Showing mock assigned projects for{" "}
-            <code className="text-white font-mono">judge_a</code>. Replace with{" "}
+            <code className="text-white font-mono">judge_a</code>. Scores are saved locally in this
+            browser. Replace with{" "}
             <code className="text-white font-mono">getAssignedProjects(judgeId)</code> from{" "}
             <code className="text-white font-mono">src/repo</code> when Krish&apos;s backend is
             wired.
           </p>
         </div>
 
-        {/* Section headers */}
+        {/* Section header */}
         <div className="flex items-center justify-between mb-6">
           <h2
             className="text-lg font-black uppercase tracking-tight text-white"
@@ -225,11 +228,11 @@ export default function JudgeDashboardPage() {
         </div>
 
         <div className="flex flex-col gap-4">
-          {MOCK_ASSIGNED_PROJECTS.map((project) => {
-            const done = scoredCount(project.scored);
+          {projects.map((project) => {
+            const done = scoredCount(project.liveScores);
             const isFullyScored = done === 3;
             const isInProgress = done > 0 && !isFullyScored;
-            const avg = weightedAvg(project.scores);
+            const avg = weightedAvg(project.liveScores);
 
             return (
               <div
@@ -245,7 +248,6 @@ export default function JudgeDashboardPage() {
               >
                 {/* Left: project info */}
                 <div className="flex-1 min-w-0">
-                  {/* Title + status pill */}
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h3 className="text-base font-bold uppercase tracking-tight text-[#111318]">
                       {project.title}
@@ -269,9 +271,9 @@ export default function JudgeDashboardPage() {
                         {project.teamName}
                       </span>
                     )}
-                    {project.lastUpdated && (
+                    {project.liveLastUpdated && (
                       <span className="text-xs font-mono text-slate-400">
-                        Updated {formatRelativeTime(project.lastUpdated)}
+                        Updated {formatRelativeTime(project.liveLastUpdated)}
                       </span>
                     )}
                   </div>
@@ -279,7 +281,7 @@ export default function JudgeDashboardPage() {
                   {/* Per-criterion mini scores */}
                   <div className="flex items-center gap-3 flex-wrap">
                     {CRITERIA_KEYS.map((key, i) => {
-                      const val = project.scores[key];
+                      const val = project.liveScores[key];
                       return (
                         <div key={key} className="flex items-center gap-1">
                           <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
@@ -341,7 +343,6 @@ export default function JudgeDashboardPage() {
           })}
         </div>
 
-        {/* Bottom tip */}
         <p className="mt-8 text-center text-xs font-mono text-slate-600 uppercase tracking-widest">
           Tip — click any project to score it. All scores are private until the event closes.
         </p>
@@ -366,24 +367,14 @@ function StatPill({
   border: string;
 }) {
   return (
-    <div
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${bg} ${border}`}
-    >
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${bg} ${border}`}>
       <span className={`text-lg font-black tabular-nums leading-none ${color}`}>{value}</span>
-      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
-        {label}
-      </span>
+      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">{label}</span>
     </div>
   );
 }
 
-function StatusPill({
-  done,
-  isFullyScored,
-}: {
-  done: number;
-  isFullyScored: boolean;
-}) {
+function StatusPill({ done, isFullyScored }: { done: number; isFullyScored: boolean }) {
   if (isFullyScored) {
     return (
       <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/30">

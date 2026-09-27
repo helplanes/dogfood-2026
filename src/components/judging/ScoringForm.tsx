@@ -2,6 +2,7 @@
 
 import { useState, useId, useEffect, useRef } from "react";
 import type { Criterion } from "@/contracts";
+import { saveProjectScores } from "@/components/judging/scoreStore";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -142,6 +143,8 @@ export function ScoringForm({
         await new Promise((res) => setTimeout(res, 700));
         console.log("[MOCK SAVE]", { projectId, scores, notes });
       }
+      // Persist to local store so dashboard reflects the scored status
+      saveProjectScores(projectId, scores as Record<Criterion, number>, notes);
       setStatus("saved");
       setHasUnsaved(false);
       savedScoresRef.current = { ...scores };
