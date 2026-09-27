@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="bg-[#191c20] border-b border-white/[0.08] py-4 px-6">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             {/* Logo: Syne bold uppercase */}
-            <a
+            <Link
               href="/"
               className="font-black uppercase tracking-tight text-xl text-white hover:text-[#fe330a] transition-colors"
               style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
@@ -21,13 +21,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </Link>
             {/* Nav: JetBrains Mono, small, uppercase, white → orange-red on hover */}
             <nav className="flex items-center gap-6">
-              <a
+              <Link
                 href="/projects"
                 className="text-xs font-mono uppercase tracking-widest text-white hover:text-[#fe330a] transition-colors"
               >
                 Gallery
               </Link>
-              <a
+              <Link
                 href="/judge/dashboard"
                 className="text-xs font-mono uppercase tracking-widest text-white hover:text-[#fe330a] transition-colors"
               >

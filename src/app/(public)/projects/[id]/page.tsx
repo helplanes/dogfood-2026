@@ -143,7 +143,7 @@ export default function ProjectDetailPage() {
               </div>
 
               <div className="space-y-3">
-                <a
+                <Link
                   href={projectDetail.repoUrl}
                   target="_blank"
                   rel="noreferrer"

@@ -188,7 +188,7 @@ export default function ProjectScoringPage() {
               </div>
 
               {/* Repo Link */}
-              <a
+              <Link
                 href={mockProjectData.repoUrl}
                 target="_blank"
                 rel="noreferrer"
