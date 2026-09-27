@@ -40,13 +40,38 @@ export default function ParticipantDashboard() {
   return (
     <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white font-sans flex flex-col">
       <header className="flex flex-wrap items-center justify-between gap-4 py-4 px-6 border-b border-stone-800/80 bg-[#11141c]/90">
-        <div className="flex items-center gap-3">
-          <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
-          <span className="text-stone-300 font-semibold font-mono tracking-wider text-xs">PARTICIPANT TERMINAL</span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 border-r border-stone-800 pr-6">
+            <span className="text-white font-black font-serif text-xl tracking-tight">DOGFOOD<span className="italic text-[#fe330a]">2026</span></span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+            <span className="text-stone-300 font-semibold font-mono tracking-wider text-xs hidden sm:inline-block">PARTICIPANT TERMINAL</span>
+          </div>
         </div>
-        <nav className="flex items-center gap-6">
-          <span className="font-mono text-[11px] uppercase tracking-widest text-stone-400">{session?.user}</span>
-          <button onClick={handleSignOut} className="font-mono text-[11px] uppercase tracking-widest text-stone-300 hover:text-[#fe330a] transition-colors border border-stone-700 px-3 py-1.5 rounded-lg bg-stone-900">Sign Out &rarr;</button>
+        <nav className="flex items-center gap-6 relative group">
+          <button className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-[#191c20] border border-stone-800 hover:border-stone-600 transition-colors">
+            <div className="w-6 h-6 rounded-full bg-stone-700 flex items-center justify-center text-xs font-bold text-white uppercase">
+              {session?.user.charAt(0)}
+            </div>
+            <span className="font-mono text-[11px] uppercase tracking-widest text-stone-300 hidden md:inline-block">{session?.user.split('@')[0]}</span>
+            <span className="text-stone-500 text-[10px]">▼</span>
+          </button>
+          
+          {/* Dropdown Menu (Visible on hover) */}
+          <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[#11141c] border border-stone-800 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            <div className="p-3 border-b border-stone-800/80">
+              <p className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">Signed In As</p>
+              <p className="text-xs font-mono text-stone-300 truncate mt-1">{session?.user}</p>
+            </div>
+            <div className="p-2 flex flex-col gap-1">
+              <button className="text-left px-3 py-2 text-xs font-mono text-stone-400 hover:text-white hover:bg-stone-900 rounded-md transition-colors">Profile & Settings</button>
+              <button className="text-left px-3 py-2 text-xs font-mono text-stone-400 hover:text-white hover:bg-stone-900 rounded-md transition-colors">Switch Team</button>
+            </div>
+            <div className="p-2 border-t border-stone-800/80">
+              <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-xs font-mono text-[#fe330a] hover:bg-[#fe330a]/10 rounded-md transition-colors">Sign Out &rarr;</button>
+            </div>
+          </div>
         </nav>
       </header>
 
