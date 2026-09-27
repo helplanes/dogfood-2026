@@ -46,7 +46,6 @@ export function GalleryCard({ project }: { project: PublicProject }) {
           href={project.repoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
           className="text-[#fe330a] hover:text-[#ff4d26] text-sm font-bold uppercase tracking-widest mt-auto inline-flex items-center gap-1 transition-colors"
         >
           View Source →
