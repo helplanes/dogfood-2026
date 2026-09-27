@@ -13,13 +13,17 @@ export default function ParticipantDashboard() {
     role: "participant",
   });
   
-  const [team, setTeam] = useState<{ id: string; name: string } | null>(null);
+  const [team, setTeam] = useState<{ id: string; name: string; members: string[] } | null>(null);
 
   useEffect(() => {
     const mockTeam = localStorage.getItem('mock_team');
     if (mockTeam) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTeam({ id: 'tm_mock', name: mockTeam });
+      setTeam({ 
+        id: 'tm_mock', 
+        name: mockTeam, 
+        members: ["participant@example.com", "hacker2@example.com", "coder3@example.com"] 
+      });
     }
   }, []);
 
@@ -66,6 +70,17 @@ export default function ParticipantDashboard() {
                   <p className="text-sm font-sans text-stone-400">
                     Your authenticated team designation: <strong className="font-mono text-stone-200 ml-2">{team.name}</strong>
                   </p>
+                  
+                  <div className="mt-4">
+                    <p className="text-[11px] font-mono uppercase tracking-widest text-stone-500 mb-2">Registered Members</p>
+                    <ul className="space-y-2">
+                      {team.members.map((member, idx) => (
+                        <li key={idx} className="text-sm font-mono text-stone-400 flex items-center gap-2 before:content-[''] before:block before:w-1.5 before:h-1.5 before:rounded-full before:bg-[#fe330a]">
+                          {member}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
