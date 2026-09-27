@@ -55,7 +55,7 @@ export default function ParticipantDashboard() {
             {team ? (
               <div className="mt-4">
                 <p className="text-sm text-slate-600">Your team has not submitted a project yet.</p>
-                <button className="mt-4 bg-[#fe330a] hover:bg-[#ff4d26] text-white px-4 py-2 rounded-md text-sm font-bold transition-colors">Submit Project</button>
+                <Link href="/dashboard/projects/new" className="mt-4 inline-block bg-[#fe330a] hover:bg-[#ff4d26] text-white px-4 py-2 rounded-md text-sm font-bold transition-colors">Submit Project</Link>
               </div>
             ) : (
               <div className="mt-4">
