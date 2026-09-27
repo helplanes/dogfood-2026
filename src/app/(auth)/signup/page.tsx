@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { LoginInput } from "@/contracts";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,22 +20,14 @@ export default function LoginPage() {
       return;
     }
 
-    // Static implementation (Wait for Krish to wire the real API)
-    // Simulating a 401 error as per the "server-error states" requirement
-    if (email === "error@example.com") {
-      setError("Invalid credentials (simulated 401).");
-      return;
-    }
-    
-    // Simulate success
-    alert("Login successful (static mode).");
+    alert("Signup successful (static mode). Redirect to dashboard.");
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#111318] p-4">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-[#ffffff] p-8 border border-[#e2e8f0]">
         <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#111318] font-['Syne']">Sign In</h2>
+          <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#111318] font-['Syne']">Sign Up</h2>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -60,7 +52,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`block w-full rounded-md border bg-white py-1.5 px-3 text-[#111318] placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm sm:leading-6 ${error ? 'border-[#ba1a1a]' : 'border-[#e2e8f0]'}`}
-                  placeholder="participant@example.com"
+                  placeholder="new@example.com"
                 />
               </div>
             </div>
@@ -74,7 +66,7 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -89,13 +81,13 @@ export default function LoginPage() {
               type="submit"
               className="flex w-full justify-center rounded-md bg-[#fe330a] px-3 py-2 text-sm font-bold leading-6 text-white transition-colors hover:bg-[#ff4d26] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#fe330a]"
             >
-              SIGN IN
+              CREATE ACCOUNT
             </button>
           </div>
           
           <div className="text-center mt-4">
-            <Link href="/signup" className="text-sm text-slate-600 hover:text-[#fe330a] transition-colors">
-              Don't have an account? Sign up
+            <Link href="/login" className="text-sm text-slate-600 hover:text-[#fe330a] transition-colors">
+              Already have an account? Sign in
             </Link>
           </div>
         </form>
