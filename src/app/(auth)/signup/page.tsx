@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { LoginInput } from "@/contracts";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export default function SignupPage() {
       return;
     }
 
-    alert("Signup successful (static mode). Redirect to dashboard.");
+    router.push("/dashboard");
   };
 
   return (

@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PublicProject } from "@/contracts";
 
 export default function ParticipantDashboard() {
+  const router = useRouter();
   // Static state for now
   const [session, setSession] = useState<{ user: string; role: string } | null>({
     user: "participant@example.com",
@@ -19,6 +21,11 @@ export default function ParticipantDashboard() {
       setTeam({ id: 'tm_mock', name: mockTeam });
     }
   }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('mock_team');
+    router.push('/login');
+  };
   
   return (
     <div className="min-h-screen bg-[#111318] text-[#ffffff]">
@@ -26,7 +33,7 @@ export default function ParticipantDashboard() {
         <h1 className="text-xl font-black uppercase tracking-tight font-['Syne']">DOGFOOD PORTAL</h1>
         <nav className="space-x-4">
           <span className="font-mono text-sm uppercase text-slate-300">{session?.user}</span>
-          <button className="font-mono text-sm uppercase text-white hover:text-[#fe330a] transition-colors">Sign Out</button>
+          <button onClick={handleSignOut} className="font-mono text-sm uppercase text-white hover:text-[#fe330a] transition-colors">Sign Out</button>
         </nav>
       </header>
 
