@@ -98,7 +98,7 @@ export default function OrganizerRubricPage() {
                   <h3 className="text-lg font-serif text-white">Normalization Engine</h3>
                 </div>
                 <p className="text-xs text-stone-400 font-sans leading-relaxed">
-                  The DOGFOOD portal uses a robust statistical normalization algorithm to correct for varying judge leniency (e.g. "hard" vs "easy" graders).
+                  The DOGFOOD portal uses a robust statistical normalization algorithm to correct for varying judge leniency (e.g. &quot;hard&quot; vs &quot;easy&quot; graders).
                 </p>
                 <div className="space-y-3 pt-4 border-t border-stone-800/80">
                   <div className="flex items-center justify-between text-[11px] font-mono">

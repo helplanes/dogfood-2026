@@ -14,7 +14,7 @@ export default function OrganizerDashboardPage() {
           <div className="flex items-center gap-3">
             <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
             <span className="text-stone-300 font-semibold">ORGANIZER COMMAND CENTER</span>
-            <span className="text-stone-600">//</span>
+            <span className="text-stone-600">{"//"}</span>
             <span>SYSTEM METRICS</span>
           </div>
           <div className="flex items-center gap-5 text-[11px]">

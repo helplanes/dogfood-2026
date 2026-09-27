@@ -84,9 +84,9 @@ export default function JudgeDashboardPage() {
           <div className="flex items-center gap-3">
             <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
             <span className="text-stone-300 font-semibold">JUROR PORTAL</span>
-            <span className="text-stone-600">//</span>
+            <span className="text-stone-600">{"//"}</span>
             <span>ASSIGNED ROUND</span>
-            <span className="text-stone-600">//</span>
+            <span className="text-stone-600">{"//"}</span>
             <span>DOUBLE-BLIND PROTOCOL V2.4</span>
           </div>
 

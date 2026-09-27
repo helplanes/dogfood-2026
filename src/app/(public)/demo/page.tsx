@@ -32,6 +32,7 @@ const SCRIPT_STEPS = [
 
 export default function DemoScriptPage() {
   const [activeStep, setActiveStep] = useState(0);
+  const currentStep = SCRIPT_STEPS[activeStep]!;
 
   return (
     <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white px-4 py-8 md:px-12 md:py-12 flex flex-col font-sans">
@@ -69,7 +70,7 @@ export default function DemoScriptPage() {
                 {step.title.split(" ")[1]} {step.title.split(" ")[2]}
               </div>
               <div className="text-[10px] font-mono mt-1 opacity-70">
-                {step.title.split("(")[1].replace(")", "")}
+                {step.title.split("(")[1]?.replace(")", "")}
               </div>
             </button>
           ))}
@@ -84,24 +85,24 @@ export default function DemoScriptPage() {
 
             <div className="space-y-2 relative z-10">
               <span className="text-[11px] font-mono text-[#fe330a] uppercase tracking-widest">
-                OBJECTIVE: {SCRIPT_STEPS[activeStep].objective}
+                OBJECTIVE: {currentStep.objective}
               </span>
               <h2 className="text-3xl md:text-4xl font-serif text-white">
-                {SCRIPT_STEPS[activeStep].title.split(" (")[0].replace(/[0-9]. /, "")}
+                {currentStep.title.split(" (")[0]?.replace(/[0-9]. /, "")}
               </h2>
             </div>
 
             <div className="space-y-3 relative z-10">
               <div className="text-xs font-mono text-stone-500 uppercase tracking-widest">TALKING POINTS (WHAT TO SAY)</div>
               <div className="p-5 rounded-xl bg-[#090b10] border border-stone-800/70 text-base text-stone-200 leading-relaxed font-sans italic border-l-4 border-l-[#fe330a]">
-                "{SCRIPT_STEPS[activeStep].script}"
+                &quot;{currentStep.script}&quot;
               </div>
             </div>
 
             <div className="space-y-3 relative z-10">
               <div className="text-xs font-mono text-stone-500 uppercase tracking-widest">SCREEN ACTION (WHAT TO DO)</div>
               <div className="p-4 rounded-xl bg-stone-900 border border-stone-800 text-sm font-mono text-emerald-400">
-                &rarr; {SCRIPT_STEPS[activeStep].action}
+                &rarr; {currentStep.action}
               </div>
             </div>
 
