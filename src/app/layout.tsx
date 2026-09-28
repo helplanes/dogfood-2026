@@ -1,11 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Inter, JetBrains_Mono, Syne } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const jbMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jb-mono" });
-const syne = Syne({ subsets: ["latin"], variable: "--font-syne", weight: ["400", "700", "800"] });
+const inter = localFont({ src: "../../public/fonts/Inter.woff2", variable: "--font-inter", display: "swap" });
+const jbMono = localFont({ src: "../../public/fonts/JetBrains_Mono.woff2", variable: "--font-jb-mono", display: "swap" });
+const syne = localFont({ src: "../../public/fonts/Syne.woff2", variable: "--font-syne", display: "swap" });
 
 export const metadata = { title: "DOGFOOD Portal" };
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-stone-800/80 px-4 md:px-8 py-3.5 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2 group">
-              <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_#fe330a] group-hover:shadow-[0_0_12px_#fe330a] transition-all" />
+              <span className="h-2 w-2 rounded-full bg-primary shadow-primary/50 group-hover:shadow-primary/80 transition-all" />
               <div className="flex items-baseline gap-1.5">
                 <span className="font-syne font-bold tracking-tight text-white text-lg">DOGFOOD</span>
                 <span className="font-syne italic font-bold text-primary text-lg leading-none">2026</span>
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <nav className="flex items-center p-1 rounded-xl bg-[#121620] border border-stone-800 text-xs font-mono">
+            <nav className="flex items-center p-1 rounded-xl bg-surface/50 border border-stone-800 text-xs font-mono">
               <Link
                 href="/projects"
                 className="px-4 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-stone-800/50 transition-all uppercase tracking-wider"
@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
             <Link
               href="/projects/new"
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[#fe330a]/20"
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-primary/20"
             >
               <span>+</span>
               Submit Project
