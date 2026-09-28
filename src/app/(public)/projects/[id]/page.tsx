@@ -1,188 +1,83 @@
 import React from "react";
 import Link from "next/link";
-import { PublicProject } from "@/contracts";
+import { notFound } from "next/navigation";
+// import { getPublicProject } from "@/repo"; // Pending Krish's implementation
 
-// Mock Data for the Detail Page using contract shape + some extended presentation properties
-const MOCK_PROJECTS: PublicProject[] = [
-  {
-    id: "prj_01",
-    title: "Glass Signal",
-    summary: "An innovative approach to transparent signaling that revolutionizes hardware diagnostics. Fault-tolerant and blazingly fast.",
-    repoUrl: "https://github.com/example/glass-signal",
-    track: "Hardware",
-    teamName: "Team Alpha",
-  },
-  {
-    id: "prj_02",
-    title: "Small Meadow",
-    summary: "A generative ecosystem simulator for studying dynamic biological interactions. Uses real-time state synchronization.",
-    repoUrl: "https://github.com/example/small-meadow",
-    track: "GenAI",
-    teamName: "Team Beta",
-  },
-  {
-    id: "prj_03",
-    title: "Deep Compass",
-    summary: "Advanced navigation for autonomous agents using decentralized coordination. Sub-millisecond latency tracking.",
-    repoUrl: "https://github.com/example/deep-compass",
-    track: "Agents",
-    teamName: "Team Gamma",
-  }
-];
+// Temporary mock data for UI building. Matches PublicProject contract.
+const MOCK_PROJECT = {
+  id: "prj_01",
+  title: "Glass Signal",
+  summary: "An innovative approach to transparent signaling that revolutionizes hardware diagnostics. Fault-tolerant and blazingly fast.",
+  repoUrl: "https://github.com/example/glass-signal",
+  track: "Hardware",
+  teamName: "Team Alpha",
+};
 
-export default async function ProjectDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  // Find project or fallback to first one if not found (for mock purposes)
-  const project = MOCK_PROJECTS.find(p => p.id === id) || MOCK_PROJECTS[0]!;
+  // TODO: const project = await getPublicProject(id);
+  const project = MOCK_PROJECT; // Hardcoded mock until DB accessor is ready
+
+  if (!project) {
+    notFound();
+  }
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
-      
-      {/* Navigation Header */}
-      <div className="bg-[#0c0e13]/50 border-b border-stone-800/50 px-4 md:px-8 py-4 flex items-center justify-between">
-        <Link href="/projects" className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-400 hover:text-[#fe330a] transition-colors">
-          &larr; BACK TO GALLERY
-        </Link>
-        <div className="flex items-center gap-3">
-          <span className="text-[11px] font-mono text-stone-500 border border-stone-800 px-2.5 py-1 rounded-md bg-[#11141c]">
-            VERIFICATION ID: <span className="text-stone-300">#{project.id}</span>
-          </span>
+    <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 flex flex-col font-sans">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-8 py-12 space-y-12">
+        
+        {/* Back Navigation */}
+        <div>
+          <Link href="/projects" className="text-xs font-mono text-stone-400 hover:text-primary transition-colors flex items-center gap-2 font-bold tracking-widest uppercase">
+            &larr; BACK TO GALLERY
+          </Link>
         </div>
-      </div>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-10 space-y-12">
-
-        {/* Hero Section */}
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-[#fe330a]/15 text-[#fe330a] border border-[#fe330a]/30">
+        {/* Project Header */}
+        <header className="space-y-6 border-b border-stone-800/80 pb-10">
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-semibold bg-surface border border-stone-700/60 text-stone-300">
               {project.track}
             </span>
-            <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-stone-800 text-stone-300 border border-stone-700">
-              {project.teamName}
+            <span className="px-3 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-primary/10 border border-primary/40 text-primary">
+              OPEN SOURCE
             </span>
           </div>
-
-          <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight leading-[1.05]">
-            {project.title}. <br/>
-            <span className="italic font-serif text-[#fe330a]">Open Source Verified</span>
-          </h1>
-        </div>
-
-        {/* Hero Image Replacement (Gradient Block) */}
-        <div className="w-full h-64 md:h-96 bg-gradient-to-br from-stone-800 to-stone-900 rounded-3xl overflow-hidden border border-stone-800 relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0e13] via-transparent to-transparent" />
-        </div>
-
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Left Column: Description & Details */}
-          <div className="lg:col-span-8 space-y-10">
-            
-            <section className="space-y-4">
-              <h2 className="text-2xl font-serif text-white flex items-center gap-3">
-                <span className="text-[#fe330a] font-mono text-sm">01</span>
-                Architecture Overview
-              </h2>
-              <div className="p-6 rounded-2xl bg-[#11141c] border border-stone-800/80 text-sm text-stone-300 leading-relaxed font-sans">
-                {project.summary}
-                <br/><br/>
-                Built entirely during the 48-hour sprint, the team utilized parallel processing to ensure thread safety without compromising on the rapid throughput required for live order matching.
-              </div>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="text-2xl font-serif text-white flex items-center gap-3">
-                <span className="text-[#fe330a] font-mono text-sm">02</span>
-                Technology Stack
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {["Rust", "TypeScript", "Docker", "Wasm"].map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-4 py-2 rounded-xl bg-[#11141c] text-xs font-mono text-stone-200 border border-stone-800 shadow-sm"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </section>
-            
-          </div>
-
-          {/* Right Column: Sticky Meta Data & Actions */}
-          <div className="lg:col-span-4 lg:sticky lg:top-24 h-fit space-y-6">
-            
-            {/* Primary Action Card */}
-            <div className="p-6 rounded-2xl bg-[#11141c] border border-stone-800 shadow-2xl space-y-6">
-              
-              <div className="space-y-1">
-                <div className="text-[11px] font-mono text-stone-500 uppercase tracking-widest">
-                  TEAM REGISTRY
-                </div>
-                <div className="text-lg font-serif text-white">
-                  {project.teamName}
-                </div>
-                <div className="flex gap-2 pt-1 text-xs font-mono text-[#fe330a]">
-                  <span>@member_1</span>
-                  <span>@member_2</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 py-4 border-y border-stone-800/80 text-xs font-mono">
-                <div>
-                  <div className="text-stone-500 mb-1">LATENCY</div>
-                  <div className="text-stone-200 font-bold">0.8ms p99</div>
-                </div>
-                <div>
-                  <div className="text-stone-500 mb-1">COVERAGE</div>
-                  <div className="text-emerald-400 font-bold">98.2%</div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Link
-                  href={project.repoUrl || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-mono font-bold border border-stone-700 flex items-center justify-between transition-colors"
-                >
-                  View Source Code <span className="text-[#fe330a]">&nearr;</span>
-                </Link>
-                <button
-                  className="w-full py-3 px-4 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-[#fe330a]/25 flex items-center justify-center gap-2"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                  Launch Sandbox Enclave
-                </button>
-              </div>
-
+          <h1 className="text-5xl md:text-6xl font-syne font-bold text-white tracking-tight">
+            {project.title}
+          </h1>
+          
+          <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center gap-2 text-sm font-mono text-stone-400">
+              <span className="tracking-widest text-[10px]">BUILT BY</span>
+              <span className="text-stone-200 font-bold">{project.teamName}</span>
             </div>
-
-            {/* Escrow Hash Card */}
-            <div className="p-4 rounded-xl bg-[#0a0d13] border border-stone-800 flex items-start gap-3">
-              <span className="text-[#fe330a] mt-0.5">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </span>
-              <div className="space-y-1">
-                <div className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">
-                  CRYPTOGRAPHIC SNAPSHOT
-                </div>
-                <div className="text-xs font-mono text-stone-300 break-all">
-                  0x9a8f22b7c4d3...e8a2
-                </div>
-              </div>
-            </div>
-
+            
+            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-xl bg-surface hover:bg-surface-hover text-stone-200 text-xs font-mono font-medium border border-stone-700 transition-colors flex items-center gap-2 shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
+              Source Code
+            </a>
           </div>
+        </header>
 
-        </div>
+        {/* Project Content / Details */}
+        <article className="prose prose-invert prose-stone max-w-none prose-headings:font-syne prose-headings:font-bold prose-headings:text-white prose-p:font-sans prose-p:text-stone-300 prose-a:text-primary hover:prose-a:text-primary-hover">
+          <p className="text-xl leading-relaxed text-stone-200">
+            {project.summary}
+          </p>
+          
+          <h2 className="text-3xl mt-12 mb-6 border-b border-stone-800 pb-2">Architecture Overview</h2>
+          <p>
+            This project was built during the DOGFOOD 2026 hackathon, focusing on offline-first capabilities and robust zero-knowledge proofs. Our team engineered a custom synchronization engine to ensure no network drops cause data loss.
+          </p>
+          <div className="p-6 my-8 rounded-xl bg-surface border border-stone-800 text-sm font-mono text-stone-400 shadow-xl">
+            <span className="text-primary font-bold tracking-widest text-[10px] block mb-3">{"// TELEMETRY BOOTSTRAP"}</span>
+            <code>$ cargo run --release --features=&quot;zk-sync&quot;</code><br/>
+            <code className="text-stone-500">{`> Initializing enclave... [OK]`}</code>
+          </div>
+        </article>
 
       </main>
     </div>

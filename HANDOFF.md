@@ -26,6 +26,9 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
   3. `getAuditLogs(limit?: number): Promise<AuditLog[]>` — for the append-only audit viewer.
   4. `/api/export.csv` — Route handler needs to be wired up for the CSV export button.
 
+
+- **STATUS (28 Sep):** Task 1 (Design Tokens + Base UI) is complete. Built the GalleryCard. Task 2 (Project Detail layout) is statically scaffolded, awaiting Krish's getPublicProjects and getPublicProject database accessors.
+
 ## Nihal
 
 - Ownership change requested by the backend lead: own the medium frontend scope—auth and participant/team/project editing flows. Do not take backend files.
