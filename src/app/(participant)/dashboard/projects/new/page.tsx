@@ -48,8 +48,19 @@ export default function SubmitProjectPage() {
 
       if (!res.ok) {
         // Show the error text from the API response
-        const errData = await res.json().catch(() => null);
-        setError(errData?.error || errData?.message || `Submission failed with status ${res.status}`);
+        let errorMessage = `Submission failed with status ${res.status}`;
+        try {
+          const rawText = await res.text();
+          try {
+            const errData = JSON.parse(rawText);
+            errorMessage = errData?.error || errData?.message || rawText;
+          } catch {
+            errorMessage = rawText || errorMessage;
+          }
+        } catch {
+          // ignore
+        }
+        setError(errorMessage);
       } else {
         setSuccess(true);
       }
