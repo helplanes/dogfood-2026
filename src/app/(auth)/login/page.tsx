@@ -49,6 +49,12 @@ export default function LoginPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {/* TODO: Login is currently simulated. The real auth API will be wired by Krish soon. */}
+          <div className="rounded-xl bg-amber-950/40 p-4 text-xs font-mono text-amber-300 border border-amber-800/50 flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            TODO: Simulated login flow (real auth API pending).
+          </div>
+          
           {error && (
             <div className="rounded-xl bg-red-950/40 p-4 text-xs font-mono text-red-300 border border-red-800/50 flex items-center gap-3">
               <span className="w-2 h-2 rounded-full bg-red-500" />
@@ -79,9 +85,6 @@ export default function LoginPage() {
                 <label htmlFor="password" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-[10px] font-mono uppercase tracking-widest text-stone-500 hover:text-stone-300 transition-colors">
-                  Forgot Password?
-                </Link>
               </div>
               <input
                 id="password"

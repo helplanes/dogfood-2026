@@ -47,19 +47,14 @@ export default function SubmitProjectPage() {
       });
 
       if (!res.ok) {
-        // Handle deadline 4xx inline (e.g. 403 Forbidden or 400 Bad Request)
+        // Show the error text from the API response
         const errData = await res.json().catch(() => null);
-        setError(errData?.error || `Submission failed: The deadline for this event has passed (${res.status}).`);
+        setError(errData?.error || errData?.message || `Submission failed with status ${res.status}`);
       } else {
         setSuccess(true);
       }
     } catch (err) {
-      // Fallback for when API doesn't exist yet on this branch
-      if (formData.title === "CLOSED_TEST") {
-        setError("Submission failed: The deadline for this event has passed (403).");
-      } else {
-        setSuccess(true); // Mock success
-      }
+      setError(err instanceof Error ? err.message : "Network error or unexpected failure.");
     } finally {
       setIsSubmitting(false);
     }
