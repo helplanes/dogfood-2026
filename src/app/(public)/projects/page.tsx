@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { PublicProject } from "@/contracts";
 import { GalleryCard } from "@/components/ui/GalleryCard";
@@ -32,10 +32,44 @@ const MOCK_PROJECTS: PublicProject[] = [
   }
 ];
 
-export default async function PublicProjectGalleryPage() {
-  // TODO(krish): replace this with the real DB fetch when ready:
-  // const projects = await getPublicProjects();
+
+async function ProjectGrid() {
+  // TODO: const projects = await getPublicProjects();
   const projects = MOCK_PROJECTS;
+
+  if (projects.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 rounded-2xl bg-surface border border-stone-800 text-center space-y-4 shadow-xl mb-12">
+        <span className="w-12 h-12 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-500 mb-2">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        </span>
+        <h3 className="text-xl font-syne font-bold text-white">Awaiting Submissions</h3>
+        <p className="text-sm text-stone-400 max-w-sm">The enclave is currently verifying inbound projects. Check back after the deadline.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      {projects.map((proj) => (
+        <GalleryCard key={proj.id} project={proj} />
+      ))}
+    </div>
+  );
+}
+
+function ProjectGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div key={i} className="h-48 rounded-2xl bg-surface border border-stone-800 animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
+export default async function PublicProjectGalleryPage() {
+  
 
   return (
     <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 selection:text-white flex flex-col font-sans">
@@ -152,20 +186,18 @@ export default async function PublicProjectGalleryPage() {
         </div>
 
         {/*  Project Showcase Grid  */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {projects.map((proj) => (
-            <GalleryCard key={proj.id} project={proj} />
-          ))}
-        </div>
+        <Suspense fallback={<ProjectGridSkeleton />}>
+          <ProjectGrid />
+        </Suspense>
 
         {/*  Consensus Scoring Matrix Section  */}
-        <div className="p-6 md:p-8 rounded-2xl bg-surface border border-stone-800 space-y-6">
+        <section aria-labelledby="matrix-heading" className="p-6 md:p-8 rounded-2xl bg-surface border border-stone-800 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <span className="text-[11px] font-mono text-primary uppercase tracking-widest block">
                 02  EVALUATION CRITERIA
               </span>
-              <h2 className="text-2xl md:text-3xl font-syne text-white">
+              <h2 id="matrix-heading" className="text-2xl md:text-3xl font-syne text-white">
                 Consensus Scoring Matrix
               </h2>
               <p className="text-xs text-stone-400 font-sans">
@@ -181,7 +213,7 @@ export default async function PublicProjectGalleryPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
             
             {/* Criteria 1 */}
-            <div className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
+            <article className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-lg font-mono font-bold text-primary">35%</span>
                 <span className="text-stone-500"></span>
@@ -196,10 +228,10 @@ export default async function PublicProjectGalleryPage() {
                 <span>WEIGHT: 35 PTS</span>
                 <span className="text-primary font-semibold">AUDIT BENCHMARK</span>
               </div>
-            </div>
+            </article>
 
             {/* Criteria 2 */}
-            <div className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
+            <article className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-lg font-mono font-bold text-primary">30%</span>
                 <span className="text-stone-500"></span>
@@ -214,10 +246,10 @@ export default async function PublicProjectGalleryPage() {
                 <span>WEIGHT: 30 PTS</span>
                 <span className="text-stone-400 font-semibold">PEER REVIEWED</span>
               </div>
-            </div>
+            </article>
 
             {/* Criteria 3 */}
-            <div className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
+            <article className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-lg font-mono font-bold text-primary">35%</span>
                 <span className="text-stone-500"></span>
@@ -232,10 +264,10 @@ export default async function PublicProjectGalleryPage() {
                 <span>WEIGHT: 35 PTS</span>
                 <span className="text-primary font-semibold">ZERO-KNOWLEDGE</span>
               </div>
-            </div>
+            </article>
 
           </div>
-        </div>
+        </section>
 
         {/*  Local Reproduction Callout CTA  */}
         <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-surface via-[#141824] to-surface border border-stone-800 flex flex-col md:flex-row items-center justify-between gap-6">
