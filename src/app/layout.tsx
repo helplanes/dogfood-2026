@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import localFont from "next/font/local";
+import { GlobalNav } from "@/components/ui/GlobalNav";
 import "./globals.css";
 
 const inter = localFont({ src: "../../public/fonts/Inter.woff2", variable: "--font-inter", display: "swap" });
@@ -27,26 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <nav className="flex items-center p-1 rounded-xl bg-surface/50 border border-stone-800 text-xs font-mono">
-              <Link
-                href="/projects"
-                className="px-4 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-stone-800/50 transition-all uppercase tracking-wider"
-              >
-                Gallery
-              </Link>
-              <Link
-                href="/judge/dashboard"
-                className="px-4 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-stone-800/50 transition-all uppercase tracking-wider"
-              >
-                Judge
-              </Link>
-              <Link
-                href="/organizer/dashboard"
-                className="px-4 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-stone-800/50 transition-all uppercase tracking-wider"
-              >
-                Organizer
-              </Link>
-            </nav>
+            <GlobalNav />
 
             <Link
               href="/projects/new"
