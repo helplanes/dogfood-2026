@@ -1,113 +1,40 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
+import { PublicProject } from "@/contracts";
 
-interface Project {
-  id: string;
-  tag: string;
-  category: string;
-  rating: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  techStack: string[];
-  imageUrl: string;
-  hasWebGPU?: boolean;
-}
-
-const PROJECTS: Project[] = [
+// Mock data shaped exactly like the contract.
+// Must contain Glass Signal, Small Meadow, Deep Compass
+const MOCK_PROJECTS: PublicProject[] = [
   {
-    id: "01",
-    tag: "01 // AETHER.CORE",
-    category: "GenAI & Autonomous",
-    rating: "9.8 / 10",
-    title: "AetherMesh",
-    subtitle: "Autonomous Multi-Agent Consensus",
-    description:
-      "Fault-tolerant agent quorum coordinating micro-transactions and real-time state synchronization over libp2p. Sub-millisecond consensus.",
-    techStack: ["Rust", "LangGraph", "libp2p", "Wasm"],
-    imageUrl:
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    id: "prj_01",
+    title: "Glass Signal",
+    summary: "An innovative approach to transparent signaling that revolutionizes hardware diagnostics. Fault-tolerant and blazingly fast.",
+    repoUrl: "https://github.com/example/glass-signal",
+    track: "Hardware",
+    teamName: "Team Alpha",
   },
   {
-    id: "02",
-    tag: "02 // HYPER.WASM",
-    category: "Dev Tooling",
-    rating: "9.6 / 10",
-    title: "HyperVapor",
-    subtitle: "Edge WebAssembly Compiler",
-    description:
-      "Sub-millisecond just-in-time micro-compiler enabling instantaneous local sandboxing for serverless distributed workflows.",
-    techStack: ["LLVM", "Rust", "Docker", "Cranelift"],
-    imageUrl:
-      "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=800&q=80",
+    id: "prj_02",
+    title: "Small Meadow",
+    summary: "A generative ecosystem simulator for studying dynamic biological interactions. Uses real-time state synchronization.",
+    repoUrl: "https://github.com/example/small-meadow",
+    track: "GenAI",
+    teamName: "Team Beta",
   },
   {
-    id: "03",
-    tag: "03 // ZK.VERIFY",
-    category: "Zero-Knowledge",
-    rating: "9.9 / 10",
-    title: "ZeroProof ID",
-    subtitle: "Anonymous Credentials",
-    description:
-      "Client-side Halo2 proving system allowing sovereign credential attestations without disclosing identity vectors on-chain.",
-    techStack: ["Halo2", "SnarkJS", "Circom", "TypeScript"],
-    imageUrl:
-      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "04",
-    tag: "04 // BIO.SYNAPSE",
-    category: "BioTech & Health",
-    rating: "9.5 / 10",
-    title: "BioSynapse",
-    subtitle: "Protein Folding Explorer",
-    description:
-      "WebGL-accelerated browser renderer running quantized ESMFold models on consumer hardware in pure WebGPU pipelines.",
-    techStack: ["WebGPU", "ONNX", "PyTorch", "Next.js"],
-    imageUrl:
-      "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "05",
-    tag: "05 // TRACE.EVAL",
-    category: "Neural Computing",
-    rating: "9.7 / 10",
-    title: "NeuroTrace",
-    subtitle: "Real-Time Inference Profiler",
-    description:
-      "Flamegraph tracing engine tracking tensor memory leaks, cache thrashing, and compute bottlenecks down to CUDA core cycles.",
-    techStack: ["CUDA", "C++20", "eBPF", "Go"],
-    imageUrl:
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "06",
-    tag: "06 // SOLUNA.GRID",
-    category: "CleanTech Grid",
-    rating: "9.4 / 10",
-    title: "Soluna",
-    subtitle: "Decentralized Grid Allocator",
-    description:
-      "Microgrid balancing oracle matching hyper-local solar surplus to dynamic EV battery bank reservoirs with zero transmission loss.",
-    techStack: ["Solidity", "IoT / MQTT", "Python", "Foundry"],
-    imageUrl:
-      "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80",
-  },
+    id: "prj_03",
+    title: "Deep Compass",
+    summary: "Advanced navigation for autonomous agents using decentralized coordination. Sub-millisecond latency tracking.",
+    repoUrl: "https://github.com/example/deep-compass",
+    track: "Agents",
+    teamName: "Team Gamma",
+  }
 ];
 
-const CATEGORIES = [
-  "All (42)",
-  "GenAI (12)",
-  "ZK Infra (8)",
-  "Dev Tools (14)",
-  "Bio / Clean (8)",
-];
-
-export default function PublicProjectGalleryPage() {
-  const [selectedCategory, setSelectedCategory] = useState("All (42)");
-  const [searchQuery, setSearchQuery] = useState("");
+export default async function PublicProjectGalleryPage() {
+  // TODO(krish): replace this with the real DB fetch when ready:
+  // const projects = await getPublicProjects();
+  const projects = MOCK_PROJECTS;
 
   return (
     <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
@@ -282,69 +209,30 @@ export default function PublicProjectGalleryPage() {
 
         </div>
 
-        {/*  Search & Category Filters Bar  */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-2 rounded-2xl bg-[#11141c] border border-stone-800">
-          
-          {/* Search Input */}
-          <div className="relative w-full md:w-96">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-500 text-xs"></span>
-            <input
-              type="text"
-              placeholder="Search by team, repository, or track..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-[#0c0e13] border border-stone-800/80 rounded-xl text-xs font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a]"
-            />
-          </div>
-
-          {/* Filter Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto p-1 text-xs font-mono">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
-                  selectedCategory === cat
-                    ? "bg-[#fe330a] text-white font-semibold shadow-sm shadow-[#fe330a]/20"
-                    : "bg-[#141822] text-stone-400 hover:text-white border border-stone-800/60"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-        </div>
-
-        {/*  Project Showcase Grid (6 Cards)  */}
+        {/*  Project Showcase Grid  */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PROJECTS.map((proj) => (
+          {projects.map((proj) => (
             <div
               key={proj.id}
               className="group flex flex-col justify-between rounded-2xl bg-[#11141c] border border-stone-800 hover:border-stone-700 hover:shadow-2xl hover:shadow-[#fe330a]/5 transition-all overflow-hidden"
             >
-              {/* Card Thumbnail Container */}
-              <div className="relative h-48 w-full bg-stone-900 overflow-hidden">
-                <img
-                  src={proj.imageUrl}
-                  alt={proj.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
-                />
+              {/* Card Thumbnail Container (No Image per backend lead) */}
+              <div className="relative h-48 w-full bg-gradient-to-br from-stone-800 to-stone-900 overflow-hidden border-b border-stone-800">
                 <div className="absolute inset-0 bg-gradient-to-t from-[#11141c] via-[#11141c]/30 to-transparent" />
 
                 {/* Category & Rating Badges */}
                 <div className="absolute top-3 inset-x-3 flex items-center justify-between">
                   <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-semibold bg-[#0c0e13]/80 backdrop-blur-md text-stone-200 border border-stone-700/60">
-                    {proj.category}
+                    {proj.track}
                   </span>
                   <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#0c0e13]/80 backdrop-blur-md text-[#fe330a] border border-[#fe330a]/40 flex items-center gap-1">
-                     {proj.rating}
+                     OPEN SOURCE
                   </span>
                 </div>
 
                 {/* Sub-tag overlay */}
                 <div className="absolute bottom-3 left-3 text-[10px] font-mono uppercase tracking-widest text-stone-400 bg-black/60 px-2 py-0.5 rounded border border-stone-800">
-                  {proj.tag}
+                  {proj.teamName}
                 </div>
               </div>
 
@@ -352,26 +240,11 @@ export default function PublicProjectGalleryPage() {
               <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-2">
                   <h3 className="text-xl font-serif text-white tracking-tight group-hover:text-stone-100 transition-colors">
-                    {proj.title} —{" "}
-                    <span className="italic font-serif text-stone-300 font-normal">
-                      {proj.subtitle}
-                    </span>
+                    {proj.title}
                   </h3>
                   <p className="text-xs text-stone-400 font-sans leading-relaxed line-clamp-3">
-                    {proj.description}
+                    {proj.summary}
                   </p>
-                </div>
-
-                {/* Tech Stack Chips */}
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {proj.techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-2 py-0.5 rounded bg-[#161a24] text-[10px] font-mono text-stone-400 border border-stone-800"
-                    >
-                      {tech}
-                    </span>
-                  ))}
                 </div>
 
                 {/* Action Buttons */}
@@ -464,25 +337,6 @@ export default function PublicProjectGalleryPage() {
               </div>
             </div>
 
-          </div>
-
-          {/* Live Juror Attestation Stream ticker */}
-          <div className="p-4 rounded-xl bg-[#0a0d13] border border-stone-800/60 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-stone-400">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#fe330a] animate-pulse" />
-              <span>LIVE JUROR ATTESTATION STREAM</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-6 text-[11px]">
-              <div className="flex items-center gap-2">
-                <span className="text-stone-300">Dr. Aris Thorne attested <strong className="text-white">AetherMesh</strong></span>
-                <span className="text-[#fe330a] font-bold">+9.8 PTS</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-stone-300">Soren Lindqvist attested <strong className="text-white">ZeroProof ID</strong></span>
-                <span className="text-[#fe330a] font-bold">+9.9 PTS</span>
-              </div>
-              <span className="text-stone-600">SYNCED: 10s AGO</span>
-            </div>
           </div>
         </div>
 

@@ -7,9 +7,9 @@ import Link from "next/link";
 const mockResults = [
   {
     rank: 1,
-    id: "prj_04",
-    title: "ZeroProof ID",
-    track: "Zero Knowledge",
+    id: "prj_01",
+    title: "Glass Signal",
+    track: "Hardware",
     nReviews: "5 / 5",
     rawScore: 14.8,
     normalizedScore: 14.92,
@@ -17,9 +17,9 @@ const mockResults = [
   },
   {
     rank: 2,
-    id: "prj_01",
-    title: "Awesome Hack",
-    track: "Web",
+    id: "prj_02",
+    title: "Small Meadow",
+    track: "GenAI",
     nReviews: "3 / 3",
     rawScore: 14.2,
     normalizedScore: 14.15,
@@ -28,23 +28,13 @@ const mockResults = [
   {
     rank: 3,
     id: "prj_03",
-    title: "AetherMesh",
-    track: "GenAI",
+    title: "Deep Compass",
+    track: "Agents",
     nReviews: "2 / 3", // Incomplete
     rawScore: 13.9,
     normalizedScore: 13.50,
     hasVarianceWarning: true, // e.g. a judge gave all 5s (zero variance)
-  },
-  {
-    rank: 4,
-    id: "prj_02",
-    title: "Mobile Innovators",
-    track: "Mobile",
-    nReviews: "3 / 3",
-    rawScore: 12.1,
-    normalizedScore: 11.90,
-    hasVarianceWarning: false,
-  },
+  }
 ];
 
 export default function OrganizerResultsPage() {

@@ -3,76 +3,58 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
+import { Criterion } from "@/contracts";
+
 interface AssignedProject {
   id: string;
   title: string;
   summary: string;
   repoUrl: string;
-  track: "Web" | "Mobile" | "Generative AI" | "Zero Knowledge";
+  track: string;
   teamName: string;
-  isScored: boolean;
-  scoreRecorded?: number;
-  priorityDeadline?: string;
-  testsPassed?: string;
+  existingScores: Partial<Record<Criterion, number>>;
 }
 
 const mockAssignedProjects: AssignedProject[] = [
   {
     id: "prj_01",
-    title: "Awesome Hack",
-    summary:
-      "A really cool project that solves a major problem using cutting-edge technology. It features a complete mobile app and a robust backend. The team worked hard to deliver this within the 48-hour window.",
-    repoUrl: "https://github.com/example/awesome",
-    track: "Web",
+    title: "Glass Signal",
+    summary: "An innovative approach to transparent signaling.",
+    repoUrl: "https://github.com/example/glass-signal",
+    track: "Hardware",
     teamName: "Team Alpha",
-    isScored: true,
-    scoreRecorded: 4.7,
+    existingScores: { functionality: 4, quality: 5 },
   },
   {
     id: "prj_02",
-    title: "Mobile Innovators",
-    summary:
-      "Revolutionizing mobile apps with distributed local compute and zero-knowledge identity attestations. Built in Flutter with Rust bridge.",
-    repoUrl: "https://github.com/example/mobile",
-    track: "Mobile",
-    teamName: "Beta Builders",
-    isScored: false,
-    priorityDeadline: "In 3 hours",
+    title: "Small Meadow",
+    summary: "A generative ecosystem simulator.",
+    repoUrl: "https://github.com/example/small-meadow",
+    track: "GenAI",
+    teamName: "Team Beta",
+    existingScores: {},
   },
   {
     id: "prj_03",
-    title: "AetherMesh",
-    summary:
-      "Fault-tolerant agent quorum coordinating micro-transactions and real-time state synchronization over libp2p. Sub-millisecond latency.",
-    repoUrl: "https://github.com/example/aethermesh",
-    track: "Generative AI",
-    teamName: "Nova Labs",
-    isScored: false,
-    testsPassed: "Pass 42/42 Tests",
-  },
-  {
-    id: "prj_04",
-    title: "ZeroProof ID",
-    summary:
-      "Client-side Halo2 proving system allowing sovereign credential attestations without disclosing identity vectors. 100% on-chain verifier.",
-    repoUrl: "https://github.com/example/zeroproof",
-    track: "Zero Knowledge",
-    teamName: "CipherForge",
-    isScored: true,
-    scoreRecorded: 4.9,
-  },
+    title: "Deep Compass",
+    summary: "Advanced navigation for autonomous agents.",
+    repoUrl: "https://github.com/example/deep-compass",
+    track: "Agents",
+    teamName: "Team Gamma",
+    existingScores: {},
+  }
 ];
 
 export default function JudgeDashboardPage() {
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
 
   const filteredProjects = mockAssignedProjects.filter((p) => {
-    if (filter === "pending") return !p.isScored;
-    if (filter === "completed") return p.isScored;
+    if (filter === "pending") return !(Object.keys(p.existingScores).length === 3);
+    if (filter === "completed") return (Object.keys(p.existingScores).length === 3);
     return true;
   });
 
-  const scoredCount = mockAssignedProjects.filter((p) => p.isScored).length;
+  const scoredCount = mockAssignedProjects.filter((p) => (Object.keys(p.existingScores).length === 3)).length;
   const pendingCount = mockAssignedProjects.length - scoredCount;
 
   return (
@@ -179,7 +161,7 @@ export default function JudgeDashboardPage() {
             <div
               key={project.id}
               className={`group flex flex-col justify-between p-6 rounded-2xl bg-[#11141c] border transition-all duration-200 ${
-                project.isScored
+                (Object.keys(project.existingScores).length === 3)
                   ? "border-stone-800/80 hover:border-stone-700 hover:shadow-lg"
                   : "border-amber-500/30 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.05)]"
               }`}
@@ -188,9 +170,9 @@ export default function JudgeDashboardPage() {
                 {/* Header: ID + Status Pill */}
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono tracking-wider text-stone-400 uppercase">
-                    ID: {project.id}  {project.isScored ? "VERIFIED" : "AWAITING RUBRIC"}
+                    ID: {project.id}  {(Object.keys(project.existingScores).length === 3) ? "VERIFIED" : "AWAITING RUBRIC"}
                   </span>
-                  {project.isScored ? (
+                  {(Object.keys(project.existingScores).length === 3) ? (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-emerald-950/40 text-emerald-400 border border-emerald-800/40">
                       <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -227,24 +209,7 @@ export default function JudgeDashboardPage() {
                     <span>TEAM:</span>
                     <span className="text-stone-200 font-medium">{project.teamName}</span>
                   </div>
-                  {project.isScored && (
-                    <div className="flex items-center justify-between text-stone-400">
-                      <span>SCORE RECORDED:</span>
-                      <span className="text-emerald-400 font-bold">{project.scoreRecorded} / 5.0</span>
-                    </div>
-                  )}
-                  {!project.isScored && project.priorityDeadline && (
-                    <div className="flex items-center justify-between text-stone-400">
-                      <span>PRIORITY DEADLINE:</span>
-                      <span className="text-amber-400 font-semibold">{project.priorityDeadline}</span>
-                    </div>
-                  )}
-                  {!project.isScored && project.testsPassed && (
-                    <div className="flex items-center justify-between text-stone-400">
-                      <span>SANDBOX:</span>
-                      <span className="text-emerald-400">{project.testsPassed}</span>
-                    </div>
-                  )}
+                  {/* (Mock properties removed per contract request) */}
                 </div>
               </div>
 
@@ -253,12 +218,12 @@ export default function JudgeDashboardPage() {
                 <Link
                   href={`/judge/dashboard/${project.id}`}
                   className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-mono uppercase tracking-wider font-semibold transition-all ${
-                    project.isScored
+                    (Object.keys(project.existingScores).length === 3)
                       ? "bg-stone-800/80 hover:bg-stone-700 text-stone-200 border border-stone-700/80"
                       : "bg-[#fe330a] hover:bg-[#ff4820] text-white shadow-lg shadow-[#fe330a]/25 hover:shadow-[#fe330a]/40"
                   }`}
                 >
-                  {project.isScored ? (
+                  {(Object.keys(project.existingScores).length === 3) ? (
                     <>
                       Edit Scores
                       <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">

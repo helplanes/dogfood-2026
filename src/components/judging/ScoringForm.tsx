@@ -138,17 +138,19 @@ export function ScoringForm({
     try {
       if (onSave) {
         await onSave(scores as Record<Criterion, number>, notes);
+        // Persist to local store so dashboard reflects the scored status
+        saveProjectScores(projectId, scores as Record<Criterion, number>, notes);
+        setStatus("saved");
+        setHasUnsaved(false);
+        savedScoresRef.current = { ...scores };
+        savedNotesRef.current = notes;
       } else {
         // TODO: replace with real fetch to POST /api/judge/scores
         await new Promise((res) => setTimeout(res, 700));
         console.log("[MOCK SAVE]", { projectId, scores, notes });
+        setStatus("error");
+        setErrorMessage("Mock API - scores not actually saved to DB.");
       }
-      // Persist to local store so dashboard reflects the scored status
-      saveProjectScores(projectId, scores as Record<Criterion, number>, notes);
-      setStatus("saved");
-      setHasUnsaved(false);
-      savedScoresRef.current = { ...scores };
-      savedNotesRef.current = notes;
     } catch (err) {
       setStatus("error");
       setErrorMessage(

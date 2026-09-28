@@ -7,23 +7,23 @@ const mockJudges = [
   {
     id: "jdg_a_91bc",
     name: "Dr. Aris Thorne",
-    tracks: ["Web", "GenAI"],
+    tracks: ["Hardware", "GenAI"],
     assignedCount: 4,
-    assignments: ["Awesome Hack", "AetherMesh", "ZeroProof ID", "NeuroTrace"],
+    assignments: ["Glass Signal", "Small Meadow", "Deep Compass"],
   },
   {
     id: "jdg_b_44de",
     name: "Soren Lindqvist",
-    tracks: ["Zero Knowledge", "Mobile"],
+    tracks: ["Agents", "Hardware"],
     assignedCount: 3,
-    assignments: ["ZeroProof ID", "Mobile Innovators", "Soluna"],
+    assignments: ["Deep Compass", "Glass Signal"],
   },
   {
     id: "jdg_c_77fa",
     name: "Elena Rostova",
-    tracks: ["BioTech", "GenAI", "Web"],
+    tracks: ["GenAI", "Agents"],
     assignedCount: 5,
-    assignments: ["BioSynapse", "NeuroTrace", "AetherMesh", "Awesome Hack", "HyperVapor"],
+    assignments: ["Small Meadow", "Deep Compass"],
   },
 ];
 

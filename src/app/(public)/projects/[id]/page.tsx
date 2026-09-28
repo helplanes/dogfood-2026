@@ -1,37 +1,45 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { PublicProject } from "@/contracts";
 
-// Mock Data for the Detail Page (In real app, fetch via ID)
-const projectDetail = {
-  id: "01",
-  tag: "01 // AETHER.CORE",
-  category: "GenAI & Autonomous",
-  rating: "9.8 / 10",
-  title: "AetherMesh",
-  subtitle: "Autonomous Multi-Agent Consensus",
-  description:
-    "AetherMesh is a fault-tolerant agent quorum coordinating micro-transactions and real-time state synchronization over libp2p. By distributing the consensus mechanisms directly to edge nodes, it achieves sub-millisecond latency. This project removes the necessity for centralized order sequencers in high-frequency trading bots.",
-  techStack: ["Rust", "LangGraph", "libp2p", "Wasm"],
-  team: {
-    name: "Nova Labs",
-    members: ["@alice_nova", "@bob_mesh"]
+// Mock Data for the Detail Page using contract shape + some extended presentation properties
+const MOCK_PROJECTS: PublicProject[] = [
+  {
+    id: "prj_01",
+    title: "Glass Signal",
+    summary: "An innovative approach to transparent signaling that revolutionizes hardware diagnostics. Fault-tolerant and blazingly fast.",
+    repoUrl: "https://github.com/example/glass-signal",
+    track: "Hardware",
+    teamName: "Team Alpha",
   },
-  repoUrl: "https://github.com/example/aethermesh",
-  metrics: {
-    latency: "0.8ms p99",
-    coverage: "98.2%",
-    commits: 142
+  {
+    id: "prj_02",
+    title: "Small Meadow",
+    summary: "A generative ecosystem simulator for studying dynamic biological interactions. Uses real-time state synchronization.",
+    repoUrl: "https://github.com/example/small-meadow",
+    track: "GenAI",
+    teamName: "Team Beta",
   },
-  imageUrl:
-    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
-};
+  {
+    id: "prj_03",
+    title: "Deep Compass",
+    summary: "Advanced navigation for autonomous agents using decentralized coordination. Sub-millisecond latency tracking.",
+    repoUrl: "https://github.com/example/deep-compass",
+    track: "Agents",
+    teamName: "Team Gamma",
+  }
+];
 
-export default function ProjectDetailPage() {
-  const params = useParams();
+export default async function ProjectDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
   
+  // Find project or fallback to first one if not found (for mock purposes)
+  const project = MOCK_PROJECTS.find(p => p.id === id) || MOCK_PROJECTS[0]!;
+
   return (
     <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
       
@@ -42,7 +50,7 @@ export default function ProjectDetailPage() {
         </Link>
         <div className="flex items-center gap-3">
           <span className="text-[11px] font-mono text-stone-500 border border-stone-800 px-2.5 py-1 rounded-md bg-[#11141c]">
-            VERIFICATION ID: <span className="text-stone-300">#AM-9942</span>
+            VERIFICATION ID: <span className="text-stone-300">#{project.id}</span>
           </span>
         </div>
       </header>
@@ -53,26 +61,21 @@ export default function ProjectDetailPage() {
         <div className="space-y-6">
           <div className="flex flex-wrap items-center gap-3">
             <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-[#fe330a]/15 text-[#fe330a] border border-[#fe330a]/30">
-              {projectDetail.category}
+              {project.track}
             </span>
             <span className="px-3 py-1 rounded-md text-[11px] font-mono uppercase tracking-wider font-semibold bg-stone-800 text-stone-300 border border-stone-700">
-              {projectDetail.tag}
+              {project.teamName}
             </span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight leading-[1.05]">
-            {projectDetail.title}. <br/>
-            <span className="italic font-serif text-[#fe330a]">{projectDetail.subtitle}</span>
+            {project.title}. <br/>
+            <span className="italic font-serif text-[#fe330a]">Open Source Verified</span>
           </h1>
         </div>
 
-        {/* Hero Image */}
-        <div className="w-full h-64 md:h-96 bg-stone-900 rounded-3xl overflow-hidden border border-stone-800 relative">
-          <img
-            src={projectDetail.imageUrl}
-            alt={projectDetail.title}
-            className="w-full h-full object-cover opacity-80"
-          />
+        {/* Hero Image Replacement (Gradient Block) */}
+        <div className="w-full h-64 md:h-96 bg-gradient-to-br from-stone-800 to-stone-900 rounded-3xl overflow-hidden border border-stone-800 relative">
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0e13] via-transparent to-transparent" />
         </div>
 
@@ -88,7 +91,7 @@ export default function ProjectDetailPage() {
                 Architecture Overview
               </h2>
               <div className="p-6 rounded-2xl bg-[#11141c] border border-stone-800/80 text-sm text-stone-300 leading-relaxed font-sans">
-                {projectDetail.description}
+                {project.summary}
                 <br/><br/>
                 Built entirely during the 48-hour sprint, the team utilized parallel processing to ensure thread safety without compromising on the rapid throughput required for live order matching.
               </div>
@@ -100,7 +103,7 @@ export default function ProjectDetailPage() {
                 Technology Stack
               </h2>
               <div className="flex flex-wrap gap-2">
-                {projectDetail.techStack.map((tech) => (
+                {["Rust", "TypeScript", "Docker", "Wasm"].map((tech) => (
                   <span
                     key={tech}
                     className="px-4 py-2 rounded-xl bg-[#11141c] text-xs font-mono text-stone-200 border border-stone-800 shadow-sm"
@@ -124,27 +127,28 @@ export default function ProjectDetailPage() {
                   TEAM REGISTRY
                 </div>
                 <div className="text-lg font-serif text-white">
-                  {projectDetail.team.name}
+                  {project.teamName}
                 </div>
                 <div className="flex gap-2 pt-1 text-xs font-mono text-[#fe330a]">
-                  {projectDetail.team.members.map(m => <span key={m}>{m}</span>)}
+                  <span>@member_1</span>
+                  <span>@member_2</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 py-4 border-y border-stone-800/80 text-xs font-mono">
                 <div>
                   <div className="text-stone-500 mb-1">LATENCY</div>
-                  <div className="text-stone-200 font-bold">{projectDetail.metrics.latency}</div>
+                  <div className="text-stone-200 font-bold">0.8ms p99</div>
                 </div>
                 <div>
                   <div className="text-stone-500 mb-1">COVERAGE</div>
-                  <div className="text-emerald-400 font-bold">{projectDetail.metrics.coverage}</div>
+                  <div className="text-emerald-400 font-bold">98.2%</div>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <Link
-                  href={projectDetail.repoUrl}
+                  href={project.repoUrl || "#"}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-mono font-bold border border-stone-700 flex items-center justify-between transition-colors"
