@@ -247,7 +247,7 @@ export default function HelpAndHowItWorksPage() {
                   <span className="text-[10px] text-stone-500 uppercase tracking-wider block mb-1">MATHEMATICAL MODEL</span>
                   <div className="text-lg font-bold text-[#fe330a]">z = (x - μ) / σ</div>
                   <p className="text-[11px] text-stone-400 mt-2 font-sans leading-relaxed">
-                    Every reviewer score is adjusted relative to that individual juror's historical mean (μ) and standard deviation (σ).
+                    Every reviewer score is adjusted relative to that individual juror&apos;s historical mean (μ) and standard deviation (σ).
                   </p>
                 </div>
               </div>

@@ -16,6 +16,8 @@ interface ChatMessage {
   timestamp?: string;
 }
 
+let nextId = 10;
+
 export default function AiChatbot() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -56,7 +58,7 @@ export default function AiChatbot() {
     if (!query) return;
 
     const userMsg: ChatMessage = {
-      id: Date.now().toString(),
+      id: (nextId++).toString(),
       sender: "user",
       text: query,
     };
@@ -80,7 +82,7 @@ export default function AiChatbot() {
       setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 1).toString(),
+          id: (nextId++).toString(),
           sender: "bot",
           text: botResponse,
         },

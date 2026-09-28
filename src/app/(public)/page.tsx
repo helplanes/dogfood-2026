@@ -82,7 +82,7 @@ export default function Home() {
           <div className="flex items-center gap-2 text-stone-300">
             <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
             <span className="font-semibold text-white">REGISTRATION OPEN</span>
-            <span className="text-stone-600">//</span>
+            <span className="text-stone-600">&#47;&#47;</span>
             <span>SEP 25-28, 2026</span>
           </div>
           <div className="text-[11px] font-semibold text-[#fe330a] bg-[#fe330a]/10 px-3 py-0.5 rounded-full border border-[#fe330a]/30">
@@ -91,52 +91,71 @@ export default function Home() {
         </div>
       </div>
 
-      <main className="space-y-24 py-12">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none flex justify-center">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        {/* Dynamic mesh gradients */}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-30 blur-[140px] bg-gradient-to-r from-[#fe330a] to-orange-600 rounded-full mix-blend-screen"></div>
+        <div className="absolute top-40 -left-40 w-[600px] h-[600px] opacity-10 blur-[120px] bg-indigo-500/20 rounded-full mix-blend-screen"></div>
+        <div className="absolute top-40 -right-40 w-[600px] h-[600px] opacity-10 blur-[120px] bg-[#fe330a]/20 rounded-full mix-blend-screen"></div>
+      </div>
+
+      <main className="space-y-24 py-12 relative z-10">
         {/* 1. HERO SECTION */}
         <section id="overview" className={tokens.container}>
-          <div className="space-y-8 max-w-4xl">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#fe330a]">
-              DOGFOOD 2026 BENCHMARK SPRINT
+          <div className="space-y-8 max-w-4xl pt-12 md:pt-24 text-center mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#141822]/80 backdrop-blur-sm border border-[#fe330a]/30 text-[11px] font-mono text-stone-300 mx-auto shadow-[0_0_20px_rgba(254,51,10,0.15)]">
+              <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
+              <span className="tracking-widest">DOGFOOD 2026 BENCHMARK SPRINT</span>
             </div>
-            <h1 className={`${tokens.serifHeading} text-5xl sm:text-6xl lg:text-7xl font-normal`}>
-              Built from Scratch.{" "}
-              <span className="italic text-[#fe330a] font-normal block sm:inline">
+            
+            <h1 className={`${tokens.serifHeading} text-5xl sm:text-7xl lg:text-[5.5rem] font-normal leading-[1.05]`}>
+              <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-stone-400">
+                Built from Scratch.
+              </span>
+              <br />
+              <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#fe330a] via-[#ff4d26] to-orange-500 font-medium block sm:inline mt-2">
                 Shipped in 48 Hours.
               </span>
             </h1>
-            <p className="text-stone-400 text-base sm:text-lg max-w-2xl leading-relaxed">
+            
+            <p className="text-stone-400 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-sans">
               An invitational engineering sprint for autonomous systems builders, verified cryptographers, and protocol hackers.
             </p>
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
               <Link href="/register" className={tokens.btnPrimary}>
                 Claim Hacker Pass &rarr;
               </Link>
-              <Link href="/projects" className={tokens.btnSecondary}>
+              <Link href="/projects" className={`${tokens.btnSecondary} bg-transparent backdrop-blur-md hover:bg-[#141822]`}>
                 Explore Public Gallery
               </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14 pt-8 border-t border-stone-800/80">
-            <div className={tokens.card}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-24 pt-8 border-t border-stone-800/80 relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#fe330a]/50 to-transparent"></div>
+            
+            <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
               <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">BENCHMARK VOLUME</span>
-              <span className="text-3xl font-mono font-bold text-white block mt-1">42</span>
+              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">42</span>
               <span className="text-xs text-stone-400 mt-1 block">Projects Shipped</span>
             </div>
-            <div className={tokens.card}>
+            <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
               <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">ATTESTATION BUS</span>
-              <span className="text-3xl font-mono font-bold text-white block mt-1">1,840</span>
+              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">1,840</span>
               <span className="text-xs text-stone-400 mt-1 block">Signed Commits</span>
             </div>
-            <div className={tokens.card}>
+            <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
               <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">CORE VERTICALS</span>
-              <span className="text-3xl font-mono font-bold text-white block mt-1">3</span>
+              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">3</span>
               <span className="text-xs text-stone-400 mt-1 block">ZK, Agents, DevTools</span>
             </div>
-            <div className={tokens.card}>
-              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">DELIBERATION AUDIT</span>
-              <span className="text-3xl font-mono font-bold text-[#fe330a] block mt-1">100%</span>
-              <span className="text-xs text-stone-400 mt-1 block">Double-Blind Verification</span>
+            <div className={`${tokens.card} bg-transparent backdrop-blur-sm relative overflow-hidden group`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#fe330a]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block relative z-10">DELIBERATION AUDIT</span>
+              <span className="text-4xl font-mono font-bold text-[#fe330a] block mt-2 relative z-10 drop-shadow-[0_0_8px_rgba(254,51,10,0.5)]">100%</span>
+              <span className="text-xs text-stone-400 mt-1 block relative z-10">Double-Blind Verification</span>
             </div>
           </div>
         </section>
