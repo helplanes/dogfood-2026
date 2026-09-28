@@ -14,7 +14,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jbMono.variable} ${syne.variable}`}>
       <body className="min-h-screen bg-background text-[#f8f9fc] flex flex-col font-sans selection:bg-primary/30">
-        
         {/* Global App Header */}
         <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-stone-800/80 px-4 md:px-8 py-3.5 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-6">
@@ -29,7 +28,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
           <div className="flex items-center gap-4">
             <GlobalNav />
-
             <Link
               href="/projects/new"
               className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-primary/20"
