@@ -285,10 +285,10 @@ export default async function PublicProjectGalleryPage() {
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <button className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-xs font-mono text-stone-300 font-medium transition-colors">
+            <button disabled title="Available after judging closes" className="px-4 py-2.5 rounded-xl bg-stone-900 border border-stone-700 text-xs font-mono text-stone-500 font-medium cursor-not-allowed opacity-50">
               Download Checksums
             </button>
-            <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-primary/25 flex items-center gap-2">
+            <button disabled title="Available after judging closes" className="px-5 py-2.5 rounded-xl bg-primary/50 text-white/60 text-xs font-mono font-bold cursor-not-allowed opacity-50 flex items-center gap-2">
               <span></span> Open Playground
             </button>
           </div>

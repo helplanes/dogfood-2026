@@ -76,8 +76,7 @@ export default function JudgeGuidelinesPage() {
             ← Back to Dashboard
           </Link>
           <h1
-            className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white"
-            style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
+            className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white font-syne"
           >
             Judging Guidelines
           </h1>
@@ -91,8 +90,7 @@ export default function JudgeGuidelinesPage() {
         {/* Overview */}
         <section>
           <h2
-            className="text-lg font-black uppercase tracking-tight text-white mb-4"
-            style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
+            className="text-lg font-black uppercase tracking-tight text-white mb-4 font-syne"
           >
             Overview
           </h2>
@@ -118,8 +116,7 @@ export default function JudgeGuidelinesPage() {
         {/* Weight summary bar */}
         <section>
           <h2
-            className="text-lg font-black uppercase tracking-tight text-white mb-4"
-            style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
+            className="text-lg font-black uppercase tracking-tight text-white mb-4 font-syne"
           >
             Rubric Weights
           </h2>
@@ -155,8 +152,7 @@ export default function JudgeGuidelinesPage() {
         {/* Criteria detail */}
         <section className="flex flex-col gap-6">
           <h2
-            className="text-lg font-black uppercase tracking-tight text-white"
-            style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
+            className="text-lg font-black uppercase tracking-tight text-white font-syne"
           >
             Criteria Detail
           </h2>
@@ -171,8 +167,7 @@ export default function JudgeGuidelinesPage() {
                 style={{ backgroundColor: c.color }}
               >
                 <h3
-                  className="text-base font-black uppercase tracking-tight text-white"
-                  style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
+                  className="text-base font-black uppercase tracking-tight text-white font-syne"
                 >
                   {c.label}
                 </h3>
@@ -213,8 +208,7 @@ export default function JudgeGuidelinesPage() {
         {/* Judging tips */}
         <section>
           <h2
-            className="text-lg font-black uppercase tracking-tight text-white mb-4"
-            style={{ fontFamily: "Syne, Geist, system-ui, sans-serif" }}
+            className="text-lg font-black uppercase tracking-tight text-white mb-4 font-syne"
           >
             Judging Tips
           </h2>
