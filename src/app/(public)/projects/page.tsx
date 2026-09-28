@@ -39,66 +39,7 @@ export default async function PublicProjectGalleryPage() {
   return (
     <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
       
-      {/*  Persistent Global Navigation Header  */}
-      <header className="sticky top-0 z-50 bg-[#0c0e13]/90 backdrop-blur-md border-b border-stone-800/80 px-4 md:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          
-          {/* Logo & Protocol status */}
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-mono font-bold tracking-tight text-white text-base">DOGFOOD</span>
-                <span className="font-serif italic font-bold text-[#fe330a] text-lg leading-none">2026</span>
-              </div>
-              <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest pl-2 hidden sm:inline">
-                03  VERIFICATION
-              </span>
-            </Link>
 
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-[#141822] border border-stone-800 text-[11px] font-mono text-stone-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#fe330a]" />
-              <span>STAGE 03 // DELIBERATION</span>
-              <span className="text-stone-600"></span>
-              <span>HALIFAX SYNC 18:42</span>
-              <span className="text-stone-600"></span>
-              <span className="text-amber-400">GOLDEN HOUR</span>
-            </div>
-          </div>
-
-          {/* Navigation Links & Action */}
-          <div className="flex items-center gap-3">
-            <nav className="hidden md:flex items-center p-1 rounded-xl bg-[#121620] border border-stone-800 text-xs font-mono">
-              <Link
-                href="/projects"
-                className="px-3.5 py-1.5 rounded-lg bg-stone-100 text-stone-900 font-bold"
-              >
-                Public Gallery
-              </Link>
-              <Link
-                href="/judge/dashboard"
-                className="px-3.5 py-1.5 rounded-lg text-stone-400 hover:text-white transition-colors"
-              >
-                Judge Console
-              </Link>
-              <Link
-                href="/organizer/dashboard"
-                className="px-3.5 py-1.5 rounded-lg text-stone-400 hover:text-white transition-colors"
-              >
-                Organizer Dashboard
-              </Link>
-            </nav>
-
-            <Link
-              href="/projects/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[#fe330a]/20"
-            >
-              <span>+</span>
-              Submit Project
-            </Link>
-          </div>
-        </div>
-      </header>
 
       {/*  Main Content Container  */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8 space-y-10">

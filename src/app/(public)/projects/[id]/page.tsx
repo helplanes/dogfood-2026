@@ -44,7 +44,7 @@ export default async function ProjectDetailPage({
     <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
       
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 bg-[#0c0e13]/90 backdrop-blur-md border-b border-stone-800/80 px-4 md:px-8 py-4 flex items-center justify-between">
+      <div className="bg-[#0c0e13]/50 border-b border-stone-800/50 px-4 md:px-8 py-4 flex items-center justify-between">
         <Link href="/projects" className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-400 hover:text-[#fe330a] transition-colors">
           &larr; BACK TO GALLERY
         </Link>
@@ -53,7 +53,7 @@ export default async function ProjectDetailPage({
             VERIFICATION ID: <span className="text-stone-300">#{project.id}</span>
           </span>
         </div>
-      </header>
+      </div>
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-10 space-y-12">
 
