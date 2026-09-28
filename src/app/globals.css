@@ -34,7 +34,6 @@
   --color-primary-hover: #ff4d26;
   --color-primary-container: #ff4d26;
   --color-on-primary: #ffffff;
-
   /* Semantic */
   --color-success: #22c55e;
   --color-warning: #f59e0b;
@@ -45,6 +44,7 @@
   --color-foreground: #f8f9fc;
   --color-border: #e2e8f0;
 
+  /* Fonts */
   --font-sans: var(--font-inter, Inter, sans-serif);
   --font-mono: var(--font-jb-mono, "JetBrains Mono", monospace);
   --font-syne: var(--font-syne, Syne, sans-serif);

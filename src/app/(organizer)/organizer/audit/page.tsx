@@ -50,21 +50,24 @@ export default function OrganizerAuditPage() {
         {/* Navigation / Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-stone-800/80">
           <div className="space-y-4">
-            <Link href="/organizer/dashboard" className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-400 hover:text-[#fe330a] transition-colors">
+            <Link href="/organizer/dashboard" className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-stone-400 hover:text-[#fe330a] transition-colors font-bold">
               &larr; COMMAND CENTER
             </Link>
-            <h1 className="text-3xl md:text-4xl font-serif text-white tracking-tight">
+            <div className="text-[11px] font-mono uppercase tracking-widest text-[#fe330a] font-bold mt-4">
+              MODULE 04
+            </div>
+            <h1 className="text-3xl md:text-5xl font-syne font-bold text-white tracking-tight">
               Audit Log. <br />
-              <span className="italic text-[#fe330a]">Append-Only Provenance.</span>
+              <span className="italic text-[#fe330a] font-medium">Append-Only Provenance.</span>
             </h1>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block mr-4">
-              <div className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">LATEST CHAIN HEIGHT</div>
-              <div className="text-xs font-mono text-emerald-400">BLOCK #104</div>
+              <div className="text-[10px] font-mono text-stone-500 uppercase tracking-widest font-bold">LATEST CHAIN HEIGHT</div>
+              <div className="text-[11px] font-mono text-emerald-400 font-bold tracking-wider mt-0.5">BLOCK #104</div>
             </div>
-            <button className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-900 text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg flex items-center gap-2">
+            <button className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-900 text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg flex items-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
               Export Log &darr;
             </button>
           </div>
@@ -73,36 +76,36 @@ export default function OrganizerAuditPage() {
         {/* Data Table Container */}
         <div className="w-full overflow-x-auto rounded-2xl bg-[#11141c] border border-stone-800 shadow-2xl">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-[#0a0c10] border-b border-stone-800/80 text-[11px] font-mono uppercase tracking-widest text-stone-500">
+            <thead className="bg-[#0a0c10] border-b border-stone-800/80 text-[10px] font-mono uppercase tracking-widest text-stone-500 font-bold">
               <tr>
-                <th className="px-6 py-4 font-semibold">Timestamp (UTC)</th>
-                <th className="px-6 py-4 font-semibold">Action</th>
-                <th className="px-6 py-4 font-semibold">Actor ID</th>
-                <th className="px-6 py-4 font-semibold">Target ID</th>
-                <th className="px-6 py-4 font-semibold text-[#fe330a]">Hash</th>
-                <th className="px-6 py-4 font-semibold">Prev Hash</th>
+                <th className="px-6 py-5">Timestamp (UTC)</th>
+                <th className="px-6 py-5">Action</th>
+                <th className="px-6 py-5">Actor ID</th>
+                <th className="px-6 py-5">Target ID</th>
+                <th className="px-6 py-5 text-[#fe330a]">Hash</th>
+                <th className="px-6 py-5">Prev Hash</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-800/50 font-mono text-stone-300">
+            <tbody className="divide-y divide-stone-800/50 font-mono text-stone-300 text-xs tracking-wider">
               {mockAuditLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-[#161a24] transition-colors">
+                <tr key={log.id} className="hover:bg-[#161a24] transition-colors group">
                   <td className="px-6 py-4 text-stone-500">{log.timestamp}</td>
                   <td className="px-6 py-4">
-                    <span className="text-emerald-400">{log.action}</span>
+                    <span className="text-emerald-400 font-bold">{log.action}</span>
                   </td>
                   <td className="px-6 py-4 text-stone-400">{log.actor}</td>
                   <td className="px-6 py-4 text-amber-500/70">{log.target}</td>
-                  <td className="px-6 py-4 text-[#fe330a] font-bold">{log.hash}</td>
-                  <td className="px-6 py-4 text-stone-600">{log.prevHash}</td>
+                  <td className="px-6 py-4 text-[#fe330a] font-bold group-hover:text-white transition-colors">{log.hash}</td>
+                  <td className="px-6 py-4 text-stone-600 group-hover:text-stone-400 transition-colors">{log.prevHash}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           
           {/* Legend / Footer */}
-          <div className="p-4 bg-[#0a0c10] border-t border-stone-800/80 flex items-center gap-6 text-[10px] font-mono text-stone-500">
+          <div className="p-5 bg-[#0a0c10] border-t border-stone-800/80 flex items-center gap-6 text-[10px] font-mono text-stone-500 font-bold tracking-widest">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-sm bg-[#fe330a] animate-pulse" />
+              <span className="w-2 h-2 rounded-sm bg-[#fe330a] animate-pulse shadow-[0_0_5px_#fe330a]" />
               <span>WAITING FOR NEW EVENTS...</span>
             </div>
           </div>
