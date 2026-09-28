@@ -58,13 +58,13 @@ export default function JudgeDashboardPage() {
   const pendingCount = mockAssignedProjects.length - scoredCount;
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white px-4 py-8 md:px-12 md:py-12">
+    <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 selection:text-white px-4 py-8 md:px-12 md:py-12">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Top Deliberation Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-3 px-5 rounded-xl bg-[#11141c]/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-3 px-5 rounded-xl bg-surface/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
           <div className="flex items-center gap-3">
-            <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_#fe330a]" />
             <span className="text-stone-300 font-semibold">JUROR PORTAL</span>
             <span className="text-stone-600">{"//"}</span>
             <span>ASSIGNED ROUND</span>
@@ -84,12 +84,12 @@ export default function JudgeDashboardPage() {
         {/* Hero Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4 border-b border-stone-800/50">
           <div className="space-y-3 max-w-2xl">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#fe330a]">
+            <div className="text-xs font-mono uppercase tracking-widest text-primary">
               01  REVIEW QUEUE  {mockAssignedProjects.length} ASSIGNED BENCHMARKS
             </div>
-            <h1 className="text-4xl md:text-5xl font-serif font-normal tracking-tight text-white leading-tight">
+            <h1 className="text-4xl md:text-5xl font-syne font-normal tracking-tight text-white leading-tight">
               Your Assignments.{" "}
-              <span className="italic text-[#fe330a] font-normal">Deliberate & Score.</span>
+              <span className="italic text-primary font-normal">Deliberate & Score.</span>
             </h1>
             <p className="text-stone-400 text-sm md:text-base leading-relaxed">
               Please review and score your assigned hackathon projects before the consensus deadline. Verified deliverables, test reproducible sandboxes, and submit rubric attestations.
@@ -97,7 +97,7 @@ export default function JudgeDashboardPage() {
           </div>
 
           {/* Quick Counter Card */}
-          <div className="flex items-center gap-6 p-4 md:px-8 md:py-5 rounded-2xl bg-[#141824] border border-stone-800 shadow-xl shrink-0">
+          <div className="flex items-center gap-6 p-4 md:px-8 md:py-5 rounded-2xl bg-surface-hover border border-stone-800 shadow-xl shrink-0">
             <div className="text-center">
               <span className="block text-[11px] font-mono text-stone-500 uppercase tracking-wider">ASSIGNED</span>
               <span className="text-2xl md:text-3xl font-bold font-mono text-white">{mockAssignedProjects.length}</span>
@@ -122,7 +122,7 @@ export default function JudgeDashboardPage() {
               onClick={() => setFilter("all")}
               className={`px-4 py-2 rounded-lg transition-all ${
                 filter === "all"
-                  ? "bg-[#fe330a] text-white font-semibold shadow-md shadow-[#fe330a]/20"
+                  ? "bg-primary text-white font-semibold shadow-md shadow-primary/20"
                   : "text-stone-400 hover:text-white"
               }`}
             >
@@ -132,7 +132,7 @@ export default function JudgeDashboardPage() {
               onClick={() => setFilter("pending")}
               className={`px-4 py-2 rounded-lg transition-all ${
                 filter === "pending"
-                  ? "bg-[#fe330a] text-white font-semibold shadow-md shadow-[#fe330a]/20"
+                  ? "bg-primary text-white font-semibold shadow-md shadow-primary/20"
                   : "text-stone-400 hover:text-white"
               }`}
             >
@@ -142,7 +142,7 @@ export default function JudgeDashboardPage() {
               onClick={() => setFilter("completed")}
               className={`px-4 py-2 rounded-lg transition-all ${
                 filter === "completed"
-                  ? "bg-[#fe330a] text-white font-semibold shadow-md shadow-[#fe330a]/20"
+                  ? "bg-primary text-white font-semibold shadow-md shadow-primary/20"
                   : "text-stone-400 hover:text-white"
               }`}
             >
@@ -160,7 +160,7 @@ export default function JudgeDashboardPage() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className={`group flex flex-col justify-between p-6 rounded-2xl bg-[#11141c] border transition-all duration-200 ${
+              className={`group flex flex-col justify-between p-6 rounded-2xl bg-surface border transition-all duration-200 ${
                 (Object.keys(project.existingScores).length === 3)
                   ? "border-stone-800/80 hover:border-stone-700 hover:shadow-lg"
                   : "border-amber-500/30 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.05)]"
@@ -189,7 +189,7 @@ export default function JudgeDashboardPage() {
 
                 {/* Project Title & Summary */}
                 <div className="space-y-2">
-                  <h2 className="text-xl font-serif text-white group-hover:text-stone-100 transition-colors line-clamp-1">
+                  <h2 className="text-xl font-syne text-white group-hover:text-stone-100 transition-colors line-clamp-1">
                     {project.title}
                   </h2>
                   <p className="text-xs text-stone-400 leading-relaxed line-clamp-3">
@@ -220,7 +220,7 @@ export default function JudgeDashboardPage() {
                   className={`w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-mono uppercase tracking-wider font-semibold transition-all ${
                     (Object.keys(project.existingScores).length === 3)
                       ? "bg-stone-800/80 hover:bg-stone-700 text-stone-200 border border-stone-700/80"
-                      : "bg-[#fe330a] hover:bg-[#ff4820] text-white shadow-lg shadow-[#fe330a]/25 hover:shadow-[#fe330a]/40"
+                      : "bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/25 hover:shadow-primary/40"
                   }`}
                 >
                   {(Object.keys(project.existingScores).length === 3) ? (
@@ -244,7 +244,7 @@ export default function JudgeDashboardPage() {
         {/* Bottom Policy Card */}
         <div className="p-4 md:p-6 rounded-2xl bg-[#10131a] border border-stone-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono text-stone-400">
           <div className="flex items-center gap-3">
-            <span className="p-2 rounded-lg bg-stone-900 border border-stone-800 text-[#fe330a]"></span>
+            <span className="p-2 rounded-lg bg-stone-900 border border-stone-800 text-primary"></span>
             <div>
               <span className="text-stone-200 font-semibold block">Official Consensus Scoring Policy</span>
               <span className="text-stone-500">Double-blind protocol requires all ratings strictly between 1 and 5. Identity tokens obfuscated.</span>

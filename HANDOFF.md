@@ -27,7 +27,7 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
   4. `/api/export.csv` — Route handler needs to be wired up for the CSV export button.
 
 
-- **STATUS (28 Sep):** Task 1 (Design Tokens + Base UI) is complete. Built the GalleryCard. Task 2 (Project Detail layout) is statically scaffolded, awaiting Krish's getPublicProjects and getPublicProject database accessors.
+- **STATUS (28 Sep):** Task 1 (Design Tokens + Base UI) is complete. Built the GalleryCard. Task 2 (Project Detail layout) is statically scaffolded, awaiting Krish's getPublicProjects and getPublicProject database accessors. Task 3 (Judge Console & Scoring Form) is functionally built with mock states and strict UI tokens, awaiting getAssignedProject.
 
 ## Nihal
 
