@@ -10,41 +10,17 @@ const tokens = {
   serifHeading: "font-serif text-white tracking-tight leading-[1.08]",
 };
 
-const CHALLENGE_TRACKS = [
-  {
-    tag: "TRACK 01 // AUTONOMOUS AGENTS",
-    pool: "$45,000 POOL",
-    title: "Autonomous Multi-Agent Systems",
-    desc: "Architect scalable consensus models, low-latency inter-agent state machines, and resilience under adversarial network partitioning.",
-    tech: ["LangGraph", "vLLM", "libp2p", "Byzantine consensus"],
-  },
-  {
-    tag: "TRACK 02 // CRYPTOGRAPHIC INFRA",
-    pool: "$35,000 POOL",
-    title: "Zero-Knowledge & Decentralized Infra",
-    desc: "Deploy client-side prover acceleration, trustless computation verification, and hermetic secure enclave execution pipelines.",
-    tech: ["Halo2", "Circom", "Rust", "Wasm Sandboxes"],
-  },
-  {
-    tag: "TRACK 03 // SYSTEMS TOOLING & MICROGRIDS",
-    pool: "$30,000 POOL",
-    title: "Developer Tooling & Microgrids",
-    desc: "Ultra-fast compilation harnesses, kernel-level telemetry capture, real-time energy telemetry streaming, and deterministic emulators.",
-    tech: ["LLVM", "WebGPU", "eBPF", "Real-time Profiling"],
-  },
-];
-
 const VALIDATION_COLUMNS = [
-  { num: "01 // IDENTITY", title: "Double-Blind Peer Review", desc: "Obfuscated identity vectors until deliberation quorum is unlocked. Jurors judge raw code artifacts without reputational bias." },
-  { num: "02 // ISOLATION", title: "Hermetic Sandboxes", desc: "100% reproducible builds execute in isolated WebContainers and hardware TEEs to measure true throughput and zero-latency states." },
-  { num: "03 // FAIRNESS", title: "Algorithmic Scoring Matrix", desc: "Z-score normalization dynamically adjusts for harsh and lenient juror biases, neutralizing single-juror skew across all tracks." },
-  { num: "04 // DISBURSEMENT", title: "Non-Dilutive Escrow", desc: "Automated multi-sig smart contract release upon unanimous cryptographic attestation. No equity capture, ever." },
+  { num: "01 // ANONYMOUS REVIEW", title: "Double-Blind Peer Review", desc: "Judges review code artifacts and demos without seeing team names or author identities to remove reputational bias." },
+  { num: "02 // TRACK ISOLATION", title: "Strict Track Assignment", desc: "Judges are assigned specific tracks and only review projects within those tracks. Cross-track visibility is strictly restricted." },
+  { num: "03 // FAIRNESS", title: "Z-Score Normalization", desc: "Scoring uses per-judge z-score normalization with shrinkage toward the global mean, neutralizing overly harsh or lenient grading." },
+  { num: "04 // ENFORCED TIMELINES", title: "Server-side Deadlines", desc: "Submissions and edits are strictly enforced by the server clock. Late submissions are automatically rejected with a 4xx error." },
 ];
 
 const FAQS = [
-  { q: "Who owns the intellectual property built during DOGFOOD 2026?", a: "100% of all intellectual property, source code, data models, and designs produced during DOGFOOD remain strictly with you and your team. We take zero equity, zero IP rights, and no future claims." },
-  { q: "What is the allowed team size and remote policy?", a: "Teams can range from 1 to 4 engineers. Remote participation is 100% supported globally with synchronized online sandboxes and Discord helpdesks." },
-  { q: "How is double-blind evaluation verified?", a: "All GitHub commits and author IDs are hashed into anonymous PRJ-IDs. Jurors cannot view author names or organization badges until all scores are committed to the escrow contract." },
+  { q: "Who owns the intellectual property built during DOGFOOD 2026?", a: "100% of all intellectual property, source code, data models, and designs produced during DOGFOOD remain strictly with you and your team." },
+  { q: "What is the allowed team size?", a: "Teams can range from 1 to 4 engineers." },
+  { q: "How is the scoring structured?", a: "Projects are graded on an integer scale of 1-5 across three criteria: Functionality, Quality, and Innovation." },
 ];
 
 export default function Home() {
@@ -63,14 +39,13 @@ export default function Home() {
             </Link>
             <nav className="hidden lg:flex items-center gap-6 text-xs font-mono text-stone-400">
               <Link href="#overview" className="text-white hover:text-[#fe330a] transition-colors">Overview</Link>
-              <Link href="#tracks" className="hover:text-[#fe330a] transition-colors">Tracks</Link>
               <Link href="/projects" className="hover:text-[#fe330a] transition-colors">Public Gallery</Link>
               <Link href="/help" className="hover:text-[#fe330a] transition-colors">Help</Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/register" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[#fe330a]/20">
-              Submit Project
+            <Link href="/projects" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[#fe330a]/20">
+              Explore Projects
             </Link>
           </div>
         </div>
@@ -81,12 +56,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-stone-300">
             <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
-            <span className="font-semibold text-white">REGISTRATION OPEN</span>
+            <span className="font-semibold text-white">SUBMISSIONS OPEN</span>
             <span className="text-stone-600">&#47;&#47;</span>
             <span>SEP 25-28, 2026</span>
-          </div>
-          <div className="text-[11px] font-semibold text-[#fe330a] bg-[#fe330a]/10 px-3 py-0.5 rounded-full border border-[#fe330a]/30">
-            $110,000 NON-DILUTIVE POOL
           </div>
         </div>
       </div>
@@ -106,7 +78,7 @@ export default function Home() {
           <div className="space-y-8 max-w-4xl pt-12 md:pt-24 text-center mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#141822]/80 backdrop-blur-sm border border-[#fe330a]/30 text-[11px] font-mono text-stone-300 mx-auto shadow-[0_0_20px_rgba(254,51,10,0.15)]">
               <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
-              <span className="tracking-widest">DOGFOOD 2026 BENCHMARK SPRINT</span>
+              <span className="tracking-widest">DOGFOOD 2026 HACKATHON</span>
             </div>
             
             <h1 className={`${tokens.serifHeading} text-5xl sm:text-7xl lg:text-[5.5rem] font-normal leading-[1.05]`}>
@@ -115,20 +87,20 @@ export default function Home() {
               </span>
               <br />
               <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#fe330a] via-[#ff4d26] to-orange-500 font-medium block sm:inline mt-2">
-                Shipped in 48 Hours.
+                Shipped in 72 Hours.
               </span>
             </h1>
             
             <p className="text-stone-400 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-sans">
-              An invitational engineering sprint for autonomous systems builders, verified cryptographers, and protocol hackers.
+              An open-source, self-hostable hackathon platform featuring strict track isolation, double-blind reviews, and normalized z-score judging.
             </p>
             
             <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
-              <Link href="/register" className={tokens.btnPrimary}>
-                Claim Hacker Pass &rarr;
+              <Link href="/projects" className={tokens.btnPrimary}>
+                Explore Public Gallery &rarr;
               </Link>
-              <Link href="/projects" className={`${tokens.btnSecondary} bg-transparent backdrop-blur-md hover:bg-[#141822]`}>
-                Explore Public Gallery
+              <Link href="/signup" className={`${tokens.btnSecondary} bg-transparent backdrop-blur-md hover:bg-[#141822]`}>
+                Sign Up as Participant
               </Link>
             </div>
           </div>
@@ -137,123 +109,57 @@ export default function Home() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#fe330a]/50 to-transparent"></div>
             
             <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
-              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">BENCHMARK VOLUME</span>
-              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">42</span>
-              <span className="text-xs text-stone-400 mt-1 block">Projects Shipped</span>
+              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">SUBMITTED PROJECTS</span>
+              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">41</span>
+              <span className="text-xs text-stone-400 mt-1 block">Live in Gallery</span>
             </div>
             <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
-              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">ATTESTATION BUS</span>
-              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">1,840</span>
-              <span className="text-xs text-stone-400 mt-1 block">Signed Commits</span>
+              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">EVALUATION TRACKS</span>
+              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">8</span>
+              <span className="text-xs text-stone-400 mt-1 block">Isolated Categories</span>
             </div>
             <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
-              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">CORE VERTICALS</span>
-              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">3</span>
-              <span className="text-xs text-stone-400 mt-1 block">ZK, Agents, DevTools</span>
+              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">EXPERT JUDGES</span>
+              <span className="text-4xl font-mono font-bold text-white block mt-2 bg-clip-text text-transparent bg-gradient-to-br from-white to-stone-500">30</span>
+              <span className="text-xs text-stone-400 mt-1 block">Active on Panel</span>
             </div>
             <div className={`${tokens.card} bg-transparent backdrop-blur-sm relative overflow-hidden group`}>
               <div className="absolute inset-0 bg-gradient-to-br from-[#fe330a]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block relative z-10">DELIBERATION AUDIT</span>
-              <span className="text-4xl font-mono font-bold text-[#fe330a] block mt-2 relative z-10 drop-shadow-[0_0_8px_rgba(254,51,10,0.5)]">100%</span>
-              <span className="text-xs text-stone-400 mt-1 block relative z-10">Double-Blind Verification</span>
+              <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block relative z-10">SCORE RECORDS</span>
+              <span className="text-4xl font-mono font-bold text-[#fe330a] block mt-2 relative z-10 drop-shadow-[0_0_8px_rgba(254,51,10,0.5)]">126</span>
+              <span className="text-xs text-stone-400 mt-1 block relative z-10">Peer Reviews Logged</span>
             </div>
           </div>
         </section>
 
-        {/* 2. ACTIVE CHALLENGE TRACKS */}
-        <section id="tracks" className={tokens.container}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-stone-800/80">
-            <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block mb-2">
-                STAGE 03 / BENCHMARK CATEGORIES
-              </span>
-              <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
-                Active Challenge Tracks
-              </h2>
-            </div>
-            <div className="text-xs font-mono text-stone-400 px-4 py-2 rounded-xl bg-[#11141c] border border-stone-800 shrink-0">
-              TOTAL POOL: <strong className="text-white">$110,000 COMMITTED</strong>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            {CHALLENGE_TRACKS.map((t, idx) => (
-              <div key={idx} className={`${tokens.card} group flex flex-col justify-between overflow-hidden p-0 border-t-2 border-t-[#fe330a]/50 hover:border-t-[#fe330a]`}>
-                <div className="p-6 space-y-4 flex-1 flex flex-col justify-between bg-gradient-to-b from-[#181c26] to-transparent">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-mono uppercase text-[#fe330a] tracking-wider block">{t.tag}</span>
-                      <span className="px-2 py-1 rounded text-[10px] font-mono font-bold bg-[#fe330a]/10 text-[#fe330a] border border-[#fe330a]/20">
-                        {t.pool}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-serif text-white">{t.title}</h3>
-                    <p className="text-xs text-stone-400 leading-relaxed font-sans">{t.desc}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 pt-4 border-t border-stone-800/50">
-                    {t.tech.map((chip, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded bg-[#11141c] text-[10px] font-mono text-stone-300 border border-stone-800">
-                        {chip}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. RAPID VALIDATION ARCHITECTURE */}
+        {/* 2. RAPID VALIDATION ARCHITECTURE */}
         <section className={tokens.container}>
           <div className="space-y-3 max-w-2xl mb-8">
             <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
               STRICT JURY PROTOCOL
             </span>
             <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
-              Engineered for Rapid Validation
+              Engineered for Fairness
             </h2>
             <p className="text-sm text-stone-400">
-              Double-blind execution, reproducible environments, and programmatic juror convergence remove all subjective variance.
+              Double-blind review isolation, strict server-side deadlines, and programmatic juror z-score normalization remove subjective variance.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            {/* Terminal Enclave */}
-            <div className="lg:col-span-5 p-6 rounded-2xl bg-[#080a0f] border border-stone-800/90 font-mono text-xs flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-stone-800/60">
-                <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
-                  <span className="text-[11px] text-stone-400 ml-2">TEE_SANDBOX_V2 // RUNNER</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {VALIDATION_COLUMNS.map((col, idx) => (
+              <div key={idx} className={tokens.card}>
+                <div className="flex items-center justify-between mb-3 text-xs font-mono">
+                  <span className="text-[#fe330a]">{col.num}</span>
                 </div>
+                <h4 className="text-base font-serif text-white mb-2">{col.title}</h4>
+                <p className="text-xs text-stone-400 leading-relaxed font-sans">{col.desc}</p>
               </div>
-              <div className="space-y-2 text-stone-300 font-mono leading-relaxed overflow-hidden">
-                <p className="text-stone-500">&gt; dogfood-bench --target @0x7f48a9 --strict</p>
-                <p className="text-emerald-400">[INIT] Isolating container c92b8d00... OK (1.4ms)</p>
-                <p>[BUILD] Wasm compilation via LLVM-18: <span className="text-cyan-400 font-semibold">VERIFIED</span></p>
-                <p>[TEST_01] Byzantine partition injection... <span className="text-emerald-400">PASS (4ms)</span></p>
-                <p>[TEST_02] Halo2 client-side proofs... <span className="text-emerald-400">PASS (8ms)</span></p>
-                <p className="text-[#fe330a] font-bold mt-2">&gt;&gt; BENCHMARK SCORE: 98.7 / 100 <span className="text-stone-500 font-normal">HASH #E88F9</span></p>
-              </div>
-            </div>
-
-            {/* Feature Cards */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {VALIDATION_COLUMNS.map((col, idx) => (
-                <div key={idx} className={tokens.card}>
-                  <div className="flex items-center justify-between mb-3 text-xs font-mono">
-                    <span className="text-[#fe330a]">{col.num}</span>
-                  </div>
-                  <h4 className="text-base font-serif text-white mb-2">{col.title}</h4>
-                  <p className="text-xs text-stone-400 leading-relaxed font-sans">{col.desc}</p>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* 4. FAQ & CALL TO ACTION */}
+        {/* 3. FAQ & CALL TO ACTION */}
         <section id="faq" className={tokens.container}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left: Native Accordion FAQ (No JS) */}
@@ -277,27 +183,27 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Auth Flow CTA (Replaces custom form to respect Nihal's scope) */}
+            {/* Right: Auth Flow CTA */}
             <div className="lg:col-span-5">
               <div className={`${tokens.card} p-8 space-y-6 bg-gradient-to-b from-[#181c26] to-[#11141c] border-[#fe330a]/20 shadow-2xl shadow-[#fe330a]/5`}>
                 <div className="flex items-center justify-between pb-3 border-b border-stone-800">
                   <div className="flex items-center gap-2 text-xs font-mono text-stone-300">
                     <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
-                    <span>ADMISSION PROTOCOL</span>
+                    <span>PUBLIC GALLERY</span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-serif text-white">Join the Network</h3>
+                  <h3 className="text-2xl font-serif text-white">Explore Submissions</h3>
                   <p className="text-sm text-stone-400 font-sans leading-relaxed">
-                    Ready to build? Authenticate your developer profile and form your team to gain access to the submission portal and compute clusters.
+                    View all 41 live projects, source code links, and 5-minute demo videos built during the 72-hour sprint.
                   </p>
                 </div>
                 <div className="pt-4 space-y-3">
-                  <Link href="/register" className={`${tokens.btnPrimary} w-full text-center`}>
-                    Create Participant Account &rarr;
+                  <Link href="/projects" className={`${tokens.btnPrimary} w-full text-center`}>
+                    Open Project Gallery &rarr;
                   </Link>
-                  <Link href="/login" className="block text-center text-xs font-mono text-stone-500 hover:text-white transition-colors">
-                    Already registered? Sign in here.
+                  <Link href="/signup" className="block text-center text-xs font-mono text-stone-500 hover:text-white transition-colors">
+                    Participant? Sign up here.
                   </Link>
                 </div>
               </div>

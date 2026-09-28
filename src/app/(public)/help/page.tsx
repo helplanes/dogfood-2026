@@ -1,5 +1,4 @@
 import Link from "next/link";
-import AiChatbot from "@/components/help/AiChatbot";
 
 /* DESIGN SYSTEM TOKENS — Obsidian Kinetic / Editorial Serif */
 const tokens = {
@@ -13,75 +12,49 @@ const tokens = {
 
 const ROLES = [
   {
-    tag: "ROLE 01 // SUBMISSION",
-    title: "Participants (Builders)",
-    desc: "Build and deploy verifiable product prototypes within the 48-hour build envelope using standardized micro-containers.",
+    tag: "ROLE 01 // PARTICIPANTS",
+    title: "Participants & Teams",
+    desc: "Join the hackathon, form teams, and submit your final project.",
     specs: [
-      { label: "Identity Attestation", detail: "Claim verified hacker pass via GitHub commit history check." },
-      { label: "Sandboxed Execution", detail: "Spin up hermetic WebContainer sandboxes for inference." },
-      { label: "Cryptographic Lock", detail: "Commit signed Git tags before Hour 48 deadline." },
+      { label: "Team Formation", detail: "Form teams of 1-4 engineers via invite links." },
+      { label: "Project Drafts", detail: "Draft and edit your submission before the final deadline." },
+      { label: "Strict Deadlines", detail: "Submissions close strictly at the deadline. Late posts are blocked." },
     ],
-    deliverables: ["Public repo", "Container build spec", "120s walkthrough"],
   },
   {
-    tag: "ROLE 02 // DELIBERATION",
-    title: "Judges (Jurors)",
-    desc: "Review randomized submissions under strict double-blind conditions with sanitized repo views and reproducible runs.",
+    tag: "ROLE 02 // JUDGES",
+    title: "Hackathon Judges",
+    desc: "Evaluate assigned projects on a strict 1-5 scale within specific tracks.",
     specs: [
-      { label: "Double-Blind Inspect", detail: "Anonymized UI strips sponsor ties and author credentials." },
-      { label: "Live Endpoint Replay", detail: "Execute remote health checks directly against isolated staging builds." },
-      { label: "Cryptographic Rubric", detail: "Submit tamper-resistant scores across Functionality, Architecture, and Innovation." },
+      { label: "Track Isolation", detail: "Judges can only see and score projects within their assigned category." },
+      { label: "Double-Blind Format", detail: "Judges review submissions without seeing the participant names." },
+      { label: "Scoring Criteria", detail: "Score across three dimensions: Functionality, Quality, and Innovation." },
     ],
-    deliverables: ["Objective scores", "Technical critique notes", "Anomaly flags"],
   },
   {
-    tag: "ROLE 03 // GOVERNANCE",
-    title: "Organizers & Leads",
-    desc: "Monitor real-time deliberation telemetry, calculate convergence, and trigger cryptographic payout executions.",
+    tag: "ROLE 03 // ORGANIZERS",
+    title: "Organizers & Admins",
+    desc: "Oversee the event, export normalized scores, and resolve disputes.",
     specs: [
-      { label: "Quorum Tracking", detail: "Ensure all projects receive 4 independent reviews with global quorum target threshold >95%." },
-      { label: "Statistical Normalization", detail: "Execute automated Z-score standardization to neutralize overly harsh or excessively lenient jurors." },
-      { label: "Escrow Multi-Sig", detail: "Sign final settlement payloads for automated non-dilutive smart contract distributions." },
+      { label: "Score Normalization", detail: "View automated Z-score standardization adjusting for juror biases." },
+      { label: "Audit Logs", detail: "View the append-only audit trail of all platform activity." },
+      { label: "Data Export", detail: "Export the final audited results and raw scores to CSV." },
     ],
-    deliverables: ["Audited results matrix", "Dispute resolutions", "Grant release sigs"],
-  },
-];
-
-const LIFECYCLE_STEPS = [
-  {
-    step: "01", hours: "H00 — H48", title: "Intake & Obfuscation",
-    desc: "Strict commit cutoff enforced by daemon. Submission hashes are locked on-chain, and repos undergo automated PII scrubbing.",
-    badge: "Identity Obfuscation"
-  },
-  {
-    step: "02", hours: "H48 — H60", title: "Double-Blind Evaluation",
-    desc: "Reviewers receive pseudo-randomized cohorts of projects. Each sandbox executes hermetically with real-time test invocation.",
-    badge: "Triangulated Quorum"
-  },
-  {
-    step: "03", hours: "H60 — H66", title: "Telemetry & Z-Score",
-    desc: "Raw juror scores are ingested by our normalization microservice. Divergent grading distributions are mathematically scaled.",
-    badge: "Variance Neutralization"
-  },
-  {
-    step: "04", hours: "H66 — H72", title: "Escrow Settlement",
-    desc: "Consensus proofs are finalized. Upon reaching 95%+ quorum signature convergence, non-dilutive grants execute directly.",
-    badge: "Immediate Non-Custodial"
   },
 ];
 
 const FAQS = [
   {
-    q: "What if my container build fails?",
-    a: "The intake runner automatically parses your dogfood.yml or Dockerfile. If the container exits with non-zero status during pre-flight sanity checks, an automated diagnostic log is returned to your dashboard with a 2-hour grace repair window.",
+    q: "How are projects scored?",
+    a: "Projects are graded on an integer scale from 1 to 5. The criteria are Functionality, Quality, and Innovation.",
   },
   {
-    q: "How are scoring disputes appealed?",
-    a: "If your submission was flagged for build failure that you can prove ran cleanly, you can initiate a single-click arbitration request within Hour 60 to 64. A Protocol Lead will re-run the build container.",
+    q: "What is Z-Score Normalization?",
+    a: "Z-score normalization dynamically adjusts scores relative to that individual juror's historical mean and standard deviation, neutralizing harsh or lenient biases.",
   },
   {
-    q: "Are prizes paid in tokens or fiat?",
-    a: "All tier payouts are executed exclusively in pure native USDC directly to the verified team multi-sig or smart wallet addresses. No token vesting, zero locked governance allocations.",
+    q: "Can I edit my project after submitting?",
+    a: "You can draft and edit your submission freely up until the server-side deadline is reached. After the deadline, the submission is locked.",
   },
 ];
 
@@ -109,13 +82,13 @@ export default function HelpAndHowItWorksPage() {
         <section className={tokens.container}>
           <div className="space-y-4 max-w-3xl">
             <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
-               PLATFORM MANUAL & ARCHITECTURAL GUIDE
+               PLATFORM MANUAL
             </span>
             <h1 className={`${tokens.serifHeading} text-4xl sm:text-5xl lg:text-6xl`}>
               How It <span className="italic text-[#fe330a]">Works</span>
             </h1>
             <p className="text-stone-400 text-base sm:text-lg leading-relaxed">
-              A transparent overview of the DOGFOOD 2026 double-blind verification pipeline, participant intake, juror scoring rubrics, and automated escrow distribution. Designed for engineering rigor, cryptographic integrity, and zero subjective friction.
+              A transparent overview of the DOGFOOD 2026 platform, participant intake, and juror scoring rubrics.
             </p>
           </div>
         </section>
@@ -125,10 +98,10 @@ export default function HelpAndHowItWorksPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-800/80 mb-8">
             <div>
               <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block mb-1">
-                01 // ECOSYSTEM PARTICIPANTS
+                01 // ECOSYSTEM ROLES
               </span>
               <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
-                Three Core Operational Roles
+                Core Operational Paths
               </h2>
             </div>
           </div>
@@ -156,117 +129,20 @@ export default function HelpAndHowItWorksPage() {
                     ))}
                   </div>
                 </div>
-                <div className="pt-6 border-t border-stone-800/60 mt-6 space-y-4">
-                  <span className="text-[10px] font-mono text-stone-500 uppercase tracking-wider block mb-2">STRICT DELIVERABLES</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {role.deliverables.map((item, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded bg-stone-900 border border-stone-800 text-[10px] font-mono text-stone-400">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* 3. PROTOCOL LIFECYCLE */}
-        <section id="lifecycle" className={tokens.container}>
-          <div className="text-center space-y-2 mb-10 max-w-2xl mx-auto">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
-              02 // 48-HOUR PROTOCOL LIFECYCLE
-            </span>
-            <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
-              From Code Freeze to Escrow Release
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {LIFECYCLE_STEPS.map((step, idx) => (
-              <div key={idx} className={`${tokens.card} flex flex-col justify-between space-y-4 bg-gradient-to-b from-[#181c26] to-[#11141c]`}>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between font-mono text-xs pb-2 border-b border-stone-800/60">
-                    <span className="px-2 py-0.5 rounded bg-[#fe330a]/20 text-[#fe330a] border border-[#fe330a]/30 font-bold">{step.step}</span>
-                    <span className="text-stone-500 text-[11px]">{step.hours}</span>
-                  </div>
-                  <h3 className="text-base font-serif font-bold text-white">{step.title}</h3>
-                  <p className="text-xs text-stone-400 leading-relaxed font-sans">{step.desc}</p>
-                </div>
-                <div className="p-3 rounded-lg bg-[#0c0e13] border border-stone-800/70 space-y-1">
-                  <span className="text-[10px] font-mono text-[#fe330a] font-bold uppercase tracking-wider block">
-                    {step.badge}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 4. SCORING MATRIX */}
-        <section id="rubric" className={tokens.container}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-7 space-y-4">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
-                  03 // DELIBERATION & SCORING RUBRIC
-                </span>
-                <h3 className={`${tokens.serifHeading} text-3xl sm:text-4xl mt-1`}>
-                  Mathematical Weight Matrix
-                </h3>
-              </div>
-              <div className="space-y-3 pt-2">
-                {[
-                  { w: "40%", t: "Functionality & Stability", d: "Does the deployed container actually run without throwing fatal unhandled exceptions? Are API calls deterministic?" },
-                  { w: "30%", t: "Code Quality & Architecture", d: "Clean modular separation, sound idiomatic patterns, clear type definitions, reproducible containerization recipes." },
-                  { w: "30%", t: "Novelty & Ecosystem Utility", d: "Breakthrough technical approaches, novel primitive combinations, and direct tangible utility for open-source developers." }
-                ].map((item, i) => (
-                  <div key={i} className={tokens.card}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-[#fe330a]/20 border border-[#fe330a]/30 text-[#fe330a] text-[10px] font-mono font-bold">{item.w} WEIGHT</span>
-                        <h4 className="font-serif font-bold text-sm text-white">{item.t}</h4>
-                      </div>
-                    </div>
-                    <p className="text-xs text-stone-400 leading-relaxed">{item.d}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="lg:col-span-5 space-y-4">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
-                  04 // MATHEMATICAL FAIRNESS
-                </span>
-                <h3 className={`${tokens.serifHeading} text-3xl sm:text-4xl mt-1`}>
-                  Z-Score Normalization
-                </h3>
-              </div>
-              <div className={`${tokens.card} space-y-5 bg-[#181c26]`}>
-                <div className="p-4 rounded-xl bg-[#0c0e13] border border-stone-800 text-center font-mono">
-                  <span className="text-[10px] text-stone-500 uppercase tracking-wider block mb-1">MATHEMATICAL MODEL</span>
-                  <div className="text-lg font-bold text-[#fe330a]">z = (x - μ) / σ</div>
-                  <p className="text-[11px] text-stone-400 mt-2 font-sans leading-relaxed">
-                    Every reviewer score is adjusted relative to that individual juror&apos;s historical mean (μ) and standard deviation (σ).
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 4.5. INTERACTIVE AI PROTOCOL ASSISTANT */}
-        <AiChatbot />
-
-        {/* 5. NATIVE FAQ (No JS required) */}
+        {/* 3. NATIVE FAQ (No JS required) */}
         <section id="faq" className={tokens.container}>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-800/80 mb-8">
             <div>
               <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block mb-1">
-                05 // KNOWLEDGE BASE
+                02 // KNOWLEDGE BASE
               </span>
               <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
-                Support & Troubleshooting
+                Support & Guidelines
               </h2>
             </div>
           </div>
@@ -284,31 +160,29 @@ export default function HelpAndHowItWorksPage() {
             ))}
           </div>
         </section>
-
-        {/* 6. TRIAGE BANNER */}
+        
+        {/* 4. GALLERY CTA */}
         <section className={tokens.container}>
-          <div className="p-8 sm:p-10 rounded-3xl bg-[#fe330a]/10 border border-[#fe330a]/20 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_30px_rgba(254,51,10,0.1)]">
+          <div className="p-8 sm:p-10 rounded-3xl bg-[#11141c] border border-stone-800 text-white flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center md:text-left">
               <span className="text-[11px] font-mono text-[#fe330a] uppercase tracking-wider block font-bold">
-                 LIVE SUPPORT ACTIVE
+                 PUBLIC GALLERY
               </span>
               <h3 className="text-2xl sm:text-3xl font-serif">
-                Need direct engineering triage?
+                Explore Submissions
               </h3>
               <p className="text-xs text-stone-400 max-w-lg font-sans leading-relaxed">
-                Our core infrastructure engineers are on standby 24/7 across dedicated Discord channels and our encrypted Telegram bridge during the entire 48-hour build window.
+                View all live projects and demos built during the sprint. 
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
-              <Link href="/" className={`${tokens.btnSecondary} bg-stone-900`}>
-                Discord Helpdesk
-              </Link>
-              <Link href="/" className={`${tokens.btnSecondary}`}>
-                &larr; Back to Home
+              <Link href="/projects" className={`${tokens.btnPrimary}`}>
+                Open Gallery &rarr;
               </Link>
             </div>
           </div>
         </section>
+
       </main>
     </div>
   );
