@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { PublicProject } from "@/contracts";
+import { GalleryCard } from "@/components/ui/GalleryCard";
 
 // Mock data shaped exactly like the contract.
 // Must contain Glass Signal, Small Meadow, Deep Compass
@@ -37,7 +38,7 @@ export default async function PublicProjectGalleryPage() {
   const projects = MOCK_PROJECTS;
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 selection:text-white flex flex-col font-sans">
       
 
 
@@ -45,9 +46,9 @@ export default async function PublicProjectGalleryPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8 space-y-10">
 
         {/* Top Deliberation Pill */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-2.5 px-4 rounded-xl bg-[#11141c]/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-2.5 px-4 rounded-xl bg-surface/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
           <div className="flex items-center gap-3">
-            <span className="flex h-2 w-2 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_#fe330a]" />
             <span className="text-stone-300 font-medium">01  REPOSITORY SHOWCASE</span>
             <span className="text-stone-600"></span>
             <span>EVERY PROJECT BUILT IN 48 HOURS</span>
@@ -63,9 +64,9 @@ export default async function PublicProjectGalleryPage() {
           {/* Left: Headlines & Metrics */}
           <div className="lg:col-span-8 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-white tracking-tight leading-[1.08]">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-syne text-white tracking-tight leading-[1.08]">
                 Built from Scratch.{" "}
-                <span className="italic font-serif text-[#fe330a] block sm:inline">
+                <span className="italic font-syne text-primary block sm:inline">
                   Shipped in 48 Hours.
                 </span>
               </h1>
@@ -76,23 +77,23 @@ export default async function PublicProjectGalleryPage() {
 
             {/* Metric Counter Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-stone-800/60">
-              <div className="p-4 rounded-xl bg-[#11141c] border border-stone-800">
+              <div className="p-4 rounded-xl bg-surface border border-stone-800">
                 <span className="text-3xl font-mono font-bold text-white block">42</span>
                 <span className="text-xs font-mono text-stone-300 font-semibold block mt-0.5">Projects Shipped</span>
                 <span className="text-[10px] font-mono text-stone-500">100% on-time intake</span>
               </div>
-              <div className="p-4 rounded-xl bg-[#11141c] border border-stone-800">
+              <div className="p-4 rounded-xl bg-surface border border-stone-800">
                 <span className="text-3xl font-mono font-bold text-white block">1,840</span>
                 <span className="text-xs font-mono text-stone-300 font-semibold block mt-0.5">Signed Commits</span>
                 <span className="text-[10px] font-mono text-stone-500">Ed25519 verified</span>
               </div>
-              <div className="p-4 rounded-xl bg-[#11141c] border border-stone-800">
+              <div className="p-4 rounded-xl bg-surface border border-stone-800">
                 <span className="text-3xl font-mono font-bold text-white block">5 Tracks</span>
                 <span className="text-xs font-mono text-stone-300 font-semibold block mt-0.5">Bounty Scopes</span>
                 <span className="text-[10px] font-mono text-stone-500">ZK, Agents, Bio, Rust</span>
               </div>
-              <div className="p-4 rounded-xl bg-[#11141c] border border-stone-800">
-                <span className="text-3xl font-mono font-bold text-[#fe330a] block">98.4%</span>
+              <div className="p-4 rounded-xl bg-surface border border-stone-800">
+                <span className="text-3xl font-mono font-bold text-primary block">98.4%</span>
                 <span className="text-xs font-mono text-stone-300 font-semibold block mt-0.5">Juror Consensus</span>
                 <span className="text-[10px] font-mono text-stone-500">Active quorum</span>
               </div>
@@ -100,18 +101,18 @@ export default async function PublicProjectGalleryPage() {
           </div>
 
           {/* Right: Deliberation Protocol Card */}
-          <div className="lg:col-span-4 p-6 rounded-2xl bg-[#11141c] border border-stone-800 flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-4 p-6 rounded-2xl bg-surface border border-stone-800 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="flex items-center gap-2 text-[#fe330a] font-semibold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#fe330a] animate-pulse" />
+                <span className="flex items-center gap-2 text-primary font-semibold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                   STAGE 03 ACTIVE
                 </span>
                 <span className="text-stone-500">18:42 SYNC</span>
               </div>
 
               <div>
-                <h2 className="text-xl font-serif text-white">Deliberation Protocol</h2>
+                <h2 className="text-xl font-syne text-white">Deliberation Protocol</h2>
                 <p className="text-xs text-stone-400 mt-1 leading-relaxed">
                   Autonomous verifiers & tier-1 human jurors reviewing benchmark reproduction.
                 </p>
@@ -121,10 +122,10 @@ export default async function PublicProjectGalleryPage() {
               <div className="space-y-1.5 pt-2">
                 <div className="flex justify-between text-xs font-mono">
                   <span className="text-stone-400">AUDITED BENCHMARKS</span>
-                  <span className="text-[#fe330a] font-bold">38 / 42 DONE</span>
+                  <span className="text-primary font-bold">38 / 42 DONE</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-stone-900 overflow-hidden border border-stone-800">
-                  <div className="h-full bg-[#fe330a] w-[90%] rounded-full shadow-[0_0_8px_#fe330a]" />
+                  <div className="h-full bg-primary w-[90%] rounded-full shadow-[0_0_8px_#fe330a]" />
                 </div>
                 <div className="flex justify-between text-[11px] font-mono text-stone-500 pt-1">
                   <span>Remaining Time:</span>
@@ -136,13 +137,13 @@ export default async function PublicProjectGalleryPage() {
             {/* Sandbox Enclave Footer */}
             <div className="pt-4 border-t border-stone-800/80 flex items-center justify-between text-xs font-mono">
               <div className="flex items-center gap-2">
-                <span className="text-[#fe330a]"></span>
+                <span className="text-primary"></span>
                 <div>
                   <span className="text-stone-300 block font-medium">TEE Sandbox</span>
                   <span className="text-stone-500 text-[10px]">Enclave isolated</span>
                 </div>
               </div>
-              <button className="text-[#fe330a] hover:underline flex items-center gap-1 font-semibold">
+              <button className="text-primary hover:underline flex items-center gap-1 font-semibold">
                 View Rules &darr;
               </button>
             </div>
@@ -151,73 +152,28 @@ export default async function PublicProjectGalleryPage() {
         </div>
 
         {/*  Project Showcase Grid  */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {projects.map((proj) => (
-            <div
-              key={proj.id}
-              className="group flex flex-col justify-between rounded-2xl bg-[#11141c] border border-stone-800 hover:border-stone-700 hover:shadow-2xl hover:shadow-[#fe330a]/5 transition-all overflow-hidden"
-            >
-              {/* Card Thumbnail Container (No Image per backend lead) */}
-              <div className="relative h-48 w-full bg-gradient-to-br from-stone-800 to-stone-900 overflow-hidden border-b border-stone-800">
-                <div className="absolute inset-0 bg-gradient-to-t from-[#11141c] via-[#11141c]/30 to-transparent" />
-
-                {/* Category & Rating Badges */}
-                <div className="absolute top-3 inset-x-3 flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-semibold bg-[#0c0e13]/80 backdrop-blur-md text-stone-200 border border-stone-700/60">
-                    {proj.track}
-                  </span>
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#0c0e13]/80 backdrop-blur-md text-[#fe330a] border border-[#fe330a]/40 flex items-center gap-1">
-                     OPEN SOURCE
-                  </span>
-                </div>
-
-                {/* Sub-tag overlay */}
-                <div className="absolute bottom-3 left-3 text-[10px] font-mono uppercase tracking-widest text-stone-400 bg-black/60 px-2 py-0.5 rounded border border-stone-800">
-                  {proj.teamName}
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-serif text-white tracking-tight group-hover:text-stone-100 transition-colors">
-                    {proj.title}
-                  </h3>
-                  <p className="text-xs text-stone-400 font-sans leading-relaxed line-clamp-3">
-                    {proj.summary}
-                  </p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="pt-4 border-t border-stone-800/80 flex items-center gap-2">
-                  <Link href={`/projects/${proj.id}`} className="flex-1 py-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-stone-300 text-xs font-mono font-medium border border-stone-800 flex items-center justify-center gap-1.5 transition-colors">
-                    View Specs
-                  </Link>
-                  <Link href={`/projects/${proj.id}`} className="flex-1 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-md shadow-[#fe330a]/20 flex items-center justify-center gap-1">
-                    Enter Project &rarr;
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <GalleryCard key={proj.id} project={proj} />
           ))}
         </div>
 
         {/*  Consensus Scoring Matrix Section  */}
-        <div className="p-6 md:p-8 rounded-2xl bg-[#11141c] border border-stone-800 space-y-6">
+        <div className="p-6 md:p-8 rounded-2xl bg-surface border border-stone-800 space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="text-[11px] font-mono text-[#fe330a] uppercase tracking-widest block">
+              <span className="text-[11px] font-mono text-primary uppercase tracking-widest block">
                 02  EVALUATION CRITERIA
               </span>
-              <h2 className="text-2xl md:text-3xl font-serif text-white">
+              <h2 className="text-2xl md:text-3xl font-syne text-white">
                 Consensus Scoring Matrix
               </h2>
               <p className="text-xs text-stone-400 font-sans">
                 Every project submitted within the 48-hour sprint underwent strict decentralized verification by both peer jurors and automated reproduction sandboxes.
               </p>
             </div>
-            <div className="text-[11px] font-mono text-stone-400 px-3 py-1.5 rounded-lg bg-[#0c0e13] border border-stone-800">
-              <span className="text-[#fe330a] font-bold"></span> Formula:{" "}
+            <div className="text-[11px] font-mono text-stone-400 px-3 py-1.5 rounded-lg bg-background border border-stone-800">
+              <span className="text-primary font-bold"></span> Formula:{" "}
               <code className="text-stone-200">W = 0.35(A) + 0.30(U) + 0.35(V)</code>
             </div>
           </div>
@@ -227,7 +183,7 @@ export default async function PublicProjectGalleryPage() {
             {/* Criteria 1 */}
             <div className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-lg font-mono font-bold text-[#fe330a]">35%</span>
+                <span className="text-lg font-mono font-bold text-primary">35%</span>
                 <span className="text-stone-500"></span>
               </div>
               <div className="space-y-1">
@@ -238,14 +194,14 @@ export default async function PublicProjectGalleryPage() {
               </div>
               <div className="pt-2 border-t border-stone-800 flex justify-between text-[10px] font-mono text-stone-500">
                 <span>WEIGHT: 35 PTS</span>
-                <span className="text-[#fe330a] font-semibold">AUDIT BENCHMARK</span>
+                <span className="text-primary font-semibold">AUDIT BENCHMARK</span>
               </div>
             </div>
 
             {/* Criteria 2 */}
             <div className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-lg font-mono font-bold text-[#fe330a]">30%</span>
+                <span className="text-lg font-mono font-bold text-primary">30%</span>
                 <span className="text-stone-500"></span>
               </div>
               <div className="space-y-1">
@@ -263,7 +219,7 @@ export default async function PublicProjectGalleryPage() {
             {/* Criteria 3 */}
             <div className="p-5 rounded-xl bg-[#0e1118] border border-stone-800/80 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-lg font-mono font-bold text-[#fe330a]">35%</span>
+                <span className="text-lg font-mono font-bold text-primary">35%</span>
                 <span className="text-stone-500"></span>
               </div>
               <div className="space-y-1">
@@ -274,7 +230,7 @@ export default async function PublicProjectGalleryPage() {
               </div>
               <div className="pt-2 border-t border-stone-800 flex justify-between text-[10px] font-mono text-stone-500">
                 <span>WEIGHT: 35 PTS</span>
-                <span className="text-[#fe330a] font-semibold">ZERO-KNOWLEDGE</span>
+                <span className="text-primary font-semibold">ZERO-KNOWLEDGE</span>
               </div>
             </div>
 
@@ -282,14 +238,14 @@ export default async function PublicProjectGalleryPage() {
         </div>
 
         {/*  Local Reproduction Callout CTA  */}
-        <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-[#11141c] via-[#141824] to-[#11141c] border border-stone-800 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-surface via-[#141824] to-surface border border-stone-800 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center md:text-left">
-            <span className="text-[11px] font-mono text-[#fe330a] uppercase tracking-widest block">
+            <span className="text-[11px] font-mono text-primary uppercase tracking-widest block">
               HACKATHON ESCROW SAFEGUARD
             </span>
-            <h3 className="text-2xl font-serif text-white">
+            <h3 className="text-2xl font-syne text-white">
               Want to reproduce a project{" "}
-              <span className="italic font-serif text-[#fe330a]">locally?</span>
+              <span className="italic font-syne text-primary">locally?</span>
             </h3>
             <p className="text-xs text-stone-400 font-sans">
               All sandboxes are hosted inside isolated WebContainers with full source transparency and verified dependency trees.
@@ -300,7 +256,7 @@ export default async function PublicProjectGalleryPage() {
             <button className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-xs font-mono text-stone-300 font-medium transition-colors">
               Download Checksums
             </button>
-            <button className="px-5 py-2.5 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-[#fe330a]/25 flex items-center gap-2">
+            <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-[#ff4922] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-primary/25 flex items-center gap-2">
               <span></span> Open Playground
             </button>
           </div>
@@ -314,7 +270,7 @@ export default async function PublicProjectGalleryPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-stone-900">
             <div>
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#fe330a]" />
+                <span className="h-2 w-2 rounded-full bg-primary" />
                 <span className="font-bold text-white tracking-tight">DOGFOOD &apos;26</span>
               </div>
               <p className="text-[11px] text-stone-500 mt-1 font-sans">

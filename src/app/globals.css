@@ -1,62 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-  /* === DESIGN-4-HYBRID: Obsidian Kinetic — Simplified Hybrid === */
+  /* === DESIGN-4-HYBRID: Obsidian Kinetic === */
 
-  /* Canvas (dark world) */
-  --color-background: #111318;
-  --color-surface-low: #191c20;
-  --color-border-dark: rgba(255, 255, 255, 0.08);
-
-  /* Legacy surface scale (kept for compatibility) */
-  --color-surface: #111318;
-  --color-surface-dim: #111318;
-  --color-surface-bright: #37393e;
-  --color-surface-container-lowest: #0c0e13;
-  --color-surface-container-low: #191c20;
-  --color-surface-container: #1d2024;
-  --color-surface-container-high: #282a2f;
-  --color-surface-container-highest: #33353a;
-
-  /* Cards (light — content lives here) */
-  --color-card: #ffffff;
-  --color-card-foreground: #111318;
-  --color-card-border: #e2e8f0;
-  --color-card-muted: #64748b;
-
-  /* Light surface helpers */
-  --color-surface-light: #ffffff;
-  --color-surface-light-muted: #f8f9fc;
-  --color-surface-light-border: #e2e8f0;
-
-  /* Brand accent */
+  /* Canvas & Surfaces */
+  --color-background: #0c0e13;
+  --color-surface: #11141c;
+  --color-surface-hover: #141824;
+  
+  /* Brand Accent */
   --color-primary: #fe330a;
-  --color-primary-hover: #ff4d26;
-  --color-primary-container: #ff4d26;
-  --color-on-primary: #ffffff;
-  /* Semantic */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-info: #00f0ff;
-  --color-error: #ba1a1a;
+  --color-primary-hover: #ff4922;
 
-  /* Foreground */
-  --color-foreground: #f8f9fc;
-  --color-border: #e2e8f0;
-
-  /* Fonts */
+  /* Typography */
   --font-sans: var(--font-inter, Inter, sans-serif);
   --font-mono: var(--font-jb-mono, "JetBrains Mono", monospace);
   --font-syne: var(--font-syne, Syne, sans-serif);
 }
 
-:root {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
+@layer base {
+  :root {
+    background-color: var(--color-background);
+    color: theme('colors.stone.100');
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-syne, Syne, sans-serif);
-  letter-spacing: -0.035em;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-syne);
+    letter-spacing: -0.035em;
+  }
 }
-
