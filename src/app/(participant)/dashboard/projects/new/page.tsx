@@ -55,7 +55,12 @@ export default function SubmitProjectPage() {
             const errData = JSON.parse(rawText);
             errorMessage = errData?.error || errData?.message || rawText;
           } catch {
-            errorMessage = rawText || errorMessage;
+            // If it's an HTML page (like a 404 or 500 error page from Next.js), don't dump the raw HTML
+            if (rawText.trim().toLowerCase().startsWith("<!doctype html>") || rawText.trim().toLowerCase().startsWith("<html")) {
+              errorMessage = `Submission failed (${res.status}): API endpoint not found or returned an HTML error page.`;
+            } else {
+              errorMessage = rawText || errorMessage;
+            }
           }
         } catch {
           // ignore
