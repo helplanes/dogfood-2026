@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AiChatbot from "@/components/help/AiChatbot";
 
 /* DESIGN SYSTEM TOKENS — Obsidian Kinetic / Editorial Serif */
 const tokens = {
@@ -253,6 +254,9 @@ export default function HelpAndHowItWorksPage() {
             </div>
           </div>
         </section>
+
+        {/* 4.5. INTERACTIVE AI PROTOCOL ASSISTANT */}
+        <AiChatbot />
 
         {/* 5. NATIVE FAQ (No JS required) */}
         <section id="faq" className={tokens.container}>
