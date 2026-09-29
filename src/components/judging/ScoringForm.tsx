@@ -58,7 +58,7 @@ const CRITERIA: CriterionDef[] = [
     weight: 30,
     prompt:
       "Does it bring a novel approach, creative problem-solving, or unique real-world sustainability leverage?",
-    colorClass: "text-[#10b981]",
+    colorClass: "text-emerald-500",
     glowColor: "rgba(16, 185, 129, 0.35)",
     labels: {
       1: { title: "POOR", sub: "Derivative / Clone" },
@@ -233,7 +233,7 @@ export function ScoringForm({ project, onSave }: Props) {
           </div>
 
           {/* Real-time Weighted Score Display */}
-          <div className="flex-shrink-0 flex items-center gap-4 px-6 py-4 rounded-xl bg-[#0a0d13] border border-stone-800/80">
+          <div className="flex-shrink-0 flex items-center gap-4 px-6 py-4 rounded-xl bg-surface border border-stone-800/80">
             <div className="w-16 h-16 rounded-full border-2 border-[var(--color-primary)] flex flex-col items-center justify-center bg-[var(--color-primary)]/10 shadow-[0_0_20px_rgba(254,51,10,0.2)]">
               <span className="text-2xl font-bold font-mono text-white leading-none">{weightedScore}</span>
               <span className="text-[10px] font-mono text-stone-400">/ 5.0</span>
@@ -306,8 +306,8 @@ export function ScoringForm({ project, onSave }: Props) {
                         onClick={() => handleScoreSelect(criterion.id, val)}
                         className={`group relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? "bg-[#181d28] border border-stone-600 shadow-lg scale-[1.02]"
-                            : "bg-[#0b0e14] hover:bg-surface-hover border border-stone-800/80 hover:border-stone-700"
+                            ? "bg-surface-hover border border-stone-600 shadow-lg scale-[1.02]"
+                            : "bg-background hover:bg-surface-hover border border-stone-800/80 hover:border-stone-700"
                         }`}
                       >
                         {/* Perfect Circular Dial Button */}
@@ -357,7 +357,7 @@ export function ScoringForm({ project, onSave }: Props) {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Provide concrete rationale, edge-case observations, or questions for final jury sync..."
-              className="w-full bg-[#0a0d14] border border-stone-800 rounded-xl p-4 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-y"
+              className="w-full bg-background border border-stone-800 rounded-xl p-4 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-y"
             />
 
             <div className="flex items-center justify-between mt-3 text-xs text-stone-500 font-mono">
@@ -365,14 +365,14 @@ export function ScoringForm({ project, onSave }: Props) {
                 <svg className="w-3.5 h-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                Double-blind jury notes (End-to-End Encrypted)
+                Jury notes (visible to organizers)
               </span>
               <span>Markdown formatting enabled</span>
             </div>
           </section>
 
           {/* ─── Bottom Sticky Dock Bar ─── */}
-          <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0a0d13]/95 backdrop-blur-md border-t border-stone-800/80 py-4 px-6 md:pl-[280px]">
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-stone-800/80 py-4 px-6 md:pl-[280px]">
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3 text-xs font-mono text-stone-400">
                 <span className={`w-2 h-2 rounded-full ${scoredCount === 3 ? "bg-emerald-400" : "bg-[var(--color-primary)] animate-pulse"}`} />
@@ -403,7 +403,7 @@ export function ScoringForm({ project, onSave }: Props) {
                 <button
                   type="submit"
                   disabled={isSubmitting || scoredCount !== CRITERIA.length}
-                  className="px-6 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[#e02d08] text-white text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 shadow-[0_0_20px_rgba(254,51,10,0.4)] disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                  className="px-6 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-primary-hover text-white text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 shadow-[0_0_20px_rgba(254,51,10,0.4)] disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Signing Scores..." : "Save Scores →"}
                 </button>

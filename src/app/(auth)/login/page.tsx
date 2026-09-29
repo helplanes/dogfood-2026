@@ -167,7 +167,7 @@ export default function LoginPage() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`w-full px-4 py-3 bg-[#11131a] border rounded-xl text-xs font-mono text-white placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/40 transition-all ${error ? "border-red-800/50" : "border-stone-800"}`}
+                        className={`w-full px-4 py-3 bg-background border rounded-xl text-xs font-mono text-white placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/40 transition-all ${error ? "border-red-800/50" : "border-stone-800"}`}
                         placeholder="participant@example.com"
                       />
                       <div className="absolute inset-y-0 right-3.5 flex items-center pointer-events-none text-stone-500">
@@ -197,7 +197,7 @@ export default function LoginPage() {
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={`w-full px-4 py-3 bg-[#11131a] border rounded-xl text-xs font-mono text-white placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/40 transition-all ${error ? "border-red-800/50" : "border-stone-800"}`}
+                        className={`w-full px-4 py-3 bg-background border rounded-xl text-xs font-mono text-white placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/40 transition-all ${error ? "border-red-800/50" : "border-stone-800"}`}
                         placeholder="••••••••••••••••"
                       />
                       <button
@@ -226,7 +226,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#202530] hover:bg-[#282e3c] border border-stone-700/60 text-stone-200 text-xs font-mono font-bold uppercase tracking-wider transition-all hover:text-white cursor-pointer disabled:opacity-50 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-surface-hover hover:bg-stone-800 border border-stone-700/60 text-stone-200 text-xs font-mono font-bold uppercase tracking-wider transition-all hover:text-white cursor-pointer disabled:opacity-50 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                   >
                     <span>{submitting ? "INITIALIZING SESSION..." : "INITIALIZE SESSION →"}</span>
                   </button>
@@ -244,7 +244,7 @@ export default function LoginPage() {
                     <select
                       value={selectedRole}
                       onChange={handleRoleChange}
-                      className="w-full appearance-none bg-[#11131a] border border-stone-800 text-stone-300 text-xs font-mono px-4 py-3 rounded-xl focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer hover:border-stone-700 font-medium"
+                      className="w-full appearance-none bg-background border border-stone-800 text-stone-300 text-xs font-mono px-4 py-3 rounded-xl focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer hover:border-stone-700 font-medium"
                     >
                       <option value="">Pick the role</option>
                       <option value="org_7f2a">Organizer // Admin</option>

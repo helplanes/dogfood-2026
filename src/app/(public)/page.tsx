@@ -51,7 +51,7 @@ export default function Home() {
         </section>
 
         {/* CSS Marquee - Subtle transition color */}
-        <div className="relative border-y border-stone-800/60 bg-[#0f121a] overflow-hidden py-4">
+        <div className="relative border-y border-stone-800/60 bg-surface overflow-hidden py-4">
           <div className="animate-marquee whitespace-nowrap flex gap-12 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-primary)] opacity-80">
             {[...Array(10)].map((_, i) => (
               <span key={i}>Build the platform that will judge you <span className="text-stone-700 mx-12">·</span></span>
@@ -60,7 +60,7 @@ export default function Home() {
         </div>
 
         {/* STATS BENTO - Dark Blue/Slate Tint */}
-        <section className="bg-gradient-to-b from-[#0f121a] to-[#141824] border-b border-stone-800/40">
+        <section className="bg-gradient-to-b from-surface to-background border-b border-stone-800/40">
           <div className="max-w-7xl mx-auto px-4 sm:px-8 py-24 lg:py-32">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {landingData.stats.map((stat, idx) => (
