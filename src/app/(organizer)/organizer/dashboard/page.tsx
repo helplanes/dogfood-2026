@@ -1,9 +1,23 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { authorize } from "@/policy";
+import { getActorFromCookies } from "@/server/auth";
+import { getJudgeLoads, getProgress } from "@/repo/queries";
 
-export default function OrganizerDashboardPage() {
+export const dynamic = "force-dynamic";
+
+export default async function OrganizerDashboardPage() {
+  const actor = await getActorFromCookies();
+  const decision = authorize(actor, "organizer:manage");
+  if (!decision.ok) notFound();
+
+  const [projects, judges] = await Promise.all([getProgress(), getJudgeLoads()]);
+  const activeJudges = judges.filter((judge) => judge.scored > 0).length;
+  const reviewTarget = projects.length * 3;
+  const completedReviews = projects.reduce((total, project) => total + Math.min(3, Number(project.reviews)), 0);
+  const quorumPercent = reviewTarget ? Math.round((completedReviews / reviewTarget) * 100) : 0;
+
   return (
     <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 selection:text-white px-4 py-8 md:px-12 md:py-12 flex flex-col font-sans">
       
@@ -28,21 +42,21 @@ export default function OrganizerDashboardPage() {
           <div className="p-6 rounded-2xl bg-surface border border-stone-800 hover:border-stone-700 transition-colors flex flex-col justify-between h-36 shadow-xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-stone-800/20 rounded-full blur-3xl group-hover:bg-stone-700/30 transition-colors" />
             <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest block relative z-10">TOTAL SUBMISSIONS</span>
-            <span className="text-5xl font-mono font-bold text-white relative z-10 tracking-tight">42</span>
+            <span className="text-5xl font-mono font-bold text-white relative z-10 tracking-tight">{projects.length}</span>
           </div>
           <div className="p-6 rounded-2xl bg-surface border border-stone-800 hover:border-stone-700 transition-colors flex flex-col justify-between h-36 shadow-xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-stone-800/20 rounded-full blur-3xl group-hover:bg-stone-700/30 transition-colors" />
             <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest block relative z-10">JURORS ACTIVE</span>
-            <span className="text-5xl font-mono font-bold text-white relative z-10 tracking-tight">12</span>
+            <span className="text-5xl font-mono font-bold text-white relative z-10 tracking-tight">{activeJudges}</span>
           </div>
           <div className="p-6 rounded-2xl bg-gradient-to-br from-[#11141c] to-[#161a24] border border-stone-800 hover:border-stone-700 transition-colors flex flex-col justify-between h-36 shadow-xl col-span-2 lg:col-span-2 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
             <div className="flex items-center justify-between relative z-10">
               <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">EVALUATION QUORUM</span>
-              <span className="text-xs font-mono font-bold text-primary px-2.5 py-1 bg-primary/10 rounded border border-primary/20">84% COMPLETE</span>
+              <span className="text-xs font-mono font-bold text-primary px-2.5 py-1 bg-primary/10 rounded border border-primary/20">{quorumPercent}% COMPLETE</span>
             </div>
             <div className="w-full h-3 rounded-full bg-stone-900 overflow-hidden border border-stone-800 mt-auto relative z-10">
-              <div className="h-full bg-primary w-[84%] rounded-full shadow-[0_0_12px_var(--color-primary)]" />
+              <div className="h-full bg-primary rounded-full shadow-[0_0_12px_var(--color-primary)]" style={{ width: `${quorumPercent}%` }} />
             </div>
           </div>
         </div>

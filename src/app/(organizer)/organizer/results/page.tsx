@@ -82,7 +82,7 @@ export default async function OrganizerResultsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`font-mono ${row.n_reviews < 3 ? "text-amber-400" : "text-stone-300"}`}>
-                        {row.n_reviews} / 3
+                        {row.n_reviews}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right font-mono text-stone-400">

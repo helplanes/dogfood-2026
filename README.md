@@ -43,7 +43,7 @@ Claimed T1 + T2. `acceptance-report.txt` shows the checker result: all 7 checks 
 
 - Real auth: signup/login/logout with argon2 password hashes and HttpOnly session cookies. The
   fixture demo users (organizer/judge/participant) have no password and keep working via their
-  fixed cookies; password login is correctly refused for them (401), same response as an unknown
+  fixed cookies, including after a demo logout; password login is correctly refused for them (401), same response as an unknown
   email, so login never reveals which emails exist.
 - Team formation by invite link (`/team/join?code=...`), enforced server-side (one team per user,
   invite code single-team-scoped).
@@ -59,8 +59,8 @@ Claimed T1 + T2. `acceptance-report.txt` shows the checker result: all 7 checks 
   normalization-report` — a standalone, reproducible proof against the raw fixture data, no
   server needed), **Threat Model** (`THREAT-MODEL.md`), **API First** (`openapi.json` + `API.md`
   — 32 documented paths, every UI action has one).
-- Basic hardening: rate limiting on login/signup (in-memory, single-instance only — see
-  `src/server/rateLimit.ts` for the caveat), `Secure` cookie flag outside local dev, and standard
+- Basic hardening: Postgres-backed fixed-window rate limiting on login/signup (shared across
+  server instances and process restarts), `Secure` cookie flag outside local dev, and standard
   security response headers (`next.config.ts`).
 - Light/dark theme toggle across the whole app.
 

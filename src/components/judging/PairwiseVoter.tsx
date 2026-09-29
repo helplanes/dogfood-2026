@@ -14,12 +14,19 @@ export function PairwiseVoter() {
   const [pair, setPair] = useState<{ a: Project; b: Project } | null | undefined>(undefined);
   const [voting, setVoting] = useState(false);
   const [votedCount, setVotedCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   function loadNext() {
     return fetch("/api/judge/pairwise/next")
-      .then((res) => (res.ok ? res.json() : { pair: null }))
+      .then((res) => {
+        if (!res.ok) throw new Error(`Could not load comparisons (HTTP ${res.status}).`);
+        return res.json();
+      })
       .then((body) => setPair(body.pair))
-      .catch(() => setPair(null));
+      .catch((cause) => {
+        setError(cause instanceof Error ? cause.message : "Could not load comparisons.");
+        setPair(null);
+      });
   }
 
   useEffect(() => {
@@ -29,14 +36,18 @@ export function PairwiseVoter() {
   async function vote(winnerId: string) {
     if (!pair) return;
     setVoting(true);
+    setError(null);
     try {
-      await fetch("/api/judge/pairwise/vote", {
+      const res = await fetch("/api/judge/pairwise/vote", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ projectAId: pair.a.id, projectBId: pair.b.id, winnerId }),
       });
+      if (!res.ok) throw new Error(`Could not save vote (HTTP ${res.status}).`);
       setVotedCount((n) => n + 1);
       await loadNext();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not save vote.");
     } finally {
       setVoting(false);
     }
@@ -46,7 +57,7 @@ export function PairwiseVoter() {
     return <p className="text-sm font-mono text-stone-500">Loading…</p>;
   }
 
-  if (pair === null) {
+  if (pair === null && !error) {
     return (
       <div className="rounded-2xl bg-surface border border-stone-800 p-12 text-center space-y-2">
         <p className="text-lg font-syne text-white">All done</p>
@@ -57,8 +68,13 @@ export function PairwiseVoter() {
     );
   }
 
+  if (pair === null) {
+    return <p role="alert" className="text-sm font-mono text-red-400">{error}</p>;
+  }
+
   return (
     <div className="space-y-6">
+      {error && <p role="alert" className="text-sm font-mono text-red-400">{error}</p>}
       <p className="text-xs font-mono text-stone-500 uppercase tracking-widest text-center">Which project is stronger?</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[pair.a, pair.b].map((p) => (

@@ -1,20 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
+
+function subscribe(onChange: () => void) {
+  window.addEventListener("dogfood-theme-change", onChange);
+  return () => window.removeEventListener("dogfood-theme-change", onChange);
+}
+
+function getTheme(): "dark" | "light" {
+  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+}
+
+function getServerTheme(): "dark" {
+  return "dark";
+}
 
 // Applies data-theme to <html> and persists to localStorage. The blocking script in layout.tsx
-// sets the initial value before paint so there is no flash of the wrong theme; the lazy
-// initializer here just reads that same attribute back for this component's own render.
+// sets the initial value before paint so there is no flash of the wrong theme. The button
+// reads that value after hydration so its first client render matches the server.
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof document === "undefined") return "dark";
-    return (document.documentElement.getAttribute("data-theme") as "dark" | "light") ?? "dark";
-  });
+  const theme = useSyncExternalStore(subscribe, getTheme, getServerTheme);
 
   function toggle() {
     const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
     document.documentElement.setAttribute("data-theme", next);
+    window.dispatchEvent(new Event("dogfood-theme-change"));
     try {
       localStorage.setItem("theme", next);
     } catch {
