@@ -4,6 +4,7 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { listEvents, listTracks } from "@/repo/queries";
 import { EventForm } from "@/components/organizer/EventForm";
+import { EventEditForm } from "@/components/organizer/EventEditForm";
 import { TrackForm } from "@/components/organizer/TrackForm";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +47,12 @@ export default async function OrganizerEventsPage() {
                 </span>
               </div>
               {ev.prizes ? <p className="text-sm text-stone-300 font-sans">{ev.prizes}</p> : null}
+
+              <EventEditForm
+                eventId={ev.id}
+                deadline={new Date(ev.submissionDeadline).toISOString()}
+                prizes={ev.prizes}
+              />
 
               <div className="pt-4 border-t border-stone-800/80 space-y-3">
                 <p className="text-[10px] font-mono uppercase tracking-widest text-stone-500">Tracks</p>

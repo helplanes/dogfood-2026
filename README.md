@@ -51,17 +51,17 @@ Claimed T1 + T2. `acceptance-report.txt` shows the checker result: all 7 checks 
   ownership-checked (`404`, not `403`, to another user so we don't leak that a project id exists).
 - Judge scoring, own-scores-only isolation, CSV export, z-score-family normalization (upgraded to
   median/MAD — see JUDGING.md), organizer-configurable rubric weights that actually change the
-  ranking, manual judge-to-track assignment, event + track creation, and an append-only audit log
-  covering score writes, project create/edit/submit, and every organizer action above.
+  ranking, manual judge-to-track assignment, event + track creation and editing (deadline and
+  prizes), and an append-only audit log covering score writes, project create/edit/submit, and
+  every organizer action above.
 - Basic hardening: rate limiting on login/signup (in-memory, single-instance only — see
   `src/server/rateLimit.ts` for the caveat), `Secure` cookie flag outside local dev, and standard
   security response headers (`next.config.ts`).
 - Light/dark theme toggle across the whole app.
 
-**Still not implemented:** organizer UI for editing an existing event's deadline/prizes (creation
-only), automatic/load-balanced judge assignment (manual assignment only — auto-assign needs
-conflict-of-interest rules the fixture doesn't define, an organizer decision as much as an
-engineering one), and the 5-minute demo video.
+**Still not implemented:** automatic/load-balanced judge assignment (manual assignment only —
+auto-assign needs conflict-of-interest rules the fixture doesn't define, an organizer decision as
+much as an engineering one), and the 5-minute demo video.
 
 **Untested:** `docker compose up` — Docker was not available on the machine this was built on.
 Verify it once before submitting.
