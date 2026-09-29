@@ -49,11 +49,14 @@ Claimed T1 + T2. `acceptance-report.txt` shows the checker result: all 7 checks 
   invite code single-team-scoped).
 - Draft-and-edit submission: create a draft, edit it, submit it — editable until the deadline,
   ownership-checked (`404`, not `403`, to another user so we don't leak that a project id exists).
-- Judge scoring, own-scores-only isolation, CSV export, z-score-family normalization (upgraded to
-  median/MAD — see JUDGING.md), organizer-configurable rubric weights that actually change the
-  ranking, manual judge-to-track assignment, event + track creation and editing (deadline and
-  prizes), and an append-only audit log covering score writes, project create/edit/submit, and
-  every organizer action above.
+- Judge scoring, own-scores-only isolation, CSV export, z-score-family normalization (median/MAD
+  with empirical-Bayes shrinkage for low-review judges — see JUDGING.md), organizer-configurable
+  rubric weights that actually change the ranking, manual judge-to-track assignment, event + track
+  creation and editing (deadline and prizes), and an append-only audit log covering score writes,
+  project create/edit/submit, and every organizer action above.
+- Bonus: Bradley-Terry pairwise judging (`/judge/pairwise`), fit by order-independent MLE
+  (Zermelo/MM), not a naive sequential Elo update — see JUDGING.md. Tie-break signal only, never
+  the required ranking.
 - Basic hardening: rate limiting on login/signup (in-memory, single-instance only — see
   `src/server/rateLimit.ts` for the caveat), `Secure` cookie flag outside local dev, and standard
   security response headers (`next.config.ts`).

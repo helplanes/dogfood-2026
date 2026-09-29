@@ -109,3 +109,20 @@ export const auditLog = pgTable("audit_log", {
   detail: text("detail").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Pairwise votes for the bonus "Pairwise" judging mode (spec: Bradley-Terry-style ranking, a
+// documented bonus, never a replacement for the required rubric score). One vote per (judge,
+// unordered project pair) — projectLow/projectHigh are stored in a canonical id order so the
+// unique index catches a duplicate vote regardless of which project was shown first.
+export const comparisons = pgTable(
+  "comparisons",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    judgeId: text("judge_id").notNull().references(() => users.id),
+    projectLow: text("project_low").notNull(),
+    projectHigh: text("project_high").notNull(),
+    winnerId: text("winner_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("comparisons_judge_pair").on(t.judgeId, t.projectLow, t.projectHigh)],
+);

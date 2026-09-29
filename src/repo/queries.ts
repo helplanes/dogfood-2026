@@ -1,8 +1,9 @@
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "@/server/db";
-import { auditLog, events, judgeTracks, projects, rubricWeights, scores, sessions, teamInvites, teamMembers, teams, tracks, users } from "@/repo/schema";
+import { auditLog, comparisons, events, judgeTracks, projects, rubricWeights, scores, sessions, teamInvites, teamMembers, teams, tracks, users } from "@/repo/schema";
 import type { PublicProject } from "@/contracts";
 import { rankProjects } from "@/domain/normalize";
+import { fitBradleyTerry } from "@/domain/bradleyTerry";
 
 export async function getPublicProjects(filter?: { q?: string; track?: string }): Promise<PublicProject[]> {
   const conds = [eq(projects.status, "submitted")];
@@ -434,4 +435,85 @@ export async function submitDraftProject(userId: string, projectId: string): Pro
 
   await db.update(projects).set({ status: "submitted", submittedAt: new Date() }).where(eq(projects.id, projectId));
   return { ok: true };
+}
+
+// ── Pairwise judging (bonus mode) ───────────────────────────────────────
+
+function canonicalPair(a: string, b: string): [string, string] {
+  return a < b ? [a, b] : [b, a];
+}
+
+// A random unseen pair from the judge's eligible, submitted, non-own-team projects. Track-scoped
+// so a judge only ever compares projects they're already allowed to see (same isolation rule as
+// scoring). Returns null once the judge has compared every pair available to them.
+export async function getNextPairwiseMatchup(judgeId: string): Promise<{ a: OwnedProject; b: OwnedProject } | null> {
+  const res = await db.execute(sql`
+    select p.id, p.title, p.summary, p.repo_url as "repoUrl", p.track, p.status
+    from projects p
+    join judge_tracks jt on jt.track_id = p.track and jt.judge_id = ${judgeId}
+    join users u on u.id = ${judgeId}
+    where p.status = 'submitted'
+      and not exists (select 1 from team_members tm where tm.team_id = p.team_id and tm.email = u.email)
+    order by p.id
+  `);
+  const eligible = res.rows as unknown as OwnedProject[];
+  if (eligible.length < 2) return null;
+
+  const seen = await db
+    .select({ low: comparisons.projectLow, high: comparisons.projectHigh })
+    .from(comparisons)
+    .where(eq(comparisons.judgeId, judgeId));
+  const seenPairs = new Set(seen.map((s) => `${s.low}::${s.high}`));
+
+  const candidates: [OwnedProject, OwnedProject][] = [];
+  for (let i = 0; i < eligible.length; i++) {
+    for (let j = i + 1; j < eligible.length; j++) {
+      const p1 = eligible[i]!;
+      const p2 = eligible[j]!;
+      const [low, high] = canonicalPair(p1.id, p2.id);
+      if (!seenPairs.has(`${low}::${high}`)) candidates.push([p1, p2]);
+    }
+  }
+  if (candidates.length === 0) return null;
+
+  const pick = candidates[Math.floor(Math.random() * candidates.length)]!;
+  return { a: pick[0], b: pick[1] };
+}
+
+export async function recordPairwiseVote(
+  judgeId: string,
+  projectAId: string,
+  projectBId: string,
+  winnerId: string,
+): Promise<{ error: string } | { ok: true }> {
+  if (winnerId !== projectAId && winnerId !== projectBId) return { error: "winner must be one of the two compared projects" };
+  if (!(await canJudgeScore(judgeId, projectAId)) || !(await canJudgeScore(judgeId, projectBId))) {
+    return { error: "not eligible to compare one or both of these projects" };
+  }
+  const [low, high] = canonicalPair(projectAId, projectBId);
+  await db.insert(comparisons).values({ judgeId, projectLow: low, projectHigh: high, winnerId }).onConflictDoNothing();
+  return { ok: true };
+}
+
+// Bonus ranking only — never replaces the required rubric-based leaderboard (see JUDGING.md).
+export async function getPairwiseLeaderboard() {
+  const rows = await db.select({ winnerId: comparisons.winnerId, projectLow: comparisons.projectLow, projectHigh: comparisons.projectHigh }).from(comparisons);
+  const matchups = rows.map((r) => ({
+    winnerId: r.winnerId,
+    loserId: r.winnerId === r.projectLow ? r.projectHigh : r.projectLow,
+  }));
+  const ranked = fitBradleyTerry(matchups);
+
+  const projs = await db.select({ id: projects.id, title: projects.title, track: projects.track }).from(projects);
+  const byId = new Map(projs.map((p) => [p.id, p]));
+  return ranked.map((r, i) => ({
+    rank: i + 1,
+    id: r.projectId,
+    title: byId.get(r.projectId)?.title ?? "",
+    track: byId.get(r.projectId)?.track ?? null,
+    strength: r.strength,
+    wins: r.wins,
+    losses: r.losses,
+    comparisons: r.comparisons,
+  }));
 }

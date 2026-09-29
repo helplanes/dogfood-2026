@@ -19,5 +19,14 @@ Edge cases from the fixtures:
 
 Known limits: `SHRINKAGE_K = 3` is a reasonable default for this dataset's caseload, not a tuned/validated constant. Automatic judge-to-track assignment (load balancing, conflict-of-interest rules) is not implemented — assignment is manual (`/organizer/assignments`).
 
-## Bonus: pairwise judging (not implemented, evaluated and scoped)
-The spec's "Pairwise +5" bonus points at Bradley-Terry / Plackett-Luce-style pairwise comparison models — instead of absolute 1-5 scores, judges pick the better of two projects, and a strength is fit from those comparisons. This is a real, well-established alternative (used in modern rating systems like TrueSkill and OpenSkill) and would need its own comparison-collection UI and a `comparisons` table, not just a scoring-layer change, so it's out of scope for this pass. Noted here rather than silently skipped.
+## Bonus: pairwise judging (implemented)
+The spec's "Pairwise +5" bonus points at Bradley-Terry-style pairwise comparison — instead of absolute 1-5 scores, judges pick the better of two projects, and a strength is fit from those comparisons.
+
+**Implementation:** `src/domain/bradleyTerry.ts`. Fit by Zermelo's iterative MLE / minorization-maximization (Zermelo, 1929; Hunter, D.R., "MM algorithms for generalized Bradley-Terry models," *Annals of Statistics*, 2004) — an order-independent convergent algorithm, not a sequential Elo-style update (a naive sequential update gives a different result depending on what order matchups are processed in, which is not a correct Bradley-Terry fit). Sparse/disconnected comparison graphs are regularized with one "ghost" match per project against a neutral reference opponent, which also prevents a project that has only ever won from diverging to infinity.
+
+- `GET /api/judge/pairwise/next`: a random unseen pair from the judge's eligible, track-scoped, non-own-team projects (same isolation rule as scoring).
+- `POST /api/judge/pairwise/vote`: records a vote; one vote per (judge, unordered pair).
+- `GET /api/organizer/pairwise`: the fitted ranking, organizer-only.
+- UI: `/judge/pairwise` (voting), a bonus section on `/organizer/results`.
+
+**This is a tie-break signal only.** It never replaces or feeds into the required rubric-based leaderboard (`getLeaderboard`) — the spec is explicit that bonus points don't change the score, only break ties.

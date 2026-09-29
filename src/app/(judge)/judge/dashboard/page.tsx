@@ -25,6 +25,9 @@ export default async function JudgeDashboardPage() {
             <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
             <span className="text-stone-300 font-semibold">JUDGE DASHBOARD</span>
           </div>
+          <Link href="/judge/pairwise" className="text-xs font-mono text-stone-400 hover:text-primary transition-colors">
+            Pairwise Judging (bonus) &rarr;
+          </Link>
         </div>
 
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4 border-b border-stone-800/50">
