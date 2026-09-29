@@ -9,3 +9,22 @@ coverage
 .DS_Store
 *.pdf
 Codeanalysis/
+
+# Internal AI-tool/team-coordination docs — not part of the judged deliverable set, kept out of
+# the public repo. If a future session regenerates one of these by habit, it stays untracked.
+AGENTS.md
+CLAUDE.md
+CODEX.md
+ANTIGRAVITY.md
+GEMINI.md
+HANDOFF.md
+TEAM-ASSIGNMENTS.md
+TEAM-PLAN.md
+TEAM-WORKFLOW.md
+PROJECT-GUIDE.md
+*_DEV_GUIDE.md
+
+# Unrelated stray artifacts that have landed in this working directory from other sessions/tasks.
+saas-video/
+transcript.json
+transcript.txt
