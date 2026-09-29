@@ -4,16 +4,22 @@ import type { Criterion } from "@/contracts";
 import { ScoringForm } from "@/components/judging/ScoringForm";
 
 export function ScoringFormClient(props: {
-  projectId: string;
-  projectTitle: string;
-  existingScores?: Partial<Record<Criterion, number>>;
+  project: {
+    id: string;
+    title: string;
+    summary: string | null;
+    repoUrl: string | null;
+    track: string | null;
+    teamName: string | null;
+    existingScores: Partial<Record<Criterion, number>>;
+  };
 }) {
   async function onSave(scores: Record<Criterion, number>) {
     for (const [criterion, value] of Object.entries(scores) as [Criterion, number][]) {
       const res = await fetch("/api/judge/scores", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ projectId: props.projectId, criterion, value }),
+        body: JSON.stringify({ projectId: props.project.id, criterion, value }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
@@ -22,5 +28,5 @@ export function ScoringFormClient(props: {
     }
   }
 
-  return <ScoringForm {...props} onSave={onSave} />;
+  return <ScoringForm project={props.project} onSave={onSave} />;
 }
