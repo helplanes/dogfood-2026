@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { GalleryCard } from "@/components/ui/GalleryCard";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { getPublicProjects } from "@/repo/queries";
 
 export const metadata = { title: "Project Gallery" };
@@ -23,8 +24,10 @@ async function ProjectGrid({ q, track }: { q?: string; track?: string }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-      {projects.map((proj) => (
-        <GalleryCard key={proj.id} project={proj} />
+      {projects.map((proj, i) => (
+        <ScrollReveal key={proj.id} delay={(i % 6) * 60}>
+          <GalleryCard project={proj} />
+        </ScrollReveal>
       ))}
     </div>
   );
@@ -97,7 +100,7 @@ export default async function PublicProjectGalleryPage({
         </Suspense>
       </main>
 
-      <footer className="mt-16 border-t border-stone-800/80 bg-[#090b10] px-4 md:px-8 py-8 text-xs font-mono text-stone-500">
+      <footer className="mt-16 border-t border-stone-800/80 bg-background px-4 md:px-8 py-8 text-xs font-mono text-stone-500">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-primary" />

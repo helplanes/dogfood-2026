@@ -3,6 +3,7 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { getAssignedProjects } from "@/repo/queries";
 import { redirect } from "next/navigation";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata = { title: "Judge Dashboard" };
 
@@ -65,12 +66,12 @@ export default async function JudgeDashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
+          {projects.map((project, i) => {
             const done = Object.keys(project.existingScores).length === CRITERIA_COUNT;
             return (
+              <ScrollReveal key={project.id} delay={(i % 6) * 60}>
               <div
-                key={project.id}
-                className={`group flex flex-col justify-between p-6 rounded-2xl bg-surface border transition-all duration-200 ${
+                className={`group flex flex-col justify-between p-6 rounded-2xl bg-surface border transition-all duration-200 h-full ${
                   done ? "border-stone-800/80 hover:border-stone-700" : "border-amber-500/30 hover:border-amber-500/60"
                 }`}
               >
@@ -120,6 +121,7 @@ export default async function JudgeDashboardPage() {
                   </Link>
                 </div>
               </div>
+              </ScrollReveal>
             );
           })}
         </div>

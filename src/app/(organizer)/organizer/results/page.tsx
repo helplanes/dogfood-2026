@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { getLeaderboard, getPairwiseLeaderboard } from "@/repo/queries";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const metadata = { title: "Results" };
 
@@ -50,6 +51,7 @@ export default async function OrganizerResultsPage() {
         </header>
 
         {/* Results Table */}
+        <ScrollReveal>
         <div className="rounded-2xl bg-surface border border-stone-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
@@ -117,6 +119,7 @@ export default async function OrganizerResultsPage() {
             </table>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Bonus pairwise ranking */}
         <div className="space-y-3">
