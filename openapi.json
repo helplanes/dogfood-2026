@@ -1,0 +1,385 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DOGFOOD 2026 Portal API",
+    "version": "1.0.0",
+    "description": "Bonus: API First. Every action the UI can take has a documented endpoint here — the UI pages are a client of this API, not a separate surface with its own undocumented logic. Denials are always raw 4xx JSON, never a redirect. Auth is a session cookie (`Cookie: session=<token>`), set by /api/auth/login or /api/auth/signup, or one of the fixed demo tokens the seed script prints."
+  },
+  "servers": [{ "url": "http://localhost:8080" }],
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": { "type": "apiKey", "in": "cookie", "name": "session" }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": { "error": { "type": "string" } },
+        "required": ["error"]
+      },
+      "PublicProject": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "summary": { "type": "string" },
+          "repoUrl": { "type": "string", "nullable": true },
+          "track": { "type": "string", "nullable": true },
+          "teamName": { "type": "string", "nullable": true }
+        }
+      },
+      "AssignedProject": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "summary": { "type": "string" },
+          "repoUrl": { "type": "string", "nullable": true },
+          "track": { "type": "string", "nullable": true },
+          "teamName": { "type": "string", "nullable": true },
+          "existingScores": {
+            "type": "object",
+            "properties": {
+              "functionality": { "type": "integer", "minimum": 1, "maximum": 5 },
+              "quality": { "type": "integer", "minimum": 1, "maximum": 5 },
+              "innovation": { "type": "integer", "minimum": 1, "maximum": 5 }
+            }
+          }
+        }
+      },
+      "ScoreInput": {
+        "type": "object",
+        "required": ["projectId", "criterion", "value"],
+        "properties": {
+          "projectId": { "type": "string" },
+          "criterion": { "type": "string", "enum": ["functionality", "quality", "innovation"] },
+          "value": { "type": "integer", "minimum": 1, "maximum": 5 }
+        }
+      },
+      "LeaderboardEntry": {
+        "type": "object",
+        "properties": {
+          "rank": { "type": "integer" },
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "track": { "type": "string", "nullable": true },
+          "duplicateOf": { "type": "string", "nullable": true },
+          "n_reviews": { "type": "integer" },
+          "rawScore": { "type": "number" },
+          "normalizedScore": { "type": "number" },
+          "rescaledScore": { "type": "number", "description": "normalizedScore mapped back onto the event's own 1-5 distribution; presentation only, same ranking" },
+          "hasVarianceWarning": { "type": "boolean" }
+        }
+      },
+      "PairwiseLeaderboardEntry": {
+        "type": "object",
+        "properties": {
+          "rank": { "type": "integer" },
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "track": { "type": "string", "nullable": true },
+          "strength": { "type": "number" },
+          "wins": { "type": "integer" },
+          "losses": { "type": "integer" },
+          "comparisons": { "type": "integer" }
+        }
+      },
+      "AuditEntry": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "actorId": { "type": "string", "nullable": true },
+          "action": { "type": "string" },
+          "entity": { "type": "string" },
+          "detail": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "JudgeLoad": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "tracks": { "type": "array", "items": { "type": "string" } },
+          "assigned": { "type": "integer" },
+          "scored": { "type": "integer" }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "submissionDeadline": { "type": "string", "format": "date-time" },
+          "prizes": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Track": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "eventId": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      },
+      "RubricWeights": {
+        "type": "object",
+        "properties": {
+          "functionality": { "type": "integer" },
+          "quality": { "type": "integer" },
+          "innovation": { "type": "integer" }
+        }
+      },
+      "OwnedProject": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "summary": { "type": "string" },
+          "repoUrl": { "type": "string", "nullable": true },
+          "track": { "type": "string", "nullable": true },
+          "status": { "type": "string", "enum": ["draft", "submitted"] }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "inviteCode": { "type": "string", "nullable": true },
+          "members": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/health": {
+      "get": { "summary": "Liveness check", "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "summary": "Create a participant account and sign in",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["email", "password", "name"], "properties": { "email": { "type": "string" }, "password": { "type": "string", "minLength": 8 }, "name": { "type": "string" } } } } } },
+        "responses": {
+          "201": { "description": "Created; sets session cookie" },
+          "409": { "description": "Email already in use", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "422": { "description": "Invalid input" },
+          "429": { "description": "Rate limited" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Sign in with email and password",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["email", "password"], "properties": { "email": { "type": "string" }, "password": { "type": "string" } } } } } },
+        "responses": {
+          "200": { "description": "Sets session cookie" },
+          "401": { "description": "Invalid credentials", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "429": { "description": "Rate limited" }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": { "summary": "End the current session", "responses": { "200": { "description": "Clears session cookie" } } }
+    },
+    "/api/event": {
+      "get": { "summary": "The current event's id and whether submissions are open", "responses": { "200": { "description": "OK" }, "404": { "description": "No event configured" } } }
+    },
+    "/api/projects": {
+      "get": {
+        "summary": "Public gallery — submitted projects, no auth required",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" }, "description": "search title/summary" },
+          { "name": "track", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "projects": { "type": "array", "items": { "$ref": "#/components/schemas/PublicProject" } } } } } } } }
+      }
+    },
+    "/api/projects/{id}/public": {
+      "get": {
+        "summary": "Public project detail — no auth required, no scores in this response",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicProject" } } } }, "404": { "description": "Not found" } }
+      }
+    },
+    "/projects/new": {
+      "post": {
+        "summary": "Create a draft project for the caller's team (participant only). Refused with 4xx once the event's deadline has passed.",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["title"], "properties": { "title": { "type": "string" }, "summary": { "type": "string" }, "repoUrl": { "type": "string", "nullable": true }, "track": { "type": "string", "nullable": true } } } } } },
+        "responses": {
+          "201": { "description": "Draft created" },
+          "401": { "description": "Unauthenticated" },
+          "403": { "description": "Not a participant, or not on a team" },
+          "409": { "description": "Submissions closed for this event" },
+          "422": { "description": "Invalid project" }
+        }
+      }
+    },
+    "/api/projects/mine": {
+      "get": { "summary": "All projects belonging to the caller's team (draft and submitted)", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "projects": { "type": "array", "items": { "$ref": "#/components/schemas/OwnedProject" } } } } } } } } }
+    },
+    "/api/projects/{id}": {
+      "get": {
+        "summary": "A single project owned by the caller's team",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OwnedProject" } } } }, "404": { "description": "Not found (never a different status for another team's project id — existence isn't leaked)" } }
+      },
+      "patch": {
+        "summary": "Edit an owned project (draft or already submitted), until the event's deadline",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "title": { "type": "string" }, "summary": { "type": "string" }, "repoUrl": { "type": "string", "nullable": true }, "track": { "type": "string", "nullable": true } } } } } },
+        "responses": { "200": { "description": "Saved" }, "404": { "description": "Not found" }, "409": { "description": "Submissions closed" }, "422": { "description": "Invalid fields" } }
+      }
+    },
+    "/api/projects/{id}/submit": {
+      "post": {
+        "summary": "Transition an owned draft project to submitted",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Submitted" }, "404": { "description": "Not found" }, "409": { "description": "Already submitted, or submissions closed" } }
+      }
+    },
+    "/api/teams": {
+      "post": {
+        "summary": "Create a team (the caller becomes its first member) and get an invite code back",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "type": "object", "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "inviteCode": { "type": "string" } } } } } }, "409": { "description": "Already on a team" } }
+      }
+    },
+    "/api/teams/join": {
+      "post": {
+        "summary": "Join a team by its invite code",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["code"], "properties": { "code": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Joined" }, "404": { "description": "Invalid invite code" }, "409": { "description": "Already on a team" } }
+      }
+    },
+    "/api/teams/me": {
+      "get": { "summary": "The caller's team, invite code, and members", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "team": { "$ref": "#/components/schemas/Team" } } } } } } } }
+    },
+    "/api/judge/scores": {
+      "get": {
+        "summary": "The caller's own scores. A `judge` query value other than the caller's own id is refused (403), never filtered to a different judge's data.",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "judge", "in": "query", "schema": { "type": "string" }, "description": "must equal the caller's own id, or omit" }],
+        "responses": { "200": { "description": "OK" }, "401": { "description": "Unauthenticated" }, "403": { "description": "Not a judge, or requested another judge's id" } }
+      },
+      "post": {
+        "summary": "Record a score for one criterion of one project",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScoreInput" } } } },
+        "responses": { "200": { "description": "Saved" }, "403": { "description": "Not eligible to score this project (wrong track, or own team)" }, "422": { "description": "Invalid score" } }
+      }
+    },
+    "/api/judge/assignments": {
+      "get": { "summary": "The caller's assignment-scoped projects, with their own existing scores", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "projects": { "type": "array", "items": { "$ref": "#/components/schemas/AssignedProject" } } } } } } } } }
+    },
+    "/api/judge/assignments/{id}": {
+      "get": {
+        "summary": "A single assigned project with the caller's own existing scores",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AssignedProject" } } } }, "404": { "description": "Not assigned to this judge" } }
+      }
+    },
+    "/api/judge/pairwise/next": {
+      "get": { "summary": "Bonus: a random unseen pair from the caller's eligible projects, or null if none remain", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/judge/pairwise/vote": {
+      "post": {
+        "summary": "Bonus: record a pairwise vote",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["projectAId", "projectBId", "winnerId"], "properties": { "projectAId": { "type": "string" }, "projectBId": { "type": "string" }, "winnerId": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Recorded" }, "403": { "description": "Invalid winner, or not eligible to compare one or both projects" } }
+      }
+    },
+    "/api/export.csv": {
+      "get": { "summary": "Organizer-only leaderboard export, RFC 4180 CSV with formula-injection guarding", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "text/csv": {} } }, "401": { "description": "Unauthenticated" }, "403": { "description": "Not an organizer" } } }
+    },
+    "/api/organizer/leaderboard": {
+      "get": { "summary": "The required, rubric-weighted, normalized ranking", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "leaderboard": { "type": "array", "items": { "$ref": "#/components/schemas/LeaderboardEntry" } } } } } } } } }
+    },
+    "/api/organizer/pairwise": {
+      "get": { "summary": "Bonus: the fitted Bradley-Terry ranking (tie-break signal, never the required ranking)", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "leaderboard": { "type": "array", "items": { "$ref": "#/components/schemas/PairwiseLeaderboardEntry" } } } } } } } } }
+    },
+    "/api/organizer/progress": {
+      "get": { "summary": "Reviews-per-project progress", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK" } } }
+    },
+    "/api/organizer/judges": {
+      "get": { "summary": "Every judge's track eligibility and review progress", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "judges": { "type": "array", "items": { "$ref": "#/components/schemas/JudgeLoad" } } } } } } } } }
+    },
+    "/api/organizer/judges/assign": {
+      "post": {
+        "summary": "Assign a judge to a track",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["judgeId", "trackId"], "properties": { "judgeId": { "type": "string" }, "trackId": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Assigned" } }
+      }
+    },
+    "/api/organizer/judges/unassign": {
+      "post": {
+        "summary": "Remove a judge from a track",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["judgeId", "trackId"], "properties": { "judgeId": { "type": "string" }, "trackId": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Unassigned" } }
+      }
+    },
+    "/api/organizer/judges/invite": {
+      "post": {
+        "summary": "Create a judge account and optionally assign an initial track. Returns a one-time temporary password (no email/SMTP dependency by design) for the organizer to relay out of band.",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["email", "name"], "properties": { "email": { "type": "string" }, "name": { "type": "string" }, "trackId": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "type": "object", "properties": { "id": { "type": "string" }, "email": { "type": "string" }, "tempPassword": { "type": "string" } } } } } }, "409": { "description": "Email already in use" } }
+      }
+    },
+    "/api/organizer/audit": {
+      "get": { "summary": "The append-only audit log", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "entries": { "type": "array", "items": { "$ref": "#/components/schemas/AuditEntry" } } } } } } } } }
+    },
+    "/api/organizer/events": {
+      "get": { "summary": "List events", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "events": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } } } } } } } } },
+      "post": {
+        "summary": "Create an event",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["name", "submissionDeadline"], "properties": { "name": { "type": "string" }, "submissionDeadline": { "type": "string", "format": "date-time" }, "prizes": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/api/organizer/events/{id}": {
+      "patch": {
+        "summary": "Edit an event's name, deadline, and/or prizes",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "name": { "type": "string" }, "submissionDeadline": { "type": "string", "format": "date-time" }, "prizes": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Saved" }, "422": { "description": "No fields, or invalid fields" } }
+      }
+    },
+    "/api/organizer/tracks": {
+      "get": { "summary": "List tracks, optionally filtered by event", "security": [{ "sessionCookie": [] }], "parameters": [{ "name": "eventId", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "tracks": { "type": "array", "items": { "$ref": "#/components/schemas/Track" } } } } } } } } },
+      "post": {
+        "summary": "Create a track under an event",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["eventId", "name"], "properties": { "eventId": { "type": "string" }, "name": { "type": "string" } } } } } },
+        "responses": { "201": { "description": "Created" } }
+      },
+      "delete": {
+        "summary": "Delete a track (and its judge assignments)",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [{ "name": "id", "in": "query", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Deleted" }, "422": { "description": "id required" } }
+      }
+    },
+    "/api/organizer/rubric": {
+      "get": { "summary": "Current rubric weights (defaults to 40/30/30 if unset)", "security": [{ "sessionCookie": [] }], "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "type": "object", "properties": { "weights": { "$ref": "#/components/schemas/RubricWeights" } } } } } } } },
+      "put": {
+        "summary": "Set rubric weights; must sum to 100",
+        "security": [{ "sessionCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RubricWeights" } } } },
+        "responses": { "200": { "description": "Saved" }, "422": { "description": "Weights must be non-negative integers summing to 100" } }
+      }
+    }
+  }
+}

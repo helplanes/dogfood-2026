@@ -19,6 +19,12 @@ Edge cases from the fixtures:
 
 Known limits: `SHRINKAGE_K = 3` is a reasonable default for this dataset's caseload, not a tuned/validated constant. Automatic judge-to-track assignment (load balancing, conflict-of-interest rules) is not implemented — assignment is manual (`/organizer/assignments`).
 
+## Bonus: Normalization Proof (implemented)
+`npm run normalization-report` (`scripts/normalization-report.ts`) reads `fixtures.json` directly — not the database — and runs the exact same pure function the app uses in production. It prints every judge's own median/MAD, the named edge cases (`jdg_01`, `jdg_07`, the `prj_41`/`prj_07` duplicate pair), a full raw-score / z-score / rank table for all 41 projects, and a sanity check comparing the result to a naive raw-average ranking (35 of 41 projects change rank — normalization is not a no-op). Runnable standalone by anyone with the fixture file, no server or database required.
+
+## Bonus: API First (implemented)
+`openapi.json` + `API.md`. Every UI action — auth, teams, draft submission and editing, judge scoring and assignments, the pairwise mode, and every organizer action (events, tracks, rubric, judge invite/assign, audit) — has a documented, working route in `openapi.json`, using the same session-cookie auth the UI itself uses. 32 documented paths.
+
 ## Bonus: pairwise judging (implemented)
 The spec's "Pairwise +5" bonus points at Bradley-Terry-style pairwise comparison — instead of absolute 1-5 scores, judges pick the better of two projects, and a strength is fit from those comparisons.
 

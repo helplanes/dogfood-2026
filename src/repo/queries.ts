@@ -530,3 +530,22 @@ export async function getPairwiseLeaderboard() {
     comparisons: r.comparisons,
   }));
 }
+
+// ── Judge invitation ─────────────────────────────────────────────────────
+
+// We have no email/SMTP capability (deliberately — "no hosted-service dependency" per the
+// spec's own rules), so invitation works like this: the organizer creates the judge account
+// here and gets a one-time temporary password back in the API response, to relay to the judge
+// out of band (Slack, in person, whatever the event already uses). The judge logs in with it
+// like any other account; nothing about login itself is different for an invited judge.
+export async function inviteJudge(email: string, name: string): Promise<{ error: string } | { id: string; tempPassword: string }> {
+  if (await findUserByEmail(email)) return { error: "an account with this email already exists" };
+
+  const tempPassword = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+  const { hashPassword } = await import("@/server/passwords");
+  const passwordHash = await hashPassword(tempPassword);
+
+  const id = `usr_${crypto.randomUUID().slice(0, 12)}`;
+  await db.insert(users).values({ id, email, name, role: "judge", passwordHash });
+  return { id, tempPassword };
+}

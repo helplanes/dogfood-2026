@@ -54,9 +54,11 @@ Claimed T1 + T2. `acceptance-report.txt` shows the checker result: all 7 checks 
   rubric weights that actually change the ranking, manual judge-to-track assignment, event + track
   creation and editing (deadline and prizes), and an append-only audit log covering score writes,
   project create/edit/submit, and every organizer action above.
-- Bonus: Bradley-Terry pairwise judging (`/judge/pairwise`), fit by order-independent MLE
-  (Zermelo/MM), not a naive sequential Elo update — see JUDGING.md. Tie-break signal only, never
-  the required ranking.
+- Bonuses attempted (all four): **Pairwise** (`/judge/pairwise`, Bradley-Terry fit by
+  order-independent MLE — see JUDGING.md), **Normalization Proof** (`npm run
+  normalization-report` — a standalone, reproducible proof against the raw fixture data, no
+  server needed), **Threat Model** (`THREAT-MODEL.md`), **API First** (`openapi.json` + `API.md`
+  — 32 documented paths, every UI action has one).
 - Basic hardening: rate limiting on login/signup (in-memory, single-instance only — see
   `src/server/rateLimit.ts` for the caveat), `Secure` cookie flag outside local dev, and standard
   security response headers (`next.config.ts`).

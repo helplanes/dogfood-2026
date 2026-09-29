@@ -43,7 +43,9 @@ function median(values: number[]): number {
   return sorted.length % 2 ? hi : (lo + hi) / 2;
 }
 
-function rawJudgeStats(values: number[]): { median: number; mad: number } {
+// Exported for scripts/normalization-report.ts (the "Normalization Proof" bonus): the report
+// shows each judge's own, unshrunk median/MAD before explaining what shrinkage does to it.
+export function rawJudgeStats(values: number[]): { median: number; mad: number } {
   if (values.length === 0) return { median: 0, mad: 0 };
   const med = median(values);
   const mad = median(values.map((v) => Math.abs(v - med)));
