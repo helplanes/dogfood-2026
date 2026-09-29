@@ -1,5 +1,5 @@
-import { getActorFromCookies } from "@/server/auth";
 import { deleteSession } from "@/repo/queries";
+import { clearSessionCookie } from "@/server/cookies";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +10,6 @@ export async function POST() {
   if (token) await deleteSession(token);
 
   const res = Response.json({ ok: true });
-  res.headers.set("set-cookie", "session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
+  res.headers.set("set-cookie", clearSessionCookie());
   return res;
 }

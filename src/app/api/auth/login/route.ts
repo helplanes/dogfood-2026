@@ -2,10 +2,14 @@ import { LoginInput } from "@/contracts";
 import { apiError } from "@/server/http";
 import { verifyPassword } from "@/server/passwords";
 import { createSession, findUserByEmail } from "@/repo/queries";
+import { sessionCookie } from "@/server/cookies";
+import { clientKey, rateLimit } from "@/server/rateLimit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  if (!rateLimit(`login:${clientKey(req)}`, 10, 60_000)) return apiError(429, "too many attempts, try again shortly");
+
   const parsed = LoginInput.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return apiError(422, "invalid email or password");
 
@@ -18,9 +22,6 @@ export async function POST(req: Request) {
 
   const { token, expiresAt } = await createSession(user.id);
   const res = Response.json({ ok: true });
-  res.headers.set(
-    "set-cookie",
-    `session=${token}; Path=/; HttpOnly; SameSite=Lax; Expires=${expiresAt.toUTCString()}`,
-  );
+  res.headers.set("set-cookie", sessionCookie(token, expiresAt));
   return res;
 }

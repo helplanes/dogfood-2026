@@ -2,7 +2,7 @@ import { authorize } from "@/policy";
 import { getActor } from "@/server/auth";
 import { apiError } from "@/server/http";
 import { ProjectInput } from "@/contracts";
-import { createDraftProject, getEventId, isSubmissionOpen } from "@/repo/queries";
+import { createDraftProject, getEventId, isSubmissionOpen, recordAudit } from "@/repo/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -23,5 +23,6 @@ export async function POST(req: Request) {
 
   const id = await createDraftProject(actor.userId!, parsed.data);
   if (!id) return apiError(403, "join a team before submitting");
+  await recordAudit(actor.userId, "project:create", id, "draft");
   return Response.json({ id, status: "draft" }, { status: 201 });
 }

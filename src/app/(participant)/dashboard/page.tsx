@@ -15,10 +15,17 @@ interface EventStatus {
   submissionsOpen: boolean;
 }
 
+interface OwnedProject {
+  id: string;
+  title: string;
+  status: string;
+}
+
 export default function ParticipantDashboard() {
   const router = useRouter();
   const [team, setTeam] = useState<Team | null | undefined>(undefined); // undefined = loading
   const [event, setEvent] = useState<EventStatus | null>(null);
+  const [projects, setProjects] = useState<OwnedProject[]>([]);
 
   useEffect(() => {
     fetch("/api/teams/me")
@@ -35,6 +42,11 @@ export default function ParticipantDashboard() {
     fetch("/api/event")
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => body && setEvent(body))
+      .catch(() => {});
+
+    fetch("/api/projects/mine")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((body) => body && setProjects(body.projects))
       .catch(() => {});
   }, [router]);
 
@@ -144,11 +156,26 @@ export default function ParticipantDashboard() {
                     <span className={`w-2 h-2 rounded-sm ${team ? "bg-amber-500/50" : "bg-red-500/50"}`} />
                     PROJECT SUBMISSION
                   </div>
-                  <h3 className="text-2xl font-serif text-white mb-2">Submit Your Project</h3>
+                  <h3 className="text-2xl font-serif text-white mb-2">Your Projects</h3>
                   {team ? (
-                    <p className="text-sm font-sans text-stone-400">
-                      Submit before the deadline. You can submit once the event is open.
-                    </p>
+                    projects.length > 0 ? (
+                      <ul className="space-y-2 mt-3">
+                        {projects.map((p) => (
+                          <li key={p.id} className="flex items-center justify-between text-sm font-mono">
+                            <Link href={`/dashboard/projects/${p.id}/edit`} className="text-stone-300 hover:text-primary transition-colors truncate">
+                              {p.title}
+                            </Link>
+                            <span className={`text-[10px] px-2 py-0.5 rounded uppercase ${p.status === "submitted" ? "bg-emerald-950/40 text-emerald-400" : "bg-amber-950/40 text-amber-300"}`}>
+                              {p.status}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm font-sans text-stone-400">
+                        No projects yet. Submit before the deadline — editable until the event closes.
+                      </p>
+                    )
                   ) : (
                     <p className="text-sm font-sans text-stone-400">Join a team before you can submit a project.</p>
                   )}
@@ -157,7 +184,7 @@ export default function ParticipantDashboard() {
                 <div className="mt-8 pt-6 border-t border-stone-800/80">
                   {team ? (
                     <Link href="/dashboard/projects/new" className="inline-flex px-5 py-2.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[var(--color-primary)]/25">
-                      Submit Project &rarr;
+                      New Project &rarr;
                     </Link>
                   ) : (
                     <button disabled className="px-5 py-2.5 rounded-xl bg-background border border-stone-800 text-stone-600 text-xs font-mono font-bold uppercase tracking-wider cursor-not-allowed">

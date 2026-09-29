@@ -2,10 +2,14 @@ import { SignupInput } from "@/contracts";
 import { apiError } from "@/server/http";
 import { hashPassword } from "@/server/passwords";
 import { createParticipant, createSession, findUserByEmail } from "@/repo/queries";
+import { sessionCookie } from "@/server/cookies";
+import { clientKey, rateLimit } from "@/server/rateLimit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  if (!rateLimit(`signup:${clientKey(req)}`, 10, 60_000)) return apiError(429, "too many attempts, try again shortly");
+
   const parsed = SignupInput.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return apiError(422, parsed.error.issues[0]?.message ?? "invalid signup");
 
@@ -16,9 +20,6 @@ export async function POST(req: Request) {
   const { token, expiresAt } = await createSession(userId);
 
   const res = Response.json({ ok: true }, { status: 201 });
-  res.headers.set(
-    "set-cookie",
-    `session=${token}; Path=/; HttpOnly; SameSite=Lax; Expires=${expiresAt.toUTCString()}`,
-  );
+  res.headers.set("set-cookie", sessionCookie(token, expiresAt));
   return res;
 }

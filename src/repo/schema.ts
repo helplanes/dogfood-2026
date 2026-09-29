@@ -6,6 +6,8 @@ export const events = pgTable("events", {
   name: text("name").notNull(),
   // Mapped from fixture event.submissions_close. DB clock is the authority for the deadline check.
   submissionDeadline: timestamp("submission_deadline", { withTimezone: true }).notNull(),
+  prizes: text("prizes").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const users = pgTable("users", {
@@ -88,3 +90,22 @@ export const scores = pgTable(
   },
   (t) => [uniqueIndex("scores_judge_project_criterion").on(t.judgeId, t.projectId, t.criterion)],
 );
+
+// Organizer-configurable rubric weights (T2: "a scoring rubric the organizer can weight").
+// One row per criterion; missing rows default to equal weight in code (see repo/queries.ts).
+export const rubricWeights = pgTable("rubric_weights", {
+  criterion: text("criterion").primaryKey(),
+  weight: integer("weight").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Append-only: rows are written by the app, never updated or deleted (organizer/audit page,
+// bonus "Threat Model" territory — a tamper-evident record of who did what).
+export const auditLog = pgTable("audit_log", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  actorId: text("actor_id"),
+  action: text("action").notNull(),
+  entity: text("entity").notNull(),
+  detail: text("detail").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

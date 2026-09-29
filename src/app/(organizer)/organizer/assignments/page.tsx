@@ -2,18 +2,20 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
-import { getJudgeLoads } from "@/repo/queries";
+import { getJudgeLoads, listTracks } from "@/repo/queries";
+import { AssignTrackControl } from "@/components/organizer/AssignTrackControl";
 
 export const dynamic = "force-dynamic";
 
-// Auto-assign and per-judge overrides are not implemented; assignment is fixed from the fixture
-// (judge_tracks). This page shows real review progress only.
+// Automatic load-balanced assignment is not implemented (an organizer decision, not just an
+// engineering gap: auto-assign needs conflict-of-interest and track-capacity rules the fixture
+// doesn't define). Manual per-judge track assignment is real and writes to judge_tracks.
 export default async function OrganizerAssignmentsPage() {
   const actor = await getActorFromCookies();
   const decision = authorize(actor, "organizer:manage");
   if (!decision.ok) redirect("/login");
 
-  const judges = await getJudgeLoads();
+  const [judges, tracks] = await Promise.all([getJudgeLoads(), listTracks()]);
 
   return (
     <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 px-4 py-8 md:px-12 md:py-12 flex flex-col font-sans">
@@ -29,7 +31,7 @@ export default async function OrganizerAssignmentsPage() {
             </div>
             <h1 className="text-4xl md:text-5xl font-syne text-white tracking-tight">Judge Progress</h1>
             <p className="text-stone-400 text-sm">
-              Track eligibility and review progress. Assignment editing is not implemented yet.
+              Track eligibility and review progress. Assign a judge to a track below.
             </p>
           </div>
         </header>
@@ -67,6 +69,8 @@ export default async function OrganizerAssignmentsPage() {
                   ))}
                 </div>
               </div>
+
+              <AssignTrackControl judgeId={judge.id} tracks={tracks} />
             </div>
           ))}
         </div>

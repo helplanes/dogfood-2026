@@ -1,6 +1,6 @@
-import { and, asc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "@/server/db";
-import { events, projects, scores, sessions, teamInvites, teamMembers, teams, users } from "@/repo/schema";
+import { auditLog, events, judgeTracks, projects, rubricWeights, scores, sessions, teamInvites, teamMembers, teams, tracks, users } from "@/repo/schema";
 import type { PublicProject } from "@/contracts";
 import { rankProjects } from "@/domain/normalize";
 
@@ -81,17 +81,43 @@ export async function isSubmissionOpen(eventId: string): Promise<boolean | null>
   return row ? row.open : null;
 }
 
+// The "current" event for flows that don't name one explicitly (submit, dashboard). Prefers
+// whichever event is still open (soonest deadline first, so the nearest live event wins if an
+// organizer runs several concurrently); if none are open, falls back to the most recently
+// created event so demo/setup still has a sensible target.
 export async function getEventId(): Promise<string | null> {
-  const [row] = await db.select({ id: events.id }).from(events).orderBy(asc(events.id)).limit(1);
-  return row?.id ?? null;
+  const [open] = await db
+    .select({ id: events.id })
+    .from(events)
+    .where(sql`now() < ${events.submissionDeadline}`)
+    .orderBy(asc(events.submissionDeadline))
+    .limit(1);
+  if (open) return open.id;
+
+  const [recent] = await db.select({ id: events.id }).from(events).orderBy(desc(events.createdAt)).limit(1);
+  return recent?.id ?? null;
 }
 
+// Per (judge, project) score is the organizer-configured weighted mean across criteria, not a
+// flat average — this is what makes the rubric weights (src/repo: getRubricWeights) actually
+// affect rankings, per the T2 spec item "a scoring rubric the organizer can weight."
 export async function getLeaderboard() {
-  const rows = await db
-    .select({ judgeId: scores.judgeId, projectId: scores.projectId, mean: sql<number>`avg(${scores.value})::float` })
-    .from(scores)
-    .groupBy(scores.judgeId, scores.projectId);
-  const ranked = rankProjects(rows.map((r) => ({ judgeId: r.judgeId, projectId: r.projectId, value: r.mean })));
+  const weights = await getRubricWeights();
+  const rawRows = await db
+    .select({ judgeId: scores.judgeId, projectId: scores.projectId, criterion: scores.criterion, value: scores.value })
+    .from(scores);
+
+  const byPair = new Map<string, { judgeId: string; projectId: string; weightedSum: number; weightTotal: number }>();
+  for (const r of rawRows) {
+    const key = `${r.judgeId}::${r.projectId}`;
+    const w = weights[r.criterion] ?? 1;
+    const entry = byPair.get(key) ?? { judgeId: r.judgeId, projectId: r.projectId, weightedSum: 0, weightTotal: 0 };
+    entry.weightedSum += r.value * w;
+    entry.weightTotal += w;
+    byPair.set(key, entry);
+  }
+  const rows = [...byPair.values()].map((e) => ({ judgeId: e.judgeId, projectId: e.projectId, value: e.weightTotal ? e.weightedSum / e.weightTotal : 0 }));
+  const ranked = rankProjects(rows);
   const projs = await db
     .select({ id: projects.id, title: projects.title, track: projects.track, duplicateOf: projects.duplicateOf })
     .from(projects);
@@ -270,4 +296,142 @@ export async function joinTeamByInvite(
 
 export async function getTeamMembers(teamId: string) {
   return db.select({ email: teamMembers.email }).from(teamMembers).where(eq(teamMembers.teamId, teamId));
+}
+
+// ── Audit log (append-only: no update/delete helpers on purpose) ───────────
+
+export async function recordAudit(actorId: string | null, action: string, entity: string, detail = "") {
+  await db.insert(auditLog).values({ actorId, action, entity, detail });
+}
+
+export async function listAuditLog(limit = 100) {
+  return db.select().from(auditLog).orderBy(sql`${auditLog.id} desc`).limit(limit);
+}
+
+// ── Rubric weights ───────────────────────────────────────────────────────
+
+const DEFAULT_WEIGHTS: Record<string, number> = { functionality: 40, quality: 30, innovation: 30 };
+
+export async function getRubricWeights(): Promise<Record<string, number>> {
+  const rows = await db.select().from(rubricWeights);
+  if (rows.length === 0) return { ...DEFAULT_WEIGHTS };
+  const out: Record<string, number> = {};
+  for (const r of rows) out[r.criterion] = r.weight;
+  return out;
+}
+
+export async function setRubricWeights(weights: Record<string, number>) {
+  await db.transaction(async (tx) => {
+    for (const [criterion, weight] of Object.entries(weights)) {
+      await tx
+        .insert(rubricWeights)
+        .values({ criterion, weight })
+        .onConflictDoUpdate({ target: rubricWeights.criterion, set: { weight, updatedAt: new Date() } });
+    }
+  });
+}
+
+// ── Events & tracks (organizer) ─────────────────────────────────────────
+
+export async function listEvents() {
+  return db.select().from(events).orderBy(events.createdAt);
+}
+
+export async function createEvent(input: { name: string; submissionDeadline: Date; prizes: string }) {
+  const id = `evt_${crypto.randomUUID().slice(0, 8)}`;
+  await db.insert(events).values({ id, ...input });
+  return id;
+}
+
+export async function updateEvent(id: string, patch: Partial<{ name: string; submissionDeadline: Date; prizes: string }>) {
+  await db.update(events).set(patch).where(eq(events.id, id));
+}
+
+export async function listTracks(eventId?: string) {
+  return eventId
+    ? db.select().from(tracks).where(eq(tracks.eventId, eventId))
+    : db.select().from(tracks);
+}
+
+export async function createTrack(eventId: string, name: string) {
+  const id = `trk_${crypto.randomUUID().slice(0, 8)}`;
+  await db.insert(tracks).values({ id, eventId, name });
+  return id;
+}
+
+export async function deleteTrack(id: string) {
+  await db.delete(judgeTracks).where(eq(judgeTracks.trackId, id));
+  await db.delete(tracks).where(eq(tracks.id, id));
+}
+
+// ── Judge assignment (organizer) ────────────────────────────────────────
+
+export async function assignJudgeToTrack(judgeId: string, trackId: string) {
+  await db.insert(judgeTracks).values({ judgeId, trackId }).onConflictDoNothing();
+}
+
+export async function unassignJudgeFromTrack(judgeId: string, trackId: string) {
+  await db.delete(judgeTracks).where(and(eq(judgeTracks.judgeId, judgeId), eq(judgeTracks.trackId, trackId)));
+}
+
+// ── Draft editing (participant) ─────────────────────────────────────────
+
+export interface OwnedProject {
+  id: string;
+  title: string;
+  summary: string;
+  repoUrl: string | null;
+  track: string | null;
+  status: string;
+}
+
+// Every project belonging to the caller's team (draft and submitted).
+export async function getMyProjects(userId: string): Promise<OwnedProject[]> {
+  const team = await getMyTeam(userId);
+  if (!team) return [];
+  return db
+    .select({ id: projects.id, title: projects.title, summary: projects.summary, repoUrl: projects.repoUrl, track: projects.track, status: projects.status })
+    .from(projects)
+    .where(eq(projects.teamId, team.id))
+    .orderBy(projects.createdAt);
+}
+
+export async function getOwnedProject(userId: string, projectId: string): Promise<OwnedProject | null> {
+  const team = await getMyTeam(userId);
+  if (!team) return null;
+  const [row] = await db
+    .select({ id: projects.id, title: projects.title, summary: projects.summary, repoUrl: projects.repoUrl, track: projects.track, status: projects.status })
+    .from(projects)
+    .where(and(eq(projects.id, projectId), eq(projects.teamId, team.id)));
+  return row ?? null;
+}
+
+// Editable at any time before the deadline, draft or already submitted (the spec calls for
+// "edit it until the deadline", not "edit only while draft").
+export async function updateOwnedProject(
+  userId: string,
+  projectId: string,
+  patch: { title?: string; summary?: string; repoUrl?: string | null; track?: string | null },
+): Promise<{ error: string } | { ok: true }> {
+  const project = await getOwnedProject(userId, projectId);
+  if (!project) return { error: "not found" };
+
+  const open = await isSubmissionOpen((await db.select({ eventId: projects.eventId }).from(projects).where(eq(projects.id, projectId)))[0]?.eventId ?? "");
+  if (!open) return { error: "submissions are closed for this event" };
+
+  await db.update(projects).set(patch).where(eq(projects.id, projectId));
+  return { ok: true };
+}
+
+export async function submitDraftProject(userId: string, projectId: string): Promise<{ error: string } | { ok: true }> {
+  const project = await getOwnedProject(userId, projectId);
+  if (!project) return { error: "not found" };
+  if (project.status === "submitted") return { error: "already submitted" };
+
+  const eventId = (await db.select({ eventId: projects.eventId }).from(projects).where(eq(projects.id, projectId)))[0]?.eventId ?? "";
+  const open = await isSubmissionOpen(eventId);
+  if (!open) return { error: "submissions are closed for this event" };
+
+  await db.update(projects).set({ status: "submitted", submittedAt: new Date() }).where(eq(projects.id, projectId));
+  return { ok: true };
 }
