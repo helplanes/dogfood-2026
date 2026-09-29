@@ -18,10 +18,10 @@ export async function GET(req: Request) {
   if (!decision.ok) return apiError(decision.status, decision.status === 401 ? "unauthenticated" : "forbidden");
 
   const rows = await getLeaderboard();
-  const header = ["rank", "project_id", "title", "track", "n_reviews", "raw_score", "normalized_score", "variance_warning", "duplicate_of"];
+  const header = ["rank", "project_id", "title", "track", "n_reviews", "raw_score", "normalized_score", "rescaled_score_1_5", "variance_warning", "duplicate_of"];
   const lines = [header.join(",")].concat(
     rows.map((r) =>
-      [r.rank, r.id, r.title, r.track, r.n_reviews, r.rawScore.toFixed(3), r.normalizedScore.toFixed(3), r.hasVarianceWarning, r.duplicateOf]
+      [r.rank, r.id, r.title, r.track, r.n_reviews, r.rawScore.toFixed(3), r.normalizedScore.toFixed(3), r.rescaledScore.toFixed(2), r.hasVarianceWarning, r.duplicateOf]
         .map(cell)
         .join(","),
     ),

@@ -4,6 +4,8 @@ import { getActorFromCookies } from "@/server/auth";
 import { getAssignedProjects } from "@/repo/queries";
 import { redirect } from "next/navigation";
 
+export const metadata = { title: "Judge Dashboard" };
+
 export const dynamic = "force-dynamic";
 
 const CRITERIA_COUNT = 3;

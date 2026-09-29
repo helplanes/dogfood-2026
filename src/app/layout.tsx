@@ -12,7 +12,10 @@ const inter = localFont({ src: "../../public/fonts/Inter.woff2", variable: "--fo
 const jbMono = localFont({ src: "../../public/fonts/JetBrains_Mono.woff2", variable: "--font-jb-mono", display: "swap" });
 const syne = localFont({ src: "../../public/fonts/Syne.woff2", variable: "--font-syne", display: "swap" });
 
-export const metadata = { title: "DOGFOOD Portal" };
+export const metadata = {
+  title: { default: "DOGFOOD Portal", template: "%s · DOGFOOD Portal" },
+  description: "Submission and judging platform for DOGFOOD 2026.",
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

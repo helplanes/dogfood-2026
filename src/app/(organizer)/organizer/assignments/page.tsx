@@ -5,6 +5,8 @@ import { getActorFromCookies } from "@/server/auth";
 import { getJudgeLoads, listTracks } from "@/repo/queries";
 import { AssignTrackControl } from "@/components/organizer/AssignTrackControl";
 
+export const metadata = { title: "Judge Assignments" };
+
 export const dynamic = "force-dynamic";
 
 // Automatic load-balanced assignment is not implemented (an organizer decision, not just an

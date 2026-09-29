@@ -31,7 +31,10 @@ async function main() {
   const db = drizzle(pool);
 
   await db.transaction(async (tx) => {
-    await tx.execute(sql`TRUNCATE scores, sessions, projects, team_members, teams, judge_tracks, tracks, users, events CASCADE`);
+    // rubric_weights, audit_log, rate_limits carry no FK to these tables, so an explicit list
+    // (not just CASCADE) keeps every reseed fully deterministic rather than leaving stray rows
+    // from a previous session's organizer actions or rate-limit counters behind.
+    await tx.execute(sql`TRUNCATE scores, comparisons, rubric_weights, audit_log, rate_limits, sessions, projects, team_members, teams, judge_tracks, tracks, users, events, team_invites CASCADE`);
     await tx.insert(t.events).values({ id: fx.event.id, name: fx.event.name, submissionDeadline: new Date(fx.event.submissions_close) });
     await tx.insert(t.tracks).values(fx.tracks.map((x) => ({ id: x.id, eventId: fx.event.id, name: x.name })));
     await tx.insert(t.users).values([

@@ -4,6 +4,8 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { PairwiseVoter } from "@/components/judging/PairwiseVoter";
 
+export const metadata = { title: "Pairwise Judging" };
+
 export const dynamic = "force-dynamic";
 
 // Bonus judging mode (spec: "Pairwise +5"). Never required, never replaces the rubric score —

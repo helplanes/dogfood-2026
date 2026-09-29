@@ -4,6 +4,8 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { listAuditLog } from "@/repo/queries";
 
+export const metadata = { title: "Audit Log" };
+
 export const dynamic = "force-dynamic";
 
 // Append-only: the app never updates or deletes rows here (src/repo/queries.ts: recordAudit).

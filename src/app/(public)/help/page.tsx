@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+export const metadata = { title: "Help" };
+
 /* DESIGN SYSTEM TOKENS — Obsidian Kinetic / Editorial Serif */
 const tokens = {
   canvas: "min-h-screen bg-background text-stone-100 antialiased selection:bg-[var(--color-primary)]/30 selection:text-white font-sans flex flex-col",

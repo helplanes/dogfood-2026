@@ -7,6 +7,8 @@ import { EventForm } from "@/components/organizer/EventForm";
 import { EventEditForm } from "@/components/organizer/EventEditForm";
 import { TrackForm } from "@/components/organizer/TrackForm";
 
+export const metadata = { title: "Events" };
+
 export const dynamic = "force-dynamic";
 
 export default async function OrganizerEventsPage() {

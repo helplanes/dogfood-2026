@@ -110,6 +110,16 @@ export const auditLog = pgTable("audit_log", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Durable fixed-window rate limiting (src/server/rateLimit.ts). Postgres-backed rather than an
+// in-memory Map so limits survive a process restart and are shared across however many server
+// instances are actually running — the in-memory version we shipped first only worked correctly
+// for a single, long-lived process.
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull(),
+  count: integer("count").notNull(),
+});
+
 // Pairwise votes for the bonus "Pairwise" judging mode (spec: Bradley-Terry-style ranking, a
 // documented bonus, never a replacement for the required rubric score). One vote per (judge,
 // unordered project pair) — projectLow/projectHigh are stored in a canonical id order so the

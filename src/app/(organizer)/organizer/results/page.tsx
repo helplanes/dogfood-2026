@@ -4,6 +4,8 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { getLeaderboard, getPairwiseLeaderboard } from "@/repo/queries";
 
+export const metadata = { title: "Results" };
+
 export const dynamic = "force-dynamic";
 
 export default async function OrganizerResultsPage() {
@@ -57,7 +59,8 @@ export default async function OrganizerResultsPage() {
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider">Project</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider">Reviews</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-right">Raw Score</th>
-                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-right">Normalized</th>
+                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-right">Normalized (z)</th>
+                  <th className="px-6 py-4 font-semibold uppercase tracking-wider text-right">Score (1-5)</th>
                   <th className="px-6 py-4 font-semibold uppercase tracking-wider text-center">Status Flags</th>
                 </tr>
               </thead>
@@ -83,8 +86,11 @@ export default async function OrganizerResultsPage() {
                     <td className="px-6 py-4 text-right font-mono text-stone-400">
                       {row.rawScore.toFixed(1)}
                     </td>
-                    <td className="px-6 py-4 text-right font-mono font-bold text-stone-200">
+                    <td className="px-6 py-4 text-right font-mono text-stone-400">
                       {row.normalizedScore.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-right font-mono font-bold text-stone-200">
+                      {row.rescaledScore.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 flex items-center justify-center gap-2">
                       {row.n_reviews < 3 && (

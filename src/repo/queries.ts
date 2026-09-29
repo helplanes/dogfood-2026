@@ -119,6 +119,18 @@ export async function getLeaderboard() {
   }
   const rows = [...byPair.values()].map((e) => ({ judgeId: e.judgeId, projectId: e.projectId, value: e.weightTotal ? e.weightedSum / e.weightTotal : 0 }));
   const ranked = rankProjects(rows);
+
+  // A raw z-score ("-1.2", "2.5") is correct but not legible to an organizer skimming a table.
+  // Rescale it back onto the event's own 1-5 distribution (population mean + z * population
+  // std), clamped to the scale's bounds. This is a presentation-only, monotonic transform: it
+  // changes nothing about the ranking, only how the same ranking reads to a human. Both the raw
+  // z-score and the rescaled score are exposed; nothing is hidden.
+  const allValues = rows.map((r) => r.value);
+  const popMean = allValues.length ? allValues.reduce((a, b) => a + b, 0) / allValues.length : 3;
+  const popVariance = allValues.length ? allValues.reduce((a, b) => a + (b - popMean) ** 2, 0) / allValues.length : 0;
+  const popStd = Math.sqrt(popVariance);
+  const rescale = (z: number) => Math.max(1, Math.min(5, popMean + z * popStd));
+
   const projs = await db
     .select({ id: projects.id, title: projects.title, track: projects.track, duplicateOf: projects.duplicateOf })
     .from(projects);
@@ -132,6 +144,7 @@ export async function getLeaderboard() {
     n_reviews: r.nReviews,
     rawScore: r.rawMean,
     normalizedScore: r.normalized,
+    rescaledScore: rescale(r.normalized),
     hasVarianceWarning: r.hasVarianceWarning,
   }));
 }

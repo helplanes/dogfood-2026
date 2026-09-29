@@ -2,6 +2,8 @@ import React, { Suspense } from "react";
 import { GalleryCard } from "@/components/ui/GalleryCard";
 import { getPublicProjects } from "@/repo/queries";
 
+export const metadata = { title: "Project Gallery" };
+
 export const dynamic = "force-dynamic";
 
 async function ProjectGrid({ q, track }: { q?: string; track?: string }) {
