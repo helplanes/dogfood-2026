@@ -1,19 +1,23 @@
 import React from "react";
-import { SubNav } from "@/components/ui/SubNav";
+import { OrganizerSidebar } from "@/components/ui/OrganizerSidebar";
 
-export default function OrganizerLayout({ children }: { children: React.ReactNode }) {
-  const organizerLinks = [
-    { name: "Overview", href: "/organizer/dashboard" },
-    { name: "Results", href: "/organizer/results" },
-    { name: "Assignments", href: "/organizer/assignments" },
-    { name: "Rubric", href: "/organizer/rubric" },
-    { name: "Audit Log", href: "/organizer/audit" },
-  ];
-  
+export default function OrganizerLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <>
-      <SubNav links={organizerLinks} />
-      {children}
-    </>
+    <div className="flex min-h-screen bg-[#08090d]">
+      <div className="hidden md:block">
+        <OrganizerSidebar />
+      </div>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col overflow-y-auto">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
+          {children}
+        </div>
+      </main>
+    </div>
   );
 }
