@@ -1,3 +1,14 @@
 # DATA-MODEL
 
-TODO: fill in during the event.
+Postgres via Drizzle (`src/repo/schema.ts`), forward-only migrations in `db/migrations`.
+
+- `events(id, name, submission_deadline, prizes, custom_questions text[], created_at)`: DB clock is the deadline authority. `getEventId()` (src/repo/queries.ts) resolves "the current event" for flows that don't name one: soonest-deadline event that's still open, else the most recently created. `custom_questions` are organizer-defined free-text prompts asked of every submission (spec's "organizer-defined custom questions"); answers live per-project in `projects.custom_answers`.
+- `users(id, email, name, role, password_hash)`; `sessions(token, user_id, expires_at)`. `password_hash` is null for the fixture demo users (organizer/judge/participant), who authenticate only via their fixed session cookie, never a password.
+- `tracks(id, event_id, name)`; `judge_tracks(judge_id, track_id)` = judge eligibility, editable by an organizer (assign/unassign).
+- `teams(id, event_id, name)`; `team_members(team_id, email)`; `team_invites(token, team_id, created_at)` — the invite-link join code.
+- `projects(id, event_id, team_id, title, summary, repo_url, track, status draft|submitted, submitted_at, duplicate_of, tagline, thumbnail_url, image_gallery text[], demo_video_url, live_url, tech_tags text[], custom_answers jsonb)`. The extra columns match the spec's own "stable submission field set" reference; all are optional (empty-string/empty-array/null defaults) so nothing breaks for rows that predate them. Draft is owner-editable (by team membership) until the event's deadline; `PATCH /api/projects/[id]` changes only supplied fields and preserves omitted fields. `POST /api/projects/[id]/submit` transitions draft → submitted.
+- `scores(judge_id, project_id, criterion, value 1-5, comment)`, unique per (judge, project, criterion).
+- `rubric_weights(criterion, weight, updated_at)`: organizer-set weights per criterion, applied before normalization (defaults to 40/30/30 if unset). See JUDGING.md.
+- `audit_log(id, actor_id, action, entity, detail, created_at, prev_hash, hash)`: append-only, enforced at the database level (a trigger rejects UPDATE/DELETE outright, even for a superuser — see THREAT-MODEL.md), not just by the app never issuing those statements. `prev_hash`/`hash` form a SHA-256 hash chain, computed by a `BEFORE INSERT` trigger (migration `0006_audit_hash_chain.sql`) — the application never sets them. Covers score writes, project create/edit/submit, and every organizer action (event/track create, rubric update, judge assign/unassign). The running app connects via a separate least-privilege role (`dogfood_app`, no UPDATE/DELETE/TRUNCATE on this table) distinct from the migration/seed admin connection.
+
+Seed: `db/seed/index.ts` loads `fixtures.json` unchanged (41 projects, 30 judges, 126 score records) and creates the demo sessions.
