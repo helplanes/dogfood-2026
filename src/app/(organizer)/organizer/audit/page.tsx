@@ -1,13 +1,19 @@
-import React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { authorize } from "@/policy";
+import { getActorFromCookies } from "@/server/auth";
+import { listAuditLog } from "@/repo/queries";
 
-const mockAuditLogs = [
-  { id: "log_903", action: "SCORE_OVERRIDE", entity: "prj_02", actor: "org_admin", timestamp: "2026-09-27T15:01:44Z", prev_hash: "0x9a3f8c21...", hash: "0x1e7d4b99..." },
-  { id: "log_902", action: "QUOTA_UPDATE", entity: "judge_b", actor: "org_admin", timestamp: "2026-09-27T14:45:12Z", prev_hash: "0x4b1cf77e...", hash: "0x9a3f8c21..." },
-  { id: "log_901", action: "SCORE_SUBMIT", entity: "prj_01", actor: "judge_a", timestamp: "2026-09-27T14:22:00Z", prev_hash: "0x8f2a11b0...", hash: "0x4b1cf77e..." }
-];
+export const dynamic = "force-dynamic";
 
-export default function OrganizerAuditPage() {
+// Append-only: the app never updates or deletes rows here (src/repo/queries.ts: recordAudit).
+export default async function OrganizerAuditPage() {
+  const actor = await getActorFromCookies();
+  const decision = authorize(actor, "organizer:manage");
+  if (!decision.ok) redirect("/login");
+
+  const entries = await listAuditLog(200);
+
   return (
     <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 px-4 py-8 md:px-12 md:py-12 flex flex-col font-sans">
       <div className="max-w-7xl mx-auto space-y-8 w-full">
@@ -19,33 +25,46 @@ export default function OrganizerAuditPage() {
             <span className="text-stone-600">/</span>
             <span className="text-xs font-mono text-primary tracking-widest uppercase">Security</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-syne text-white tracking-tight">Append-Only Audit Log</h1>
+          <h1 className="text-4xl md:text-5xl font-syne text-white tracking-tight">Audit Log</h1>
           <p className="text-stone-400 text-sm">
-            Cryptographic hash chain verifying data integrity. No UPDATE or DELETE grants exist for this table.
+            Append-only. {entries.length} of the most recent {entries.length === 200 ? "200+" : entries.length} entries.
           </p>
         </header>
-        
-        <div className="rounded-2xl bg-surface border border-stone-800 p-6 space-y-4 font-mono text-xs overflow-x-auto">
-          {mockAuditLogs.map((log) => (
-            <div key={log.id} className="flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-xl bg-background border border-stone-800 hover:border-stone-700 transition-colors">
-              <div className="w-48 shrink-0 text-stone-500">{log.timestamp}</div>
-              <div className="w-32 shrink-0">
-                <span className={`px-2 py-1 rounded bg-stone-900 border ${log.action.includes('OVERRIDE') ? 'border-primary/50 text-primary' : 'border-stone-700 text-stone-300'}`}>
-                  {log.action}
-                </span>
-              </div>
-              <div className="w-32 shrink-0 text-stone-400">ACTOR: {log.actor}</div>
-              <div className="w-32 shrink-0 text-stone-400">TGT: {log.entity}</div>
-              <div className="flex-1 flex flex-col gap-1 text-[10px] text-stone-500 md:text-right">
-                <div>PREV: <span className="text-stone-400">{log.prev_hash}</span></div>
-                <div>HASH: <span className="text-emerald-400/80">{log.hash}</span></div>
-              </div>
-            </div>
-          ))}
-          <div className="p-4 text-center text-stone-500 border-t border-stone-800/80 mt-4 pt-6">
-            END OF LEDGER
+
+        {entries.length === 0 ? (
+          <div className="rounded-2xl bg-surface border border-stone-800 p-12 text-center font-mono text-xs text-stone-500">
+            No activity recorded yet.
           </div>
-        </div>
+        ) : (
+          <div className="rounded-2xl bg-surface border border-stone-800 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-background/50 text-xs font-mono text-stone-400 border-b border-stone-800">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold uppercase tracking-wider">Time</th>
+                    <th className="px-4 py-3 font-semibold uppercase tracking-wider">Action</th>
+                    <th className="px-4 py-3 font-semibold uppercase tracking-wider">Actor</th>
+                    <th className="px-4 py-3 font-semibold uppercase tracking-wider">Entity</th>
+                    <th className="px-4 py-3 font-semibold uppercase tracking-wider">Detail</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-800/60 font-mono text-xs">
+                  {entries.map((e) => (
+                    <tr key={e.id} className="hover:bg-background/30 transition-colors">
+                      <td className="px-4 py-3 text-stone-500">{new Date(e.createdAt).toISOString()}</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-1 rounded bg-stone-900 border border-stone-700 text-stone-300">{e.action}</span>
+                      </td>
+                      <td className="px-4 py-3 text-stone-400">{e.actorId ?? "—"}</td>
+                      <td className="px-4 py-3 text-stone-400">{e.entity}</td>
+                      <td className="px-4 py-3 text-stone-500 max-w-xs truncate">{e.detail}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export default function OrganizerDashboardPage() {
               <span className="text-xs font-mono font-bold text-primary px-2.5 py-1 bg-primary/10 rounded border border-primary/20">84% COMPLETE</span>
             </div>
             <div className="w-full h-3 rounded-full bg-stone-900 overflow-hidden border border-stone-800 mt-auto relative z-10">
-              <div className="h-full bg-primary w-[84%] rounded-full shadow-[0_0_12px_#fe330a]" />
+              <div className="h-full bg-primary w-[84%] rounded-full shadow-[0_0_12px_var(--color-primary)]" />
             </div>
           </div>
         </div>

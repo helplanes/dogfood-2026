@@ -9,7 +9,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 /**
  * Input — DESIGN-4-HYBRID §3
- * White bg, #e2e8f0 border. Focus: ring-2 ring-[#fe330a]. Error: border-[#ba1a1a].
+ * White bg, #e2e8f0 border. Focus: ring-2 ring-[var(--color-primary)]. Error: border-[#ba1a1a].
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className = "", error, ...props }, ref) => {
@@ -22,7 +22,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const borderStyles = error
       ? "border-[#ba1a1a] focus:ring-[#ba1a1a]"
-      : "border-[#e2e8f0] focus:ring-[#fe330a]";
+      : "border-[#e2e8f0] focus:ring-[var(--color-primary)]";
 
     return (
       <input

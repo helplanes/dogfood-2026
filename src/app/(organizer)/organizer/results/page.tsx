@@ -1,14 +1,17 @@
-import React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { authorize } from "@/policy";
+import { getActorFromCookies } from "@/server/auth";
+import { getLeaderboard } from "@/repo/queries";
 
-// Mock Data matching the LeaderboardEntry contract (Waiting on Krish)
-const mockResults = [
-  { rank: 1, id: "prj_01", title: "Glass Signal", track: "Hardware", n_reviews: 3, rawScore: 14.5, normalizedScore: 92.4, hasVarianceWarning: false },
-  { rank: 2, id: "prj_03", title: "Deep Compass", track: "Agents", n_reviews: 3, rawScore: 13.8, normalizedScore: 89.1, hasVarianceWarning: true },
-  { rank: 3, id: "prj_02", title: "Small Meadow", track: "GenAI", n_reviews: 1, rawScore: 4.0, normalizedScore: 78.5, hasVarianceWarning: false }
-];
+export const dynamic = "force-dynamic";
 
-export default function OrganizerResultsPage() {
+export default async function OrganizerResultsPage() {
+  const actor = await getActorFromCookies();
+  const decision = authorize(actor, "organizer:manage");
+  if (!decision.ok) redirect("/login");
+
+  const results = await getLeaderboard();
   return (
     <div className="min-h-screen bg-background text-stone-100 antialiased selection:bg-primary/30 px-4 py-8 md:px-12 md:py-12 flex flex-col font-sans">
       <div className="max-w-7xl mx-auto space-y-10 w-full">
@@ -59,7 +62,7 @@ export default function OrganizerResultsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-800/60">
-                {mockResults.map((row) => (
+                {results.map((row) => (
                   <tr key={row.id} className="hover:bg-background/30 transition-colors">
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-mono font-bold text-xs ${row.rank === 1 ? "bg-primary/20 text-primary border border-primary/30" : "bg-stone-900 text-stone-300 border border-stone-800"}`}>
