@@ -1,5 +1,5 @@
 // Drizzle schema foundation. Krish owns; DATA-MODEL.md documents it. Forward-only migrations in db/migrations.
-import { pgTable, text, timestamp, integer, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, uniqueIndex, jsonb } from "drizzle-orm/pg-core";
 
 export const events = pgTable("events", {
   id: text("id").primaryKey(),
@@ -7,6 +7,10 @@ export const events = pgTable("events", {
   // Mapped from fixture event.submissions_close. DB clock is the authority for the deadline check.
   submissionDeadline: timestamp("submission_deadline", { withTimezone: true }).notNull(),
   prizes: text("prizes").notNull().default(""),
+  // Organizer-defined free-text questions asked of every submission for this event (spec: "plus
+  // organizer-defined custom questions" in the stable submission field reference). Answers live
+  // per-project in projects.customAnswers, keyed by the question text.
+  customQuestions: text("custom_questions").array().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -64,11 +68,23 @@ export const projects = pgTable("projects", {
   // Set (never delete) when normalized title or repo_url matches an earlier project; organizer reviews.
   duplicateOf: text("duplicate_of"),
   title: text("title").notNull(),
-  summary: text("summary").notNull().default(""),
+  summary: text("summary").notNull().default(""), // the spec's "long description"
   repoUrl: text("repo_url"),
   track: text("track"),
   status: text("status").notNull().default("draft"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  // Spec's "the submission field set is stable across every platform we studied": name, tagline,
+  // long description, thumbnail, image gallery, hosted demo video URL, repository URL, live link,
+  // tech tags, plus organizer-defined custom questions. All optional so existing fixture rows
+  // (which predate these columns) remain valid without a data migration.
+  tagline: text("tagline").notNull().default(""),
+  thumbnailUrl: text("thumbnail_url"),
+  imageGallery: text("image_gallery").array().notNull().default([]),
+  demoVideoUrl: text("demo_video_url"),
+  liveUrl: text("live_url"),
+  techTags: text("tech_tags").array().notNull().default([]),
+  // { [question]: answer }, questions come from events.customQuestions at submission time.
+  customAnswers: jsonb("custom_answers").notNull().default({}),
 });
 
 // A single-use-forever link per team; regenerable. `/team/join?code=<token>` is the invite link.

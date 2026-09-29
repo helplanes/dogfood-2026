@@ -10,6 +10,7 @@ const PatchEvent = z.object({
   name: z.string().min(1).max(200).optional(),
   submissionDeadline: z.string().datetime().optional(),
   prizes: z.string().max(2000).optional(),
+  customQuestions: z.array(z.string().max(300)).max(20).optional(),
 });
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {

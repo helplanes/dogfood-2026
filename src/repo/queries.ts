@@ -16,6 +16,8 @@ export async function getPublicProjects(filter?: { q?: string; track?: string })
     .select({
       id: projects.id, title: projects.title, summary: projects.summary,
       repoUrl: projects.repoUrl, track: projects.track, teamName: teams.name,
+      tagline: projects.tagline, thumbnailUrl: projects.thumbnailUrl, imageGallery: projects.imageGallery,
+      demoVideoUrl: projects.demoVideoUrl, liveUrl: projects.liveUrl, techTags: projects.techTags,
     })
     .from(projects)
     .leftJoin(teams, eq(teams.id, projects.teamId))
@@ -29,6 +31,8 @@ export async function getPublicProject(id: string): Promise<PublicProject | null
     .select({
       id: projects.id, title: projects.title, summary: projects.summary,
       repoUrl: projects.repoUrl, track: projects.track, teamName: teams.name,
+      tagline: projects.tagline, thumbnailUrl: projects.thumbnailUrl, imageGallery: projects.imageGallery,
+      demoVideoUrl: projects.demoVideoUrl, liveUrl: projects.liveUrl, techTags: projects.techTags,
     })
     .from(projects)
     .leftJoin(teams, eq(teams.id, projects.teamId))
@@ -151,8 +155,23 @@ export async function getLeaderboard() {
 
 export { users };
 
+export interface DraftProjectInput {
+  eventId: string;
+  title: string;
+  tagline: string;
+  summary: string;
+  repoUrl: string | null;
+  track: string | null;
+  thumbnailUrl: string | null;
+  imageGallery: string[];
+  demoVideoUrl: string | null;
+  liveUrl: string | null;
+  techTags: string[];
+  customAnswers: Record<string, string>;
+}
+
 // Creates a draft for the participant's team. Returns null if they are not on a team.
-export async function createDraftProject(userId: string, input: { eventId: string; title: string; summary: string; repoUrl: string | null; track: string | null }) {
+export async function createDraftProject(userId: string, input: DraftProjectInput) {
   const res = await db.execute(sql`
     select tm.team_id from team_members tm join users u on u.email = tm.email
     where u.id = ${userId} limit 1`);
@@ -170,13 +189,20 @@ export interface AssignedProject {
   repoUrl: string | null;
   track: string | null;
   teamName: string | null;
+  tagline: string;
+  thumbnailUrl: string | null;
+  demoVideoUrl: string | null;
+  liveUrl: string | null;
+  techTags: string[];
   existingScores: Partial<Record<"functionality" | "quality" | "innovation", number>>;
 }
 
 // Assignment-scoped: only projects in the judge's eligible tracks, excluding their own team.
 export async function getAssignedProjects(judgeId: string): Promise<AssignedProject[]> {
   const res = await db.execute(sql`
-    select p.id, p.title, p.summary, p.repo_url as "repoUrl", p.track, t.name as "teamName"
+    select p.id, p.title, p.summary, p.repo_url as "repoUrl", p.track, t.name as "teamName",
+      p.tagline, p.thumbnail_url as "thumbnailUrl", p.demo_video_url as "demoVideoUrl",
+      p.live_url as "liveUrl", p.tech_tags as "techTags"
     from projects p
     join judge_tracks jt on jt.track_id = p.track and jt.judge_id = ${judgeId}
     join users u on u.id = ${judgeId}
@@ -351,14 +377,19 @@ export async function listEvents() {
   return db.select().from(events).orderBy(events.createdAt);
 }
 
-export async function createEvent(input: { name: string; submissionDeadline: Date; prizes: string }) {
+export async function createEvent(input: { name: string; submissionDeadline: Date; prizes: string; customQuestions?: string[] }) {
   const id = `evt_${crypto.randomUUID().slice(0, 8)}`;
   await db.insert(events).values({ id, ...input });
   return id;
 }
 
-export async function updateEvent(id: string, patch: Partial<{ name: string; submissionDeadline: Date; prizes: string }>) {
+export async function updateEvent(id: string, patch: Partial<{ name: string; submissionDeadline: Date; prizes: string; customQuestions: string[] }>) {
   await db.update(events).set(patch).where(eq(events.id, id));
+}
+
+export async function getEvent(id: string) {
+  const [row] = await db.select().from(events).where(eq(events.id, id));
+  return row ?? null;
 }
 
 export async function listTracks(eventId?: string) {
@@ -397,27 +428,40 @@ export interface OwnedProject {
   repoUrl: string | null;
   track: string | null;
   status: string;
+  tagline: string;
+  thumbnailUrl: string | null;
+  imageGallery: string[];
+  demoVideoUrl: string | null;
+  liveUrl: string | null;
+  techTags: string[];
+  customAnswers: Record<string, string>;
 }
+
+const OWNED_PROJECT_COLUMNS = {
+  id: projects.id, title: projects.title, summary: projects.summary, repoUrl: projects.repoUrl,
+  track: projects.track, status: projects.status, tagline: projects.tagline,
+  thumbnailUrl: projects.thumbnailUrl, imageGallery: projects.imageGallery,
+  demoVideoUrl: projects.demoVideoUrl, liveUrl: projects.liveUrl, techTags: projects.techTags,
+  customAnswers: projects.customAnswers,
+};
 
 // Every project belonging to the caller's team (draft and submitted).
 export async function getMyProjects(userId: string): Promise<OwnedProject[]> {
   const team = await getMyTeam(userId);
   if (!team) return [];
-  return db
-    .select({ id: projects.id, title: projects.title, summary: projects.summary, repoUrl: projects.repoUrl, track: projects.track, status: projects.status })
-    .from(projects)
-    .where(eq(projects.teamId, team.id))
-    .orderBy(projects.createdAt);
+  return (
+    await db.select(OWNED_PROJECT_COLUMNS).from(projects).where(eq(projects.teamId, team.id)).orderBy(projects.createdAt)
+  ) as OwnedProject[];
 }
 
 export async function getOwnedProject(userId: string, projectId: string): Promise<OwnedProject | null> {
   const team = await getMyTeam(userId);
   if (!team) return null;
   const [row] = await db
-    .select({ id: projects.id, title: projects.title, summary: projects.summary, repoUrl: projects.repoUrl, track: projects.track, status: projects.status })
+    .select(OWNED_PROJECT_COLUMNS)
     .from(projects)
     .where(and(eq(projects.id, projectId), eq(projects.teamId, team.id)));
-  return row ?? null;
+  return (row as OwnedProject) ?? null;
 }
 
 // Editable at any time before the deadline, draft or already submitted (the spec calls for
@@ -425,7 +469,12 @@ export async function getOwnedProject(userId: string, projectId: string): Promis
 export async function updateOwnedProject(
   userId: string,
   projectId: string,
-  patch: { title?: string; summary?: string; repoUrl?: string | null; track?: string | null },
+  patch: {
+    title?: string; summary?: string; repoUrl?: string | null; track?: string | null;
+    tagline?: string; thumbnailUrl?: string | null; imageGallery?: string[];
+    demoVideoUrl?: string | null; liveUrl?: string | null; techTags?: string[];
+    customAnswers?: Record<string, string>;
+  },
 ): Promise<{ error: string } | { ok: true }> {
   const project = await getOwnedProject(userId, projectId);
   if (!project) return { error: "not found" };

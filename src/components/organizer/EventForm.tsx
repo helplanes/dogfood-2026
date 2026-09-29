@@ -8,6 +8,7 @@ export function EventForm() {
   const [name, setName] = useState("");
   const [deadline, setDeadline] = useState("");
   const [prizes, setPrizes] = useState("");
+  const [questionsText, setQuestionsText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -20,10 +21,11 @@ export function EventForm() {
     }
     setSubmitting(true);
     try {
+      const customQuestions = questionsText.split("\n").map((q) => q.trim()).filter(Boolean);
       const res = await fetch("/api/organizer/events", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, submissionDeadline: new Date(deadline).toISOString(), prizes }),
+        body: JSON.stringify({ name, submissionDeadline: new Date(deadline).toISOString(), prizes, customQuestions }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -33,6 +35,7 @@ export function EventForm() {
       setName("");
       setDeadline("");
       setPrizes("");
+      setQuestionsText("");
       router.refresh();
     } finally {
       setSubmitting(false);
@@ -59,6 +62,13 @@ export function EventForm() {
         onChange={(e) => setPrizes(e.target.value)}
         placeholder="Prizes (free text)"
         className="px-3 py-2 rounded-lg bg-background border border-stone-700 text-sm text-stone-100"
+      />
+      <textarea
+        value={questionsText}
+        onChange={(e) => setQuestionsText(e.target.value)}
+        placeholder="Custom submission questions, one per line (optional)"
+        rows={3}
+        className="md:col-span-3 px-3 py-2 rounded-lg bg-background border border-stone-700 text-sm text-stone-100"
       />
       <button
         type="submit"

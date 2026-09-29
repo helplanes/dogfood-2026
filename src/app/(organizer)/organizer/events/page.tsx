@@ -49,11 +49,19 @@ export default async function OrganizerEventsPage() {
                 </span>
               </div>
               {ev.prizes ? <p className="text-sm text-stone-300 font-sans">{ev.prizes}</p> : null}
+              {ev.customQuestions.length > 0 ? (
+                <ul className="text-xs text-stone-500 font-mono list-disc list-inside space-y-0.5">
+                  {ev.customQuestions.map((q) => (
+                    <li key={q}>{q}</li>
+                  ))}
+                </ul>
+              ) : null}
 
               <EventEditForm
                 eventId={ev.id}
                 deadline={new Date(ev.submissionDeadline).toISOString()}
                 prizes={ev.prizes}
+                customQuestions={ev.customQuestions}
               />
 
               <div className="pt-4 border-t border-stone-800/80 space-y-3">

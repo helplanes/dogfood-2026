@@ -11,11 +11,22 @@ function toLocalInput(iso: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function EventEditForm({ eventId, deadline, prizes }: { eventId: string; deadline: string; prizes: string }) {
+export function EventEditForm({
+  eventId,
+  deadline,
+  prizes,
+  customQuestions,
+}: {
+  eventId: string;
+  deadline: string;
+  prizes: string;
+  customQuestions: string[];
+}) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [localDeadline, setLocalDeadline] = useState(() => toLocalInput(deadline));
   const [localPrizes, setLocalPrizes] = useState(prizes);
+  const [localQuestions, setLocalQuestions] = useState(customQuestions.join("\n"));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +37,11 @@ export function EventEditForm({ eventId, deadline, prizes }: { eventId: string; 
       const res = await fetch(`/api/organizer/events/${eventId}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ submissionDeadline: new Date(localDeadline).toISOString(), prizes: localPrizes }),
+        body: JSON.stringify({
+          submissionDeadline: new Date(localDeadline).toISOString(),
+          prizes: localPrizes,
+          customQuestions: localQuestions.split("\n").map((q) => q.trim()).filter(Boolean),
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -73,6 +88,15 @@ export function EventEditForm({ eventId, deadline, prizes }: { eventId: string; 
           />
         </label>
       </div>
+      <label className="block text-[10px] font-mono uppercase tracking-widest text-stone-500">
+        Custom submission questions (one per line)
+        <textarea
+          value={localQuestions}
+          onChange={(e) => setLocalQuestions(e.target.value)}
+          rows={3}
+          className="mt-1 w-full px-3 py-2 rounded-lg bg-surface border border-stone-700 text-sm text-stone-100"
+        />
+      </label>
       <div className="flex gap-2">
         <button
           onClick={save}
