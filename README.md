@@ -29,3 +29,13 @@ Known issue: if `npm test` says `Cannot find native binding` (npm optional-deps 
 ## Limitations
 - `Dockerfile` and `docker-compose.yml` are unverified (Docker was not available when they were written).
 - Database migrations, seed data, auth and the official `run.py`/`fixtures.json` are not in the repo yet.
+
+
+## Run
+```
+docker compose up        # migrates, seeds fixtures.json, prints demo logins, serves :8080
+python3 run.py .dogfood.toml > acceptance-report.txt
+```
+
+## Status (honest)
+Claimed T1 + T2. `acceptance-report.txt` shows the checker result. Gaps: password login/signup and invite links are not implemented in the backend; organizer-configurable rubric weights, judge invitation/assignment UI, and event creation are not implemented; the frontend pages from teammates may still use mock data. Docker was not runnable on the author machine, so the compose boot path is untested.
