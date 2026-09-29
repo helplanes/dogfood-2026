@@ -4,6 +4,9 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { getJudgeLoads, listTracks } from "@/repo/queries";
 import { AssignTrackControl } from "@/components/organizer/AssignTrackControl";
+import { InviteJudgeForm } from "@/components/organizer/InviteJudgeForm";
+
+export const metadata = { title: "Judge Assignments" };
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +38,8 @@ export default async function OrganizerAssignmentsPage() {
             </p>
           </div>
         </header>
+
+        <InviteJudgeForm tracks={tracks} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {judges.map((judge) => (

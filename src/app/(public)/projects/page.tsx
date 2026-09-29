@@ -1,6 +1,9 @@
 import React, { Suspense } from "react";
 import { GalleryCard } from "@/components/ui/GalleryCard";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { getPublicProjects } from "@/repo/queries";
+
+export const metadata = { title: "Project Gallery" };
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +14,7 @@ async function ProjectGrid({ q, track }: { q?: string; track?: string }) {
     return (
       <div className="flex flex-col items-center justify-center p-12 rounded-2xl bg-surface border border-stone-800 text-center space-y-4 shadow-xl mb-12">
         <span className="w-12 h-12 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-500 mb-2">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
         </span>
         <h3 className="text-xl font-syne font-bold text-white">No projects match</h3>
         <p className="text-sm text-stone-400 max-w-sm">Try a different search or track filter.</p>
@@ -21,8 +24,10 @@ async function ProjectGrid({ q, track }: { q?: string; track?: string }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-      {projects.map((proj) => (
-        <GalleryCard key={proj.id} project={proj} />
+      {projects.map((proj, i) => (
+        <ScrollReveal key={proj.id} delay={(i % 6) * 60}>
+          <GalleryCard project={proj} />
+        </ScrollReveal>
       ))}
     </div>
   );
@@ -95,7 +100,7 @@ export default async function PublicProjectGalleryPage({
         </Suspense>
       </main>
 
-      <footer className="mt-16 border-t border-stone-800/80 bg-[#090b10] px-4 md:px-8 py-8 text-xs font-mono text-stone-500">
+      <footer className="mt-16 border-t border-stone-800/80 bg-background px-4 md:px-8 py-8 text-xs font-mono text-stone-500">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-primary" />

@@ -10,6 +10,7 @@ const CreateEvent = z.object({
   name: z.string().min(1).max(200),
   submissionDeadline: z.string().datetime(),
   prizes: z.string().max(2000).default(""),
+  customQuestions: z.array(z.string().max(300)).max(20).default([]),
 });
 
 export async function GET(req: Request) {
@@ -27,7 +28,12 @@ export async function POST(req: Request) {
   const parsed = CreateEvent.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return apiError(422, "invalid event (name, submissionDeadline ISO datetime, prizes)");
 
-  const id = await createEvent({ name: parsed.data.name, submissionDeadline: new Date(parsed.data.submissionDeadline), prizes: parsed.data.prizes });
+  const id = await createEvent({
+    name: parsed.data.name,
+    submissionDeadline: new Date(parsed.data.submissionDeadline),
+    prizes: parsed.data.prizes,
+    customQuestions: parsed.data.customQuestions,
+  });
   await recordAudit(actor.userId, "event:create", id, parsed.data.name);
   return Response.json({ id }, { status: 201 });
 }

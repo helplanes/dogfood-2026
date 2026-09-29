@@ -19,6 +19,8 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
 
 ## Shriyash
 
+- **29 Sep (Krish, repository owner):** End-to-end verification authorized fixes in Shriyash's UI scope: SSR-safe theme/scroll reveal hydration, organizer dashboard authorization and real metrics, accurate pairwise vote error handling, and an accurate review count in results. These changes are being made in the integration checkout for the walkthrough; Shriyash should review them before merging to his personal branch.
+
 - Ownership change requested by the backend lead: own the largest frontend scope—design system, shared UI, public gallery/project pages, judge console, and organizer views. Do not take backend files.
 - The old tool-based lanes have been replaced with person-based routing in `AGENTS.md`, `TEAM-ASSIGNMENTS.md`, `CLAUDE.md`, `CODEX.md`, and `ANTIGRAVITY.md`.
 - **REQUEST FOR KRISH (27 Sep):** Judge console (Task 3) is scaffolded with mock data at `src/app/(judge)/dashboard/`. Need two typed page-data functions from `src/repo` or `src/server`:
@@ -41,6 +43,7 @@ Shared workflow: `TEAM-WORKFLOW.md` records where each owner pushes and how PRs 
 ## Nihal
 
 - Ownership change requested by the backend lead: own the medium frontend scope—auth and participant/team/project editing flows. Do not take backend files.
+- **29 Sep (Krish, repository owner):** End-to-end walkthrough found that the participant dashboard checklist kept the repository and submission steps unchecked after a successful submission, and demo role switching failed after a password login left an HttpOnly cookie. The integration checkout now derives checklist steps from project data and clears the prior session before applying a demo profile. Please review before your next merge.
 
 ## Prajwal
 

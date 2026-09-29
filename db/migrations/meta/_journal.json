@@ -22,6 +22,34 @@
       "when": 1790660387839,
       "tag": "0002_many_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790685227865,
+      "tag": "0003_secret_silvermane",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790688721410,
+      "tag": "0004_absent_the_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790693413716,
+      "tag": "0005_same_carlie_cooper",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790700000000,
+      "tag": "0006_audit_hash_chain",
+      "breakpoints": true
     }
   ]
 }

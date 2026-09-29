@@ -3,6 +3,9 @@ import { authorize } from "@/policy";
 import { getActorFromCookies } from "@/server/auth";
 import { getAssignedProjects } from "@/repo/queries";
 import { redirect } from "next/navigation";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+
+export const metadata = { title: "Judge Dashboard" };
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +28,9 @@ export default async function JudgeDashboardPage() {
             <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
             <span className="text-stone-300 font-semibold">JUDGE DASHBOARD</span>
           </div>
+          <Link href="/judge/pairwise" className="text-xs font-mono text-stone-400 hover:text-primary transition-colors">
+            Pairwise Judging (bonus) &rarr;
+          </Link>
         </div>
 
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4 border-b border-stone-800/50">
@@ -60,12 +66,12 @@ export default async function JudgeDashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
+          {projects.map((project, i) => {
             const done = Object.keys(project.existingScores).length === CRITERIA_COUNT;
             return (
+              <ScrollReveal key={project.id} delay={(i % 6) * 60}>
               <div
-                key={project.id}
-                className={`group flex flex-col justify-between p-6 rounded-2xl bg-surface border transition-all duration-200 ${
+                className={`group flex flex-col justify-between p-6 rounded-2xl bg-surface border transition-all duration-200 h-full ${
                   done ? "border-stone-800/80 hover:border-stone-700" : "border-amber-500/30 hover:border-amber-500/60"
                 }`}
               >
@@ -115,6 +121,7 @@ export default async function JudgeDashboardPage() {
                   </Link>
                 </div>
               </div>
+              </ScrollReveal>
             );
           })}
         </div>

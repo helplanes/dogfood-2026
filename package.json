@@ -15,7 +15,8 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx db/migrate.ts",
-    "db:seed": "tsx db/seed/index.ts"
+    "db:seed": "tsx db/seed/index.ts",
+    "normalization-report": "tsx scripts/normalization-report.ts"
   },
   "dependencies": {
     "argon2": "^0.45.1",

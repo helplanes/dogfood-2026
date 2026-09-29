@@ -7,6 +7,10 @@ export function GalleryCard({ project }: { project: PublicProject }) {
     <div className="group flex flex-col justify-between rounded-2xl bg-surface border border-stone-800 hover:border-stone-700 hover:shadow-2xl hover:shadow-primary/5 transition-all overflow-hidden">
       {/* Card Thumbnail Container */}
       <div className="relative h-48 w-full bg-gradient-to-br from-stone-800 to-stone-900 overflow-hidden border-b border-stone-800">
+        {project.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- arbitrary participant-supplied URLs; no fixed domain allowlist to configure next/image against.
+          <img src={project.thumbnailUrl} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
 
         {/* Category & Rating Badges */}
@@ -31,9 +35,19 @@ export function GalleryCard({ project }: { project: PublicProject }) {
           <h3 className="text-xl font-syne font-bold text-white tracking-tight group-hover:text-stone-100 transition-colors">
             {project.title}
           </h3>
+          {project.tagline ? <p className="text-xs text-primary font-mono">{project.tagline}</p> : null}
           <p className="text-xs text-stone-400 font-sans leading-relaxed line-clamp-3">
             {project.summary}
           </p>
+          {project.techTags.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {project.techTags.slice(0, 5).map((tag) => (
+                <span key={tag} className="px-2 py-0.5 rounded bg-stone-900 border border-stone-700/50 text-[10px] font-mono text-stone-400">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
 
         {/* Action Buttons */}

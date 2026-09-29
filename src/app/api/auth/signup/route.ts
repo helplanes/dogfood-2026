@@ -8,7 +8,7 @@ import { clientKey, rateLimit } from "@/server/rateLimit";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  if (!rateLimit(`signup:${clientKey(req)}`, 10, 60_000)) return apiError(429, "too many attempts, try again shortly");
+  if (!(await rateLimit(`signup:${clientKey(req)}`, 10, 60_000))) return apiError(429, "too many attempts, try again shortly");
 
   const parsed = SignupInput.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return apiError(422, parsed.error.issues[0]?.message ?? "invalid signup");

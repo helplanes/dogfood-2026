@@ -7,16 +7,24 @@ import { useRouter } from "next/navigation";
 interface OwnedProject {
   id: string;
   title: string;
+  tagline: string;
   summary: string;
   repoUrl: string | null;
   track: string | null;
   status: string;
+  thumbnailUrl: string | null;
+  demoVideoUrl: string | null;
+  liveUrl: string | null;
+  techTags: string[];
+  customAnswers: Record<string, string>;
 }
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const [project, setProject] = useState<OwnedProject | null>(null);
+  const [techTagsInput, setTechTagsInput] = useState("");
+  const [customQuestions, setCustomQuestions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -24,8 +32,16 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     fetch(`/api/projects/${id}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then(setProject)
+      .then((p: OwnedProject) => {
+        setProject(p);
+        setTechTagsInput((p.techTags ?? []).join(", "));
+      })
       .catch(() => setError("Could not load this project."));
+
+    fetch("/api/event")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((body) => body && setCustomQuestions(body.customQuestions ?? []))
+      .catch(() => {});
   }, [id]);
 
   async function save(e: React.FormEvent) {
@@ -38,7 +54,18 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
       const res = await fetch(`/api/projects/${id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title: project.title, summary: project.summary, repoUrl: project.repoUrl, track: project.track }),
+        body: JSON.stringify({
+          title: project.title,
+          tagline: project.tagline,
+          summary: project.summary,
+          repoUrl: project.repoUrl,
+          track: project.track,
+          thumbnailUrl: project.thumbnailUrl,
+          demoVideoUrl: project.demoVideoUrl,
+          liveUrl: project.liveUrl,
+          techTags: techTagsInput.split(",").map((t) => t.trim()).filter(Boolean),
+          customAnswers: project.customAnswers,
+        }),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -103,7 +130,15 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
             />
           </div>
           <div>
-            <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Summary</label>
+            <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Tagline</label>
+            <input
+              value={project.tagline}
+              onChange={(e) => setProject({ ...project, tagline: e.target.value })}
+              className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Description</label>
             <textarea
               value={project.summary}
               onChange={(e) => setProject({ ...project, summary: e.target.value })}
@@ -111,23 +146,74 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
               className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
             />
           </div>
-          <div>
-            <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Repository URL</label>
-            <input
-              value={project.repoUrl ?? ""}
-              onChange={(e) => setProject({ ...project, repoUrl: e.target.value || null })}
-              className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Repository URL</label>
+              <input
+                value={project.repoUrl ?? ""}
+                onChange={(e) => setProject({ ...project, repoUrl: e.target.value || null })}
+                className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Track ID</label>
+              <input
+                value={project.track ?? ""}
+                onChange={(e) => setProject({ ...project, track: e.target.value || null })}
+                placeholder="trk_01"
+                className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Live Link</label>
+              <input
+                value={project.liveUrl ?? ""}
+                onChange={(e) => setProject({ ...project, liveUrl: e.target.value || null })}
+                className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Demo Video URL</label>
+              <input
+                value={project.demoVideoUrl ?? ""}
+                onChange={(e) => setProject({ ...project, demoVideoUrl: e.target.value || null })}
+                className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Thumbnail URL</label>
+              <input
+                value={project.thumbnailUrl ?? ""}
+                onChange={(e) => setProject({ ...project, thumbnailUrl: e.target.value || null })}
+                className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Tech Tags (comma-separated)</label>
+              <input
+                value={techTagsInput}
+                onChange={(e) => setTechTagsInput(e.target.value)}
+                className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">Track ID</label>
-            <input
-              value={project.track ?? ""}
-              onChange={(e) => setProject({ ...project, track: e.target.value || null })}
-              placeholder="trk_01"
-              className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
-            />
-          </div>
+
+          {customQuestions.length > 0 && (
+            <div className="space-y-4 pt-4 border-t border-stone-800">
+              <p className="text-xs font-mono uppercase tracking-widest text-stone-500">Organizer Questions</p>
+              {customQuestions.map((q) => (
+                <div key={q}>
+                  <label className="block text-xs font-mono uppercase tracking-widest text-stone-400 mb-1">{q}</label>
+                  <textarea
+                    rows={2}
+                    value={project.customAnswers?.[q] ?? ""}
+                    onChange={(e) => setProject({ ...project, customAnswers: { ...project.customAnswers, [q]: e.target.value } })}
+                    className="w-full px-4 py-3 bg-surface border border-stone-800 rounded-xl text-sm text-stone-100"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="flex gap-4 pt-2">
             <button

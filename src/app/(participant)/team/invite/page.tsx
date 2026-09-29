@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface TeamInfo {
   id: string;
@@ -38,7 +39,10 @@ export default function InviteTeamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 text-white">
+    <div className="relative min-h-screen bg-background flex items-center justify-center p-4 text-white">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-md bg-surface rounded-2xl shadow-xl p-8 border border-stone-800">
         <h2 className="text-2xl font-black uppercase tracking-tight font-serif tracking-tight mb-2">Invite Members</h2>
         <p className="text-sm text-stone-400 mb-6">Share this link with teammates. They&apos;ll join instantly.</p>

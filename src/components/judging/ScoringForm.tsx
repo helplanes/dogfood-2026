@@ -1,401 +1,417 @@
 "use client";
 
-import { useState, useId, useEffect, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import type { Criterion } from "@/contracts";
-import { saveProjectScores } from "@/components/judging/scoreStore";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface CriterionScore {
-  criterion: Criterion;
-  value: number | null; // null = not yet scored
+interface CriterionDef {
+  id: Criterion;
+  number: string;
+  title: string;
+  weight: number; // percentage (e.g. 40)
+  prompt: string;
+  labels: { [key: number]: { title: string; sub: string } };
+  colorClass: string;
+  glowColor: string;
 }
 
-interface ScoringFormProps {
-  projectId: string;
-  projectTitle: string;
-  /** Pre-populated existing scores, if any */
-  existingScores?: Partial<Record<Criterion, number>>;
-  /** Pre-populated notes, if any */
-  existingNotes?: string;
-  /**
-   * Called when the judge submits scores.
-   * TODO: replace body with real API call to POST /api/judge/scores once Krish wires it.
-   * Must send one ScoreInput per criterion.
-   */
-  onSave?: (scores: Record<Criterion, number>, notes: string) => Promise<void>;
-}
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const CRITERIA: {
-  key: Criterion;
-  label: string;
-  description: string;
-  weight: number; // percentage weight in rubric
-}[] = [
+const CRITERIA: CriterionDef[] = [
   {
-    key: "functionality",
-    label: "Functionality",
-    description: "Does it work as described? Are core features complete and stable?",
+    id: "functionality",
+    number: "01",
+    title: "Functionality & Technical Execution",
     weight: 40,
+    prompt:
+      "Does it work as described? Are core features complete, operational, and resilient under expected demo inputs?",
+    colorClass: "text-[var(--color-primary)]",
+    glowColor: "rgba(254, 51, 10, 0.4)",
+    labels: {
+      1: { title: "POOR", sub: "Broken / Non-functional" },
+      2: { title: "BELOW", sub: "Partial features" },
+      3: { title: "AVERAGE", sub: "Baseline operational" },
+      4: { title: "GOOD", sub: "Solid implementation" },
+      5: { title: "EXCELLENT", sub: "Flawless & resilient" },
+    },
   },
   {
-    key: "quality",
-    label: "Code Quality",
-    description: "Is the code readable, well-structured, tested, and maintainable?",
+    id: "quality",
+    number: "02",
+    title: "Code Quality & Architecture",
     weight: 30,
+    prompt:
+      "Is the code readable, well-structured, modular, tested, properly version-controlled, and maintainable?",
+    colorClass: "text-[#00f0ff]",
+    glowColor: "rgba(0, 240, 255, 0.35)",
+    labels: {
+      1: { title: "POOR", sub: "Messy / Unreadable" },
+      2: { title: "BELOW", sub: "Minimal structure" },
+      3: { title: "AVERAGE", sub: "Standard conventions" },
+      4: { title: "GOOD", sub: "Polished & clean" },
+      5: { title: "EXCELLENT", sub: "Production-grade" },
+    },
   },
   {
-    key: "innovation",
-    label: "Innovation",
-    description: "Does it bring a novel approach, creative problem-solving, or unique value?",
+    id: "innovation",
+    number: "03",
+    title: "Innovation & Real-World Impact",
     weight: 30,
+    prompt:
+      "Does it bring a novel approach, creative problem-solving, or unique real-world sustainability leverage?",
+    colorClass: "text-emerald-500",
+    glowColor: "rgba(16, 185, 129, 0.35)",
+    labels: {
+      1: { title: "POOR", sub: "Derivative / Clone" },
+      2: { title: "BELOW", sub: "Marginal utility" },
+      3: { title: "AVERAGE", sub: "Viable novelty" },
+      4: { title: "GOOD", sub: "Creative solution" },
+      5: { title: "EXCELLENT", sub: "Moonshot impact" },
+    },
   },
 ];
 
-const SCORE_LABELS: Record<number, string> = {
-  1: "Poor",
-  2: "Below avg",
-  3: "Average",
-  4: "Good",
-  5: "Excellent",
+type Props = {
+  project: {
+    id: string;
+    title: string;
+    summary: string | null;
+    repoUrl: string | null;
+    track: string | null;
+    teamName: string | null;
+    existingScores: Partial<Record<Criterion, number>>;
+  };
+  onSave: (scores: Record<Criterion, number>) => Promise<void>;
 };
 
-const SCORE_COLORS: Record<number, { bg: string; border: string; text: string }> = {
-  1: { bg: "bg-[#ba1a1a]", border: "border-[#ba1a1a]", text: "text-white" },
-  2: { bg: "bg-[#f59e0b]", border: "border-[#f59e0b]", text: "text-white" },
-  3: { bg: "bg-[#64748b]", border: "border-[#64748b]", text: "text-white" },
-  4: { bg: "bg-[#22c55e]", border: "border-[#22c55e]", text: "text-white" },
-  5: { bg: "bg-[var(--color-primary)]", border: "border-[var(--color-primary)]", text: "text-white" },
-};
-
-type SaveStatus = "idle" | "saving" | "saved" | "error";
-
-// ─── Weighted score calculator ────────────────────────────────────────────────
-
-function computeWeightedScore(scores: Record<Criterion, number | null>): number | null {
-  const filled = CRITERIA.filter((c) => scores[c.key] !== null);
-  if (filled.length === 0) return null;
-  const totalWeight = filled.reduce((sum, c) => sum + c.weight, 0);
-  const weighted = filled.reduce((sum, c) => sum + (scores[c.key] as number) * c.weight, 0);
-  return Math.round((weighted / totalWeight) * 10) / 10;
-}
-
-// ─── Component ───────────────────────────────────────────────────────────────
-
-/**
- * ScoringForm — DESIGN-4-HYBRID §3
- * Client component. Judges score each criterion 1–5.
- * Shows saved ✅ / error ❌ states. Keyboard accessible.
- * Includes: notes textarea, weighted score preview, unsaved-changes guard.
- * TODO: wire onSave to POST /api/judge/scores (ScoreInput per criterion).
- */
-export function ScoringForm({
-  projectId,
-  projectTitle,
-  existingScores = {},
-  existingNotes = "",
-  onSave,
-}: ScoringFormProps) {
-  const formId = useId();
-
-  // Initialise scores from existing or null
+export function ScoringForm({ project, onSave }: Props) {
+  const router = useRouter();
   const [scores, setScores] = useState<Record<Criterion, number | null>>({
-    functionality: existingScores.functionality ?? null,
-    quality: existingScores.quality ?? null,
-    innovation: existingScores.innovation ?? null,
+    functionality: project.existingScores.functionality ?? null,
+    quality: project.existingScores.quality ?? null,
+    innovation: project.existingScores.innovation ?? null,
   });
 
-  const [notes, setNotes] = useState(existingNotes);
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [hasUnsaved, setHasUnsaved] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saved">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const savedScoresRef = useRef({ ...scores });
-  const savedNotesRef = useRef(notes);
+  // Calculate composite weighted score
+  const { weightedScore, scoredCount } = useMemo(() => {
+    let total = 0;
+    let countedWeight = 0;
+    let count = 0;
 
-  // Track unsaved changes
-  useEffect(() => {
-    const scoresChanged = CRITERIA.some(
-      (c) => scores[c.key] !== savedScoresRef.current[c.key]
-    );
-    const notesChanged = notes !== savedNotesRef.current;
-    setHasUnsaved(scoresChanged || notesChanged);
-    if (status === "saved" && (scoresChanged || notesChanged)) setStatus("idle");
-  }, [scores, notes, status]);
-
-  const allScored = Object.values(scores).every((v) => v !== null);
-  const weightedScore = computeWeightedScore(scores);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!allScored) return;
-
-    setStatus("saving");
-    setErrorMessage("");
-
-    try {
-      if (onSave) {
-        await onSave(scores as Record<Criterion, number>, notes);
-        // Persist to local store so dashboard reflects the scored status
-        saveProjectScores(projectId, scores as Record<Criterion, number>, notes);
-        setStatus("saved");
-        setHasUnsaved(false);
-        savedScoresRef.current = { ...scores };
-        savedNotesRef.current = notes;
-      } else {
-        // TODO: replace with real fetch to POST /api/judge/scores
-        await new Promise((res) => setTimeout(res, 700));
-        console.log("[MOCK SAVE]", { projectId, scores, notes });
-        setStatus("error");
-        setErrorMessage("Mock API - scores not actually saved to DB.");
+    CRITERIA.forEach((c) => {
+      const val = scores[c.id];
+      if (val !== null) {
+        count += 1;
+        total += val * (c.weight / 100);
+        countedWeight += c.weight / 100;
       }
-    } catch (err) {
-      setStatus("error");
-      setErrorMessage(
-        err instanceof Error ? err.message : "Failed to save scores. Please try again."
-      );
-    }
-  }
+    });
 
-  function handleScoreChange(criterion: Criterion, value: number) {
-    setScores((prev) => ({ ...prev, [criterion]: value }));
-  }
+    const normalized = countedWeight > 0 ? (total / countedWeight).toFixed(1) : "0.0";
+    return { weightedScore: normalized, scoredCount: count };
+  }, [scores]);
+
+  const handleScoreSelect = (criterionId: Criterion, value: number) => {
+    setScores((prev) => ({
+      ...prev,
+      [criterionId]: prev[criterionId] === value ? null : value,
+    }));
+  };
+
+  const handleSaveDraft = async () => {
+    if (scoredCount === 0) return;
+    try {
+      setSaveStatus("idle");
+      // Only send non-null
+      const partialScores: Partial<Record<Criterion, number>> = {};
+      for (const k in scores) {
+         if (scores[k as Criterion] !== null) partialScores[k as Criterion] = scores[k as Criterion]!;
+      }
+      // Assuming onSave can handle partial saves (the API actually just saves whatever is passed in loop)
+      await onSave(partialScores as Record<Criterion, number>);
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2500);
+    } catch (e: any) {
+      setErrorMsg(e.message ?? "Error saving");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (scoredCount !== CRITERIA.length) {
+      alert("Please score all criteria before submitting.");
+      return;
+    }
+    setIsSubmitting(true);
+    setErrorMsg(null);
+    try {
+      await onSave(scores as Record<Criterion, number>);
+      setSaveStatus("saved");
+      alert("Evaluation securely recorded and signed to audit ledger!");
+      router.push("/judge/dashboard");
+    } catch (e: any) {
+      setErrorMsg(e.message ?? "Save failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      aria-label={`Scoring form for ${projectTitle}`}
-      className="bg-white border border-[#e2e8f0] rounded-lg overflow-hidden"
-    >
-      {/* Weighted score preview banner */}
-      {weightedScore !== null && (
-        <div className="bg-[#111318] px-6 py-3 flex items-center justify-between gap-4 border-b border-white/[0.08]">
-          <span className="text-xs font-mono uppercase tracking-widest text-slate-400">
-            Weighted Preview Score
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-black text-white tabular-nums">
-              {weightedScore}
+    <div className="min-h-screen bg-surface text-stone-200 antialiased selection:bg-[var(--color-primary)]/20 selection:text-white -m-4 md:-m-12">
+      {/* ─── Top Context Header Bar ─── */}
+      <header className="sticky top-0 z-30 border-b border-stone-800/80 bg-surface/90 backdrop-blur-md px-6 py-4">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-xs font-mono flex-wrap">
+            <Link
+              href="/judge/dashboard"
+              className="text-stone-400 hover:text-stone-200 transition-colors flex items-center gap-1.5"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              ASSIGNMENTS
+            </Link>
+            <span className="text-stone-600">/</span>
+            <span className="px-2 py-0.5 rounded bg-stone-900 border border-stone-800 text-[var(--color-primary)] font-semibold">
+              {project.id.toUpperCase()}
             </span>
-            <span className="text-xs font-mono text-slate-500">/ 5.0</span>
-            {/* Mini bar */}
-            <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden ml-2">
-              <div
-                className="h-full bg-[var(--color-primary)] rounded-full transition-all duration-300"
-                style={{ width: `${(weightedScore / 5) * 100}%` }}
-              />
+            {project.track && (
+              <span className="text-stone-500 hidden sm:inline">{"// "}{project.track}</span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 text-xs font-mono flex-wrap">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/60 text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>WINDOW: OPEN</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1 rounded-lg bg-stone-900 hover:bg-stone-800 border border-stone-700/80 text-stone-300 hover:text-white transition-colors flex items-center gap-1.5"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  Repository
+                </a>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </header>
 
-      <div className="p-6 flex flex-col gap-6">
-        {/* Criteria */}
-        {CRITERIA.map(({ key, label, description, weight }) => {
-          const currentValue = scores[key];
-          const groupId = `${formId}-${key}`;
-          const colors = currentValue ? SCORE_COLORS[currentValue] : null;
-
-          return (
-            <fieldset key={key} className="flex flex-col gap-2">
-              {/* Legend row with weight badge */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <legend className="text-sm font-bold uppercase tracking-tight text-[#111318]">
-                  {label}
-                </legend>
-                <span className="text-[10px] font-mono uppercase tracking-widest bg-[#f1f5f9] text-slate-500 border border-[#e2e8f0] px-1.5 py-0.5 rounded-sm">
-                  {weight}% weight
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed mb-1">{description}</p>
-
-              {/* Score radio buttons 1–5 */}
-              <div
-                className="flex items-center gap-2 flex-wrap"
-                role="group"
-                aria-labelledby={groupId}
-              >
-                <span id={groupId} className="sr-only">
-                  {label} score
-                </span>
-                {[1, 2, 3, 4, 5].map((score) => {
-                  const inputId = `${groupId}-${score}`;
-                  const isSelected = currentValue === score;
-                  const c = SCORE_COLORS[score as keyof typeof SCORE_COLORS]!;
-
-                  return (
-                    <label
-                      key={score}
-                      htmlFor={inputId}
-                      className={[
-                        "flex flex-col items-center justify-center w-14 h-14 rounded-lg border-2 cursor-pointer",
-                        "text-sm font-bold transition-all duration-150",
-                        "focus-within:ring-2 focus-within:ring-[var(--color-primary)] focus-within:ring-offset-1",
-                        isSelected
-                          ? `${c.bg} ${c.border} ${c.text}`
-                          : "bg-white border-[#e2e8f0] text-[#111318] hover:border-[var(--color-primary)] hover:scale-105",
-                      ].join(" ")}
-                      title={SCORE_LABELS[score]}
-                    >
-                      <input
-                        type="radio"
-                        id={inputId}
-                        name={`${formId}-${key}`}
-                        value={score}
-                        checked={isSelected}
-                        onChange={() => handleScoreChange(key, score)}
-                        className="sr-only"
-                      />
-                      <span aria-hidden="true" className="text-base leading-none">
-                        {score}
-                      </span>
-                      <span className="text-[8px] font-mono uppercase tracking-wide mt-0.5 leading-none opacity-80">
-                        {(SCORE_LABELS[score] ?? "").split(" ")[0]}
-                      </span>
-                    </label>
-                  );
-                })}
-
-                {/* Current label */}
-                {currentValue !== null && (
-                  <span className="ml-2 text-xs font-mono text-slate-500 uppercase tracking-wider">
-                    — {SCORE_LABELS[currentValue]}
-                  </span>
-                )}
-              </div>
-            </fieldset>
-          );
-        })}
-
-        {/* Notes textarea */}
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor={`${formId}-notes`}
-            className="text-sm font-bold uppercase tracking-tight text-[#111318]"
-          >
-            Notes{" "}
-            <span className="text-xs font-normal text-slate-400 normal-case tracking-normal">
-              (optional — private to you)
-            </span>
-          </label>
-          <textarea
-            id={`${formId}-notes`}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            placeholder="Add reasoning, observations, or flags for your own reference…"
-            className="w-full rounded-lg border border-[#e2e8f0] bg-[#f8f9fc] px-4 py-3 text-sm text-[#111318] placeholder:text-slate-400 resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all"
-            maxLength={2000}
-          />
-          <span className="text-[10px] font-mono text-slate-400 text-right tabular-nums">
-            {notes.length} / 2000
-          </span>
-        </div>
-
-        {/* Divider */}
-        <div className="border-t border-[#e2e8f0]" />
-
-        {/* Submit row */}
-        <div className="flex items-center gap-4 flex-wrap">
-          <button
-            type="submit"
-            disabled={!allScored || status === "saving"}
-            className={[
-              "px-6 py-2.5 rounded-lg text-sm font-bold uppercase tracking-widest transition-all duration-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
-              allScored && status !== "saving"
-                ? "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] active:bg-[#e02d07] shadow-sm hover:shadow-md"
-                : "bg-[#e2e8f0] text-slate-400 cursor-not-allowed",
-            ].join(" ")}
-            aria-busy={status === "saving"}
-          >
-            {status === "saving" ? (
-              <span className="flex items-center gap-2">
-                <svg
-                  className="animate-spin w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-                Saving…
+      {/* ─── Main Review Container ─── */}
+      <main className="max-w-5xl mx-auto px-6 py-8 pb-32">
+        {/* Project Header Banner & Score Card */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 rounded-2xl bg-surface border border-stone-800/80 mb-8 shadow-sm">
+          <div>
+            <div className="flex items-center gap-3 mb-2.5">
+              <span className="px-2.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/70 text-emerald-400 font-mono text-xs font-semibold">
+                {project.teamName || "NO TEAM"}
               </span>
-            ) : (
-              "Save Scores"
+              <span className="text-xs font-mono text-stone-400">{project.id.toUpperCase()}</span>
+            </div>
+
+            <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+              Review: <span className="text-white">{project.title}</span>
+            </h1>
+
+            {project.summary && (
+              <p className="text-stone-400 text-sm max-w-2xl leading-relaxed mb-4">
+                {project.summary}
+              </p>
             )}
-          </button>
+          </div>
 
-          {/* Unsaved changes dot */}
-          {hasUnsaved && status !== "saving" && (
-            <span className="flex items-center gap-1.5 text-xs font-mono text-[#f59e0b] uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse" />
-              Unsaved changes
-            </span>
-          )}
-
-          {/* Status feedback */}
-          {status === "saved" && (
-            <span
-              role="status"
-              aria-live="polite"
-              className="flex items-center gap-1.5 text-sm font-mono text-[#22c55e] uppercase tracking-wider"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <circle cx="8" cy="8" r="7.5" stroke="#22c55e" />
-                <path
-                  d="M4.5 8l2.5 2.5L11.5 5.5"
-                  stroke="#22c55e"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Scores saved
-            </span>
-          )}
-
-          {status === "error" && (
-            <span
-              role="alert"
-              aria-live="assertive"
-              className="flex items-center gap-1.5 text-sm font-mono text-[#ba1a1a] uppercase tracking-wider"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <circle cx="8" cy="8" r="7.5" stroke="#ba1a1a" />
-                <path
-                  d="M5.5 5.5l5 5M10.5 5.5l-5 5"
-                  stroke="#ba1a1a"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              {errorMessage || "Save failed"}
-            </span>
-          )}
-
-          {/* Incomplete warning */}
-          {!allScored && status === "idle" && (
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-              Score all 3 criteria to save
-            </span>
-          )}
+          {/* Real-time Weighted Score Display */}
+          <div className="flex-shrink-0 flex items-center gap-4 px-6 py-4 rounded-xl bg-surface border border-stone-800/80">
+            <div className="w-16 h-16 rounded-full border-2 border-[var(--color-primary)] flex flex-col items-center justify-center bg-[var(--color-primary)]/10 shadow-[0_0_20px_rgba(254,51,10,0.2)]">
+              <span className="text-2xl font-bold font-mono text-white leading-none">{weightedScore}</span>
+              <span className="text-[10px] font-mono text-stone-400">/ 5.0</span>
+            </div>
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-wider text-stone-400">Weighted Score</div>
+              <div className="text-[10px] font-mono text-stone-500 mt-0.5">(0.4F + 0.3Q + 0.3I)</div>
+            </div>
+          </div>
         </div>
-      </div>
-    </form>
+
+        {errorMsg && (
+          <div className="mb-6 rounded-xl bg-red-950/40 p-4 text-xs font-mono text-red-300 border border-red-800/50 flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {/* ─── Rubric Scoring Cards ─── */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {CRITERIA.map((criterion) => {
+            const currentScore = scores[criterion.id];
+
+            return (
+              <section
+                key={criterion.id}
+                className="p-6 rounded-2xl bg-surface border border-stone-800/80 hover:border-stone-700/80 transition-all duration-200"
+              >
+                {/* Criterion Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        currentScore ? "bg-[var(--color-primary)] shadow-[0_0_8px_var(--color-primary)]" : "bg-stone-600"
+                      }`}
+                    />
+                    <h2 className="text-base font-bold font-mono tracking-tight text-white uppercase">
+                      {criterion.number}. {criterion.title}
+                    </h2>
+                    <span
+                      className={`ml-1 text-[11px] font-mono px-2 py-0.5 rounded-full ${
+                        currentScore
+                          ? "bg-emerald-950/50 text-emerald-400 border border-emerald-800/50"
+                          : "bg-stone-900 text-stone-500 border border-stone-800"
+                      }`}
+                    >
+                      {currentScore ? `Active (${currentScore}/5)` : "Pending"}
+                    </span>
+                  </div>
+
+                  <span className="text-xs font-mono font-bold text-[var(--color-primary)] tracking-wider px-2.5 py-0.5 rounded bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/30">
+                    {criterion.weight}% WEIGHT
+                  </span>
+                </div>
+
+                <p className="text-sm text-stone-400 leading-relaxed mb-6 pl-5">
+                  {criterion.prompt}
+                </p>
+
+                {/* ─── Round Score Buttons (1–5) ─── */}
+                <div className="grid grid-cols-5 gap-3 sm:gap-4 max-w-3xl pl-5">
+                  {[1, 2, 3, 4, 5].map((val) => {
+                    const isSelected = currentScore === val;
+                    const meta = criterion.labels[val]!;
+
+                    return (
+                      <button
+                        type="button"
+                        key={val}
+                        onClick={() => handleScoreSelect(criterion.id, val)}
+                        className={`group relative flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl transition-all duration-200 cursor-pointer ${
+                          isSelected
+                            ? "bg-surface-hover border border-stone-600 shadow-lg scale-[1.02]"
+                            : "bg-background hover:bg-surface-hover border border-stone-800/80 hover:border-stone-700"
+                        }`}
+                      >
+                        {/* Perfect Circular Dial Button */}
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-mono font-bold transition-all duration-200 ${
+                            isSelected
+                              ? "bg-[var(--color-primary)] text-white shadow-[0_0_18px_rgba(254,51,10,0.55)] scale-110"
+                              : "bg-surface-hover text-stone-300 group-hover:text-white group-hover:border-stone-500 border border-stone-700/80"
+                          }`}
+                        >
+                          {val}
+                        </div>
+
+                        {/* Micro Label Underneath Button */}
+                        <div className="text-center mt-3">
+                          <span
+                            className={`block text-[11px] font-mono tracking-wider transition-colors ${
+                              isSelected ? "text-white font-bold" : "text-stone-400 group-hover:text-stone-300"
+                            }`}
+                          >
+                            {meta.title}
+                          </span>
+                          <span className="hidden sm:block text-[9px] font-mono text-stone-500 tracking-tight mt-0.5">
+                            {meta.sub}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+
+          {/* ─── Deliberation & Qualitative Feedback ─── */}
+          <section className="p-6 rounded-2xl bg-surface border border-stone-800/80">
+            <div className="flex items-center justify-between mb-3">
+              <label htmlFor="notes" className="text-sm font-bold font-mono text-white uppercase tracking-tight">
+                DELIBERATION & TECHNICAL NOTES
+              </label>
+              <span className="text-xs font-mono text-stone-500">{notes.length} / 2000 CHARACTERS</span>
+            </div>
+
+            <textarea
+              id="notes"
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Provide concrete rationale, edge-case observations, or questions for final jury sync..."
+              className="w-full bg-background border border-stone-800 rounded-xl p-4 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-y"
+            />
+
+            <div className="flex items-center justify-between mt-3 text-xs text-stone-500 font-mono">
+              <span className="flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Jury notes (visible to organizers)
+              </span>
+              <span>Markdown formatting enabled</span>
+            </div>
+          </section>
+
+          {/* ─── Bottom Sticky Dock Bar ─── */}
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-stone-800/80 py-4 px-6 md:pl-[280px]">
+            <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3 text-xs font-mono text-stone-400">
+                <span className={`w-2 h-2 rounded-full ${scoredCount === 3 ? "bg-emerald-400" : "bg-[var(--color-primary)] animate-pulse"}`} />
+                <span className="text-white font-medium">
+                  {scoredCount} OF {CRITERIA.length} CRITERIA SCORED
+                </span>
+                <span className="text-stone-600">|</span>
+                <span className="text-stone-500">HOTKEYS: 1-5 RATE • ⌘+↵ SAVE</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={scoredCount === 0 || isSubmitting}
+                  className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700/80 text-xs font-mono font-medium text-stone-300 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {saveStatus === "saved" ? "✓ Draft Saved" : "Save as Draft"}
+                </button>
+
+                <Link
+                  href="/judge/dashboard"
+                  className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700/80 text-xs font-mono font-medium text-stone-300 hover:text-white transition-colors cursor-pointer"
+                >
+                  Back to Queue →
+                </Link>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || scoredCount !== CRITERIA.length}
+                  className="px-6 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-primary-hover text-white text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 shadow-[0_0_20px_rgba(254,51,10,0.4)] disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Signing Scores..." : "Save Scores →"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SignupInput } from "@/contracts";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -43,8 +44,11 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-stone-100 antialiased selection:bg-[var(--color-primary)]/30 selection:text-white font-sans">
-      
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4 text-stone-100 antialiased selection:bg-[var(--color-primary)]/30 selection:text-white font-sans">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-surface p-8 border border-stone-800 shadow-xl">
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-6">
