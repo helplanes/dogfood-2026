@@ -122,3 +122,68 @@ export async function createDraftProject(userId: string, input: { eventId: strin
   await db.insert(projects).values({ id, teamId, status: "draft", ...input });
   return id;
 }
+
+export interface AssignedProject {
+  id: string;
+  title: string;
+  summary: string;
+  repoUrl: string | null;
+  track: string | null;
+  teamName: string | null;
+  existingScores: Partial<Record<"functionality" | "quality" | "innovation", number>>;
+}
+
+// Assignment-scoped: only projects in the judge's eligible tracks, excluding their own team.
+export async function getAssignedProjects(judgeId: string): Promise<AssignedProject[]> {
+  const res = await db.execute(sql`
+    select p.id, p.title, p.summary, p.repo_url as "repoUrl", p.track, t.name as "teamName"
+    from projects p
+    join judge_tracks jt on jt.track_id = p.track and jt.judge_id = ${judgeId}
+    join users u on u.id = ${judgeId}
+    left join teams t on t.id = p.team_id
+    where p.status = 'submitted'
+      and not exists (select 1 from team_members tm where tm.team_id = p.team_id and tm.email = u.email)
+    order by p.id
+  `);
+  const rows = res.rows as unknown as Omit<AssignedProject, "existingScores">[];
+  const scoreRows = await db
+    .select({ projectId: scores.projectId, criterion: scores.criterion, value: scores.value })
+    .from(scores)
+    .where(eq(scores.judgeId, judgeId));
+  const byProject = new Map<string, AssignedProject["existingScores"]>();
+  for (const s of scoreRows) {
+    const m = byProject.get(s.projectId) ?? {};
+    m[s.criterion as "functionality" | "quality" | "innovation"] = s.value;
+    byProject.set(s.projectId, m);
+  }
+  return rows.map((r) => ({ ...r, existingScores: byProject.get(r.id) ?? {} }));
+}
+
+export async function getAssignedProject(judgeId: string, projectId: string): Promise<AssignedProject | null> {
+  const all = await getAssignedProjects(judgeId);
+  return all.find((p) => p.id === projectId) ?? null;
+}
+
+export interface JudgeLoad {
+  id: string;
+  name: string;
+  tracks: string[];
+  assigned: number;
+  scored: number;
+}
+
+export async function getJudgeLoads(): Promise<JudgeLoad[]> {
+  const res = await db.execute(sql`
+    select u.id, u.name,
+      coalesce(array_agg(distinct trk.name) filter (where trk.name is not null), '{}') as tracks,
+      (select count(*) from projects p where p.track in (select track_id from judge_tracks where judge_id = u.id) and p.status = 'submitted')::int as assigned,
+      (select count(distinct s.project_id) from scores s where s.judge_id = u.id)::int as scored
+    from users u
+    left join judge_tracks jt on jt.judge_id = u.id
+    left join tracks trk on trk.id = jt.track_id
+    where u.role = 'judge'
+    group by u.id, u.name
+    order by u.name
+  `);
+  return res.rows as unknown as JudgeLoad[];
+}

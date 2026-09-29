@@ -13,9 +13,7 @@ function readCookie(header: string | null, name: string): string | null {
   return null;
 }
 
-// Resolves the session cookie to an actor. No/unknown/expired session => visitor (userId null => 401).
-export async function getActor(req: Request): Promise<Actor> {
-  const token = readCookie(req.headers.get("cookie"), "session");
+async function resolveActor(token: string | null): Promise<Actor> {
   if (!token) return { userId: null, role: "visitor" };
   const [row] = await db
     .select({ userId: users.id, role: users.role })
@@ -26,4 +24,16 @@ export async function getActor(req: Request): Promise<Actor> {
   if (!row) return { userId: null, role: "visitor" };
   const role = Role.safeParse(row.role);
   return { userId: row.userId, role: role.success ? role.data : "visitor" };
+}
+
+// Route handlers: resolve from the incoming Request's cookie header.
+export async function getActor(req: Request): Promise<Actor> {
+  return resolveActor(readCookie(req.headers.get("cookie"), "session"));
+}
+
+// Server Components / Server Actions: no Request object, read from next/headers instead.
+export async function getActorFromCookies(): Promise<Actor> {
+  const { cookies } = await import("next/headers");
+  const jar = await cookies();
+  return resolveActor(jar.get("session")?.value ?? null);
 }

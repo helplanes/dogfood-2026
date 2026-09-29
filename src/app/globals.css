@@ -1,4 +1,31 @@
 @import "tailwindcss";
 
-/* PLACEHOLDER from backend scaffold. Shriyash owns this file: replace with the design tokens. */
-:root { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+@theme {
+  /* === DESIGN-4-HYBRID: Obsidian Kinetic === */
+
+  /* Canvas & Surfaces */
+  --color-background: #0c0e13;
+  --color-surface: #11141c;
+  --color-surface-hover: #141824;
+  
+  /* Brand Accent */
+  --color-primary: #fe330a;
+  --color-primary-hover: #ff4922;
+
+  /* Typography */
+  --font-sans: var(--font-inter, Inter, sans-serif);
+  --font-mono: var(--font-jb-mono, "JetBrains Mono", monospace);
+  --font-syne: var(--font-syne, Syne, sans-serif);
+}
+
+@layer base {
+  :root {
+    background-color: var(--color-background);
+    color: theme('colors.stone.100');
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-syne);
+    letter-spacing: -0.035em;
+  }
+}
