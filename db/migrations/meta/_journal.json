@@ -43,6 +43,13 @@
       "when": 1790693413716,
       "tag": "0005_same_carlie_cooper",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790700000000,
+      "tag": "0006_audit_hash_chain",
+      "breakpoints": true
     }
   ]
 }

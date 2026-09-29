@@ -48,6 +48,7 @@ export default async function OrganizerAuditPage() {
                     <th className="px-4 py-3 font-semibold uppercase tracking-wider">Actor</th>
                     <th className="px-4 py-3 font-semibold uppercase tracking-wider">Entity</th>
                     <th className="px-4 py-3 font-semibold uppercase tracking-wider">Detail</th>
+                    <th className="px-4 py-3 font-semibold uppercase tracking-wider">SHA-256</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-800/60 font-mono text-xs">
@@ -60,6 +61,9 @@ export default async function OrganizerAuditPage() {
                       <td className="px-4 py-3 text-stone-400">{e.actorId ?? "—"}</td>
                       <td className="px-4 py-3 text-stone-400">{e.entity}</td>
                       <td className="px-4 py-3 text-stone-500 max-w-xs truncate">{e.detail}</td>
+                      <td className="px-4 py-3 text-stone-500" title={`Previous: ${e.prevHash}\nEntry: ${e.hash}`}>
+                        {e.hash.slice(0, 12)}…
+                      </td>
                     </tr>
                   ))}
                 </tbody>

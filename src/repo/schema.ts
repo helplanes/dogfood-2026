@@ -124,6 +124,8 @@ export const auditLog = pgTable("audit_log", {
   entity: text("entity").notNull(),
   detail: text("detail").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  prevHash: text("prev_hash").notNull().$defaultFn(() => ""),
+  hash: text("hash").notNull().$defaultFn(() => ""),
 });
 
 // Durable fixed-window rate limiting (src/server/rateLimit.ts). Postgres-backed rather than an

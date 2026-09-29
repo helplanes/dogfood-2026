@@ -12,4 +12,6 @@ Next.js 16 (App Router) + Postgres. One process, one database, offline.
 
 Auth: the checker sends `Cookie: session=<token>` against the seed's fixed demo tokens (documented, demo-only — the four roles the checker exercises have no password). Real accounts (signup at `/signup`) use argon2-hashed passwords and the same session-cookie mechanism.
 
+Database roles: two separate Postgres connections, not one. `DATABASE_URL_ADMIN` (superuser) runs migrations and seeding only. `DATABASE_URL` (the `dogfood_app` role, created by migration `0006_audit_hash_chain.sql`) is what the running app server actually queries with day to day — it has ordinary CRUD on every table except `audit_log`, where UPDATE/DELETE/TRUNCATE are explicitly revoked and a trigger enforces append-only regardless of role. So a compromise of the running Next.js process cannot itself rewrite history, only extend it.
+
 Subsystems beyond the checker's 7 requests: team formation by invite link, draft-and-edit project submission, organizer event/track CRUD, organizer-configurable rubric weights (which the leaderboard actually applies before normalization, not just displays), manual judge-to-track assignment, an append-only audit log, and the pairwise bonus mode — see JUDGING.md and DATA-MODEL.md for each.

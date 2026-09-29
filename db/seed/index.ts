@@ -27,7 +27,7 @@ const norm = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
 
 async function main() {
   const fx: Fixtures = JSON.parse(readFileSync(process.env.FIXTURES_PATH ?? "fixtures.json", "utf8"));
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL_ADMIN ?? process.env.DATABASE_URL });
   const db = drizzle(pool);
 
   await db.transaction(async (tx) => {
