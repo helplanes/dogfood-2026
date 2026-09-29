@@ -9,7 +9,7 @@ export default function Home() {
       <main className="flex-1">
         
         {/* HERO SECTION - Deep Space Vibe */}
-        <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 px-4 md:px-8 flex flex-col items-center justify-center text-center bg-[#0a0c10]">
+        <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 px-4 md:px-8 flex flex-col items-center justify-center text-center bg-background">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-primary)]/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen" />
 
           <ScrollReveal>

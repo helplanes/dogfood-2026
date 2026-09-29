@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function GlobalNav() {
   const pathname = usePathname();
@@ -42,8 +43,9 @@ export function GlobalNav() {
         </div>
         
         <div className="flex items-center gap-6">
-          <Link 
-            href="/login" 
+          <ThemeToggle />
+          <Link
+            href="/login"
             className="text-sm font-mono text-stone-300 hover:text-primary transition-colors"
           >
             Login

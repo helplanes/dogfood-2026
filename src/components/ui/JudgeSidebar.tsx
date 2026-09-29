@@ -3,6 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 
 interface NavItem {
   id: string;
@@ -61,7 +63,7 @@ export function JudgeSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-screen bg-[#0c0e14] border-r border-stone-800/80 flex flex-col justify-between select-none shrink-0 sticky top-0">
+    <aside className="w-64 h-screen bg-surface border-r border-stone-800/80 flex flex-col justify-between select-none shrink-0 sticky top-0">
       {/* ─── 1. Brand Header ─── */}
       <div className="px-6 py-5 border-b border-stone-800/60 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
@@ -119,7 +121,7 @@ export function JudgeSidebar() {
       </div>
 
       {/* ─── 3. Clean Footer Profile ─── */}
-      <div className="p-4 border-t border-stone-800/60 bg-[#0a0c10]/50">
+      <div className="p-4 border-t border-stone-800/60 bg-background/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-surface-hover border border-stone-700/70 flex items-center justify-center text-xs font-mono font-bold text-stone-300">
@@ -131,15 +133,15 @@ export function JudgeSidebar() {
             </div>
           </div>
           <div className="flex items-center gap-1 text-stone-400">
-            <Link
-              href="/api/auth/logout"
-              title="Lock Session"
+            <ThemeToggle />
+            <LogoutButton
               className="p-1.5 rounded-lg hover:bg-stone-800 hover:text-red-400 transition-colors"
             >
+              <span className="sr-only">Log out</span>
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-            </Link>
+            </LogoutButton>
           </div>
         </div>
       </div>

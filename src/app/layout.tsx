@@ -1,7 +1,5 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import localFont from "next/font/local";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import "./globals.css";
 
 // Runs before paint so switching themes never flashes the wrong one on reload.
@@ -22,11 +20,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-screen bg-background text-stone-100 flex flex-col font-sans selection:bg-primary/30 relative">
-        {/* Removed global header to prevent double header. Role-based layouts handle navigation. */}
-        <div className="absolute top-4 right-4 z-[100]">
-          <ThemeToggle />
-        </div>
+      <body className="min-h-screen bg-background text-stone-100 flex flex-col font-sans selection:bg-primary/30">
+        {/* No global header/toggle here — every page renders its own nav (GlobalNav, the judge/
+            organizer sidebars, or a page-scoped header) with ThemeToggle placed inside it, so it
+            never floats over page content like a "back" link. See globals.css theme block. */}
         <div className="flex-1 flex flex-col">
           {children}
         </div>

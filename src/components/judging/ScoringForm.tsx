@@ -161,9 +161,9 @@ export function ScoringForm({ project, onSave }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0e14] text-stone-200 antialiased selection:bg-[var(--color-primary)]/20 selection:text-white -m-4 md:-m-12">
+    <div className="min-h-screen bg-surface text-stone-200 antialiased selection:bg-[var(--color-primary)]/20 selection:text-white -m-4 md:-m-12">
       {/* ─── Top Context Header Bar ─── */}
-      <header className="sticky top-0 z-30 border-b border-stone-800/80 bg-[#0c0e14]/90 backdrop-blur-md px-6 py-4">
+      <header className="sticky top-0 z-30 border-b border-stone-800/80 bg-surface/90 backdrop-blur-md px-6 py-4">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-xs font-mono flex-wrap">
             <Link

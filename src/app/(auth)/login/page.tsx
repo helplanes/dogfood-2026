@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LoginInput } from "@/contracts";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import screenImg from "@/components/images/screen.png";
 
 export default function LoginPage() {
@@ -57,9 +58,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#08090d] text-stone-100 font-sans selection:bg-[var(--color-primary)]/30 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-background text-stone-100 font-sans selection:bg-[var(--color-primary)]/30 overflow-x-hidden">
       {/* ─── GLOBAL TOP PROTOCOL BAR ─── */}
-      <header className="w-full flex items-center justify-between px-6 lg:px-12 py-4 border-b border-stone-800/60 bg-[#08090d]/80 backdrop-blur-md z-30">
+      <header className="w-full flex items-center justify-between px-6 lg:px-12 py-4 border-b border-stone-800/60 bg-background/80 backdrop-blur-md z-30">
         <Link href="/" className="inline-flex items-center gap-3 group">
           <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/40 flex items-center justify-center">
             <span className="h-2 w-2 rounded-sm bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]" />
@@ -69,21 +70,24 @@ export default function LoginPage() {
             <span className="font-mono text-[var(--color-primary)] font-bold text-base">2026</span>
           </div>
         </Link>
-        <Link
-          href="/"
-          className="text-xs font-mono text-stone-400 hover:text-white transition-colors flex items-center gap-1.5"
-        >
-          &larr; Back to Overview
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="text-xs font-mono text-stone-400 hover:text-white transition-colors flex items-center gap-1.5"
+          >
+            &larr; Back to Overview
+          </Link>
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* ─── MAIN SPLIT WORKSPACE CONTAINER ─── */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12">
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 rounded-3xl border border-stone-800/80 bg-[#0c0e14] shadow-2xl overflow-hidden min-h-[640px]">
+        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 rounded-3xl border border-stone-800/80 bg-surface shadow-2xl overflow-hidden min-h-[640px]">
           {/* ─── LEFT COLUMN: Engineering Squad War Room ─── */}
           <div className="hidden lg:flex lg:col-span-7 relative flex-col justify-between p-10 xl:p-12 border-r border-stone-800/80 overflow-hidden">
             {/* Cinematic Telemetry Background (Offline-compliant using local image) */}
-            <div className="absolute inset-0 z-0 bg-[#08090d]">
+            <div className="absolute inset-0 z-0 bg-background">
               <Image
                 src={screenImg}
                 alt="Engineering Squad War Room"
@@ -111,7 +115,7 @@ export default function LoginPage() {
 
             {/* Bottom Hero Narrative */}
             <div className="relative z-10 space-y-6">
-              <div className="p-6 rounded-2xl bg-[#08090d]/80 border border-stone-800/70 backdrop-blur-md space-y-2 max-w-lg">
+              <div className="p-6 rounded-2xl bg-background/80 border border-stone-800/70 backdrop-blur-md space-y-2 max-w-lg">
                 <h1 className="text-3xl font-serif font-bold text-white tracking-tight leading-tight">
                   DOGFOOD <span className="text-[var(--color-primary)]">2026</span>
                 </h1>
@@ -123,7 +127,7 @@ export default function LoginPage() {
           </div>
 
           {/* ─── RIGHT COLUMN: Enterprise Authentication Form (5 cols) ─── */}
-          <div className="lg:col-span-5 flex items-center justify-center p-8 sm:p-12 bg-[#0c0e14] relative">
+          <div className="lg:col-span-5 flex items-center justify-center p-8 sm:p-12 bg-surface relative">
             <div className="w-full max-w-md space-y-7">
               {/* Header */}
               <div className="space-y-1">

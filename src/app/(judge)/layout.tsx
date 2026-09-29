@@ -7,7 +7,7 @@ export default function JudgeDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#08090d]">
+    <div className="flex min-h-screen bg-background">
       <div className="hidden md:block">
         <JudgeSidebar />
       </div>

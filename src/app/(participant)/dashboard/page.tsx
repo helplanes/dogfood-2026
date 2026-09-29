@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface Team {
   id: string;
@@ -67,12 +68,15 @@ export default function ParticipantDashboard() {
             <span className="text-stone-300 font-semibold font-mono tracking-wider text-xs hidden sm:inline-block">PARTICIPANT DASHBOARD</span>
           </div>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-mono font-medium border border-stone-700 transition-colors"
-        >
-          Sign Out
-        </button>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <button
+            onClick={handleSignOut}
+            className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-mono font-medium border border-stone-700 transition-colors"
+          >
+            Sign Out
+          </button>
+        </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 w-full flex-grow flex flex-col">
