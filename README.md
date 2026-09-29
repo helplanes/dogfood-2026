@@ -68,5 +68,5 @@ Claimed T1 + T2. `acceptance-report.txt` shows the checker result: all 7 checks 
 auto-assign needs conflict-of-interest rules the fixture doesn't define, an organizer decision as
 much as an engineering one), and the 5-minute demo video.
 
-**Untested:** `docker compose up` — Docker was not available on the machine this was built on.
-Verify it once before submitting.
+**Verified:** `docker compose up` boots the whole stack — Postgres, migrate, seed, serve — and
+`run.py` passes all 7 checks against that containerized instance (not just the local dev server).
