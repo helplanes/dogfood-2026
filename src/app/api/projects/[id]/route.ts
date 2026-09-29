@@ -24,11 +24,19 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (!decision.ok) return apiError(decision.status, decision.status === 401 ? "unauthenticated" : "forbidden");
 
   const { id } = await params;
-  const patch = ProjectInput.omit({ eventId: true }).partial().safeParse(await req.json().catch(() => null));
+  const body = await req.json().catch(() => null);
+  const patch = ProjectInput.omit({ eventId: true }).partial().safeParse(body);
   if (!patch.success) return apiError(422, "invalid project fields");
 
-  const result = await updateOwnedProject(actor.userId!, id, patch.data);
+  // Zod v4 applies the create schema's defaults even inside partial(), so parsing a
+  // summary-only edit also produces repoUrl: null, track: null, etc. Keep only keys the
+  // caller supplied, or a small PATCH silently erases the rest of the project.
+  const changes = Object.fromEntries(
+    Object.entries(patch.data).filter(([key]) => Object.prototype.hasOwnProperty.call(body, key)),
+  ) as typeof patch.data;
+
+  const result = await updateOwnedProject(actor.userId!, id, changes);
   if ("error" in result) return apiError(result.error === "not found" ? 404 : 409, result.error);
-  await recordAudit(actor.userId, "project:edit", id, Object.keys(patch.data).join(","));
+  await recordAudit(actor.userId, "project:edit", id, Object.keys(changes).join(","));
   return Response.json({ ok: true });
 }
