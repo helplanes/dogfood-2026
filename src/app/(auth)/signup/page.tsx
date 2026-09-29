@@ -3,38 +3,55 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LoginInput } from "@/contracts";
+import { SignupInput } from "@/contracts";
 
 export default function SignupPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Validate using the contract
-    const result = LoginInput.safeParse({ email, password });
+    const result = SignupInput.safeParse({ email, password, name });
     if (!result.success) {
-      setError("Please enter a valid email and password.");
+      setError(result.error.issues[0]?.message ?? "Please check your details.");
       return;
     }
 
-    router.push("/dashboard");
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(result.data),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+        setError(body.error ?? "Could not create account.");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0c0e13] p-4 text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white font-sans">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-stone-100 antialiased selection:bg-[var(--color-primary)]/30 selection:text-white font-sans">
       
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-[#11141c] p-8 border border-stone-800 shadow-xl">
+      <div className="w-full max-w-md space-y-8 rounded-2xl bg-surface p-8 border border-stone-800 shadow-xl">
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-6">
-            <span className="flex h-3 w-3 rounded-full bg-[#fe330a] shadow-[0_0_12px_#fe330a] animate-pulse" />
+            <span className="flex h-3 w-3 rounded-full bg-[var(--color-primary)] shadow-[0_0_12px_var(--color-primary)] animate-pulse" />
           </div>
           <h2 className="text-3xl md:text-4xl font-serif text-white tracking-tight">
-            Register. <span className="italic text-[#fe330a]">Join.</span>
+            Register. <span className="italic text-[var(--color-primary)]">Join.</span>
           </h2>
           <p className="text-sm font-mono text-stone-500 uppercase tracking-widest">
             New Identity Creation
@@ -51,6 +68,23 @@ export default function SignupPage() {
           
           <div className="space-y-5">
             <div className="space-y-2">
+              <label htmlFor="name" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
+                Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={`w-full px-4 py-3 bg-background border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
+                placeholder="Ada Okonkwo"
+              />
+            </div>
+
+            <div className="space-y-2">
               <label htmlFor="email" className="block text-[11px] font-mono uppercase tracking-widest text-stone-400">
                 Email Address
               </label>
@@ -62,7 +96,7 @@ export default function SignupPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full px-4 py-3 bg-[#0c0e13] border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
+                className={`w-full px-4 py-3 bg-background border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
                 placeholder="new@example.com"
               />
             </div>
@@ -79,7 +113,7 @@ export default function SignupPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full px-4 py-3 bg-[#0c0e13] border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[#fe330a] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
+                className={`w-full px-4 py-3 bg-background border rounded-xl text-sm font-mono text-stone-200 placeholder:text-stone-600 focus:outline-none focus:border-[var(--color-primary)] transition-colors ${error ? 'border-red-800' : 'border-stone-800/80'}`}
                 placeholder="••••••••"
               />
             </div>
@@ -88,14 +122,15 @@ export default function SignupPage() {
           <div className="pt-2">
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#fe330a]/25 focus:outline-none focus:border-white"
+              disabled={submitting}
+              className="flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-lg shadow-[var(--color-primary)]/25 focus:outline-none focus:border-white disabled:opacity-50"
             >
-              CREATE ACCOUNT &rarr;
+              {submitting ? "CREATING…" : <>CREATE ACCOUNT &rarr;</>}
             </button>
           </div>
           
           <div className="text-center pt-2">
-            <Link href="/login" className="text-xs font-mono text-stone-500 hover:text-[#fe330a] transition-colors">
+            <Link href="/login" className="text-xs font-mono text-stone-500 hover:text-[var(--color-primary)] transition-colors">
               EXISTING IDENTITY? SIGN IN
             </Link>
           </div>

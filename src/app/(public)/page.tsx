@@ -2,11 +2,11 @@ import Link from "next/link";
 
 /*  DESIGN SYSTEM TOKEN CLASS MAPPINGS  */
 const tokens = {
-  canvas: "min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white font-sans",
+  canvas: "min-h-screen bg-background text-stone-100 antialiased selection:bg-[var(--color-primary)]/30 selection:text-white font-sans",
   container: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-  card: "bg-[#11141c] border border-stone-800/80 rounded-2xl p-6 transition-all duration-200 hover:border-stone-700 hover:shadow-xl hover:shadow-[#fe330a]/5",
-  btnPrimary: "inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono uppercase tracking-wider font-bold transition-all shadow-lg shadow-[#fe330a]/25 hover:shadow-[#fe330a]/40",
-  btnSecondary: "inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#141822] hover:bg-[#1a202c] text-stone-300 hover:text-white border border-stone-800 text-xs font-mono uppercase tracking-wider font-semibold transition-all",
+  card: "bg-surface border border-stone-800/80 rounded-2xl p-6 transition-all duration-200 hover:border-stone-700 hover:shadow-xl hover:shadow-[var(--color-primary)]/5",
+  btnPrimary: "inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-mono uppercase tracking-wider font-bold transition-all shadow-lg shadow-[var(--color-primary)]/25 hover:shadow-[var(--color-primary)]/40",
+  btnSecondary: "inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-surface-hover hover:bg-surface-hover text-stone-300 hover:text-white border border-stone-800 text-xs font-mono uppercase tracking-wider font-semibold transition-all",
   serifHeading: "font-serif text-white tracking-tight leading-[1.08]",
 };
 
@@ -27,24 +27,24 @@ export default function Home() {
   return (
     <div className={tokens.canvas}>
       {/* GLOBAL PROTOCOL HEADER */}
-      <header className="sticky top-0 z-50 bg-[#0c0e13]/90 backdrop-blur-md border-b border-stone-800/80 px-4 sm:px-8 py-3.5">
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-stone-800/80 px-4 sm:px-8 py-3.5">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#fe330a] shadow-[0_0_10px_#fe330a]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]" />
               <div className="flex items-baseline gap-1.5">
                 <span className="font-mono font-bold tracking-tight text-white text-base">DOGFOOD</span>
-                <span className="font-serif italic font-bold text-[#fe330a] text-lg leading-none">2026</span>
+                <span className="font-serif italic font-bold text-[var(--color-primary)] text-lg leading-none">2026</span>
               </div>
             </Link>
             <nav className="hidden lg:flex items-center gap-6 text-xs font-mono text-stone-400">
-              <Link href="#overview" className="text-white hover:text-[#fe330a] transition-colors">Overview</Link>
-              <Link href="/projects" className="hover:text-[#fe330a] transition-colors">Public Gallery</Link>
-              <Link href="/help" className="hover:text-[#fe330a] transition-colors">Help</Link>
+              <Link href="#overview" className="text-white hover:text-[var(--color-primary)] transition-colors">Overview</Link>
+              <Link href="/projects" className="hover:text-[var(--color-primary)] transition-colors">Public Gallery</Link>
+              <Link href="/help" className="hover:text-[var(--color-primary)] transition-colors">Help</Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/projects" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[#fe330a]/20">
+            <Link href="/projects" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[var(--color-primary)]/20">
               Explore Projects
             </Link>
           </div>
@@ -52,10 +52,10 @@ export default function Home() {
       </header>
 
       {/* STATUS NOTIFICATION BANNER */}
-      <div className="border-b border-stone-800/80 bg-[#10141e]/80 py-2.5 px-4 text-xs font-mono">
+      <div className="border-b border-stone-800/80 bg-surface/80 py-2.5 px-4 text-xs font-mono">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-stone-300">
-            <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
             <span className="font-semibold text-white">SUBMISSIONS OPEN</span>
             <span className="text-stone-600">&#47;&#47;</span>
             <span>SEP 25-28, 2026</span>
@@ -67,17 +67,17 @@ export default function Home() {
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none flex justify-center">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         {/* Dynamic mesh gradients */}
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-30 blur-[140px] bg-gradient-to-r from-[#fe330a] to-orange-600 rounded-full mix-blend-screen"></div>
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-30 blur-[140px] bg-gradient-to-r from-[var(--color-primary)] to-orange-600 rounded-full mix-blend-screen"></div>
         <div className="absolute top-40 -left-40 w-[600px] h-[600px] opacity-10 blur-[120px] bg-indigo-500/20 rounded-full mix-blend-screen"></div>
-        <div className="absolute top-40 -right-40 w-[600px] h-[600px] opacity-10 blur-[120px] bg-[#fe330a]/20 rounded-full mix-blend-screen"></div>
+        <div className="absolute top-40 -right-40 w-[600px] h-[600px] opacity-10 blur-[120px] bg-[var(--color-primary)]/20 rounded-full mix-blend-screen"></div>
       </div>
 
       <main className="space-y-24 py-12 relative z-10">
         {/* 1. HERO SECTION */}
         <section id="overview" className={tokens.container}>
           <div className="space-y-8 max-w-4xl pt-12 md:pt-24 text-center mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#141822]/80 backdrop-blur-sm border border-[#fe330a]/30 text-[11px] font-mono text-stone-300 mx-auto shadow-[0_0_20px_rgba(254,51,10,0.15)]">
-              <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-hover/80 backdrop-blur-sm border border-[var(--color-primary)]/30 text-[11px] font-mono text-stone-300 mx-auto shadow-[0_0_20px_rgba(254,51,10,0.15)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
               <span className="tracking-widest">DOGFOOD 2026 HACKATHON</span>
             </div>
             
@@ -86,7 +86,7 @@ export default function Home() {
                 Built from Scratch.
               </span>
               <br />
-              <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#fe330a] via-[#ff4d26] to-orange-500 font-medium block sm:inline mt-2">
+              <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-primary-hover)] to-orange-500 font-medium block sm:inline mt-2">
                 Shipped in 72 Hours.
               </span>
             </h1>
@@ -99,14 +99,14 @@ export default function Home() {
               <Link href="/projects" className={tokens.btnPrimary}>
                 Explore Public Gallery &rarr;
               </Link>
-              <Link href="/signup" className={`${tokens.btnSecondary} bg-transparent backdrop-blur-md hover:bg-[#141822]`}>
+              <Link href="/signup" className={`${tokens.btnSecondary} bg-transparent backdrop-blur-md hover:bg-surface-hover`}>
                 Sign Up as Participant
               </Link>
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-24 pt-8 border-t border-stone-800/80 relative">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[#fe330a]/50 to-transparent"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[var(--color-primary)]/50 to-transparent"></div>
             
             <div className={`${tokens.card} bg-transparent backdrop-blur-sm`}>
               <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block">SUBMITTED PROJECTS</span>
@@ -124,9 +124,9 @@ export default function Home() {
               <span className="text-xs text-stone-400 mt-1 block">Active on Panel</span>
             </div>
             <div className={`${tokens.card} bg-transparent backdrop-blur-sm relative overflow-hidden group`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-[#fe330a]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <span className="text-[11px] font-mono text-stone-500 uppercase tracking-wider block relative z-10">SCORE RECORDS</span>
-              <span className="text-4xl font-mono font-bold text-[#fe330a] block mt-2 relative z-10 drop-shadow-[0_0_8px_rgba(254,51,10,0.5)]">126</span>
+              <span className="text-4xl font-mono font-bold text-[var(--color-primary)] block mt-2 relative z-10 drop-shadow-[0_0_8px_rgba(254,51,10,0.5)]">126</span>
               <span className="text-xs text-stone-400 mt-1 block relative z-10">Peer Reviews Logged</span>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function Home() {
         {/* 2. RAPID VALIDATION ARCHITECTURE */}
         <section className={tokens.container}>
           <div className="space-y-3 max-w-2xl mb-8">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
+            <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-primary)] block">
               STRICT JURY PROTOCOL
             </span>
             <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
@@ -150,7 +150,7 @@ export default function Home() {
             {VALIDATION_COLUMNS.map((col, idx) => (
               <div key={idx} className={tokens.card}>
                 <div className="flex items-center justify-between mb-3 text-xs font-mono">
-                  <span className="text-[#fe330a]">{col.num}</span>
+                  <span className="text-[var(--color-primary)]">{col.num}</span>
                 </div>
                 <h4 className="text-base font-serif text-white mb-2">{col.title}</h4>
                 <p className="text-xs text-stone-400 leading-relaxed font-sans">{col.desc}</p>
@@ -165,7 +165,7 @@ export default function Home() {
             {/* Left: Native Accordion FAQ (No JS) */}
             <div className="lg:col-span-7 space-y-4">
               <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">KNOWLEDGE BASE</span>
+                <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-primary)] block">KNOWLEDGE BASE</span>
                 <h3 className={`${tokens.serifHeading} text-3xl sm:text-4xl mt-1`}>Frequently Answered Inquiries</h3>
               </div>
               <div className="space-y-3 pt-4">
@@ -173,7 +173,7 @@ export default function Home() {
                   <details key={idx} className={`${tokens.card} group cursor-pointer marker:content-['']`}>
                     <summary className="flex items-center justify-between gap-4 font-serif text-base text-white hover:text-stone-200 list-none">
                       <span>{faq.q}</span>
-                      <span className="text-xs font-mono text-[#fe330a] group-open:rotate-45 transition-transform">+</span>
+                      <span className="text-xs font-mono text-[var(--color-primary)] group-open:rotate-45 transition-transform">+</span>
                     </summary>
                     <p className="text-xs text-stone-400 font-sans leading-relaxed mt-4 pt-3 border-t border-stone-800">
                       {faq.a}
@@ -185,10 +185,10 @@ export default function Home() {
 
             {/* Right: Auth Flow CTA */}
             <div className="lg:col-span-5">
-              <div className={`${tokens.card} p-8 space-y-6 bg-gradient-to-b from-[#181c26] to-[#11141c] border-[#fe330a]/20 shadow-2xl shadow-[#fe330a]/5`}>
+              <div className={`${tokens.card} p-8 space-y-6 bg-gradient-to-b from-[#181c26] to-[#11141c] border-[var(--color-primary)]/20 shadow-2xl shadow-[var(--color-primary)]/5`}>
                 <div className="flex items-center justify-between pb-3 border-b border-stone-800">
                   <div className="flex items-center gap-2 text-xs font-mono text-stone-300">
-                    <span className="h-2 w-2 rounded-full bg-[#fe330a] animate-pulse" />
+                    <span className="h-2 w-2 rounded-full bg-[var(--color-primary)] animate-pulse" />
                     <span>PUBLIC GALLERY</span>
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export default function Home() {
       </main>
       
       {/* FOOTER */}
-      <footer className="border-t border-stone-800/80 bg-[#080b11] py-12 px-4 sm:px-8 text-xs font-mono text-stone-500 mt-12">
+      <footer className="border-t border-stone-800/80 bg-background py-12 px-4 sm:px-8 text-xs font-mono text-stone-500 mt-12">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>&copy; 2026 DOGFOOD PORTAL</div>
           <div className="flex items-center gap-6">

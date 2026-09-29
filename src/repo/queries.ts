@@ -1,6 +1,6 @@
 import { and, asc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "@/server/db";
-import { events, projects, scores, teams, users } from "@/repo/schema";
+import { events, projects, scores, sessions, teamInvites, teamMembers, teams, users } from "@/repo/schema";
 import type { PublicProject } from "@/contracts";
 import { rankProjects } from "@/domain/normalize";
 
@@ -186,4 +186,88 @@ export async function getJudgeLoads(): Promise<JudgeLoad[]> {
     order by u.name
   `);
   return res.rows as unknown as JudgeLoad[];
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+
+export async function findUserByEmail(email: string) {
+  const [row] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return row ?? null;
+}
+
+export async function createParticipant(input: { email: string; name: string; passwordHash: string }) {
+  const id = `usr_${crypto.randomUUID().slice(0, 12)}`;
+  await db.insert(users).values({ id, email: input.email, name: input.name, role: "participant", passwordHash: input.passwordHash });
+  return id;
+}
+
+export async function createSession(userId: string, ttlDays = 30) {
+  const token = crypto.randomUUID().replace(/-/g, "");
+  const expiresAt = new Date(Date.now() + ttlDays * 24 * 60 * 60 * 1000);
+  await db.insert(sessions).values({ token, userId, expiresAt });
+  return { token, expiresAt };
+}
+
+export async function deleteSession(token: string) {
+  await db.delete(sessions).where(eq(sessions.token, token));
+}
+
+// ── Teams ─────────────────────────────────────────────────────────────────
+
+// A user's team membership is keyed by email (fixture members are emails; see schema.ts).
+export async function getMyTeam(userId: string) {
+  const res = await db.execute(sql`
+    select t.id, t.name from teams t
+    join team_members tm on tm.team_id = t.id
+    join users u on u.email = tm.email
+    where u.id = ${userId} limit 1
+  `);
+  return (res.rows[0] as { id: string; name: string } | undefined) ?? null;
+}
+
+export async function createTeam(
+  userId: string,
+  input: { eventId: string; name: string },
+): Promise<{ error: string } | { id: string; name: string; inviteCode: string }> {
+  const existing = await getMyTeam(userId);
+  if (existing) return { error: "already on a team" };
+
+  const [user] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId));
+  if (!user) return { error: "user not found" };
+
+  const id = `tm_${crypto.randomUUID().slice(0, 8)}`;
+  await db.insert(teams).values({ id, eventId: input.eventId, name: input.name });
+  await db.insert(teamMembers).values({ teamId: id, email: user.email });
+
+  const token = crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+  await db.insert(teamInvites).values({ token, teamId: id });
+
+  return { id, name: input.name, inviteCode: token };
+}
+
+export async function getTeamInvite(teamId: string) {
+  const [row] = await db.select({ token: teamInvites.token }).from(teamInvites).where(eq(teamInvites.teamId, teamId)).limit(1);
+  return row?.token ?? null;
+}
+
+export async function joinTeamByInvite(
+  userId: string,
+  code: string,
+): Promise<{ error: string } | { id: string; name: string }> {
+  const existing = await getMyTeam(userId);
+  if (existing) return { error: "already on a team" };
+
+  const [invite] = await db.select().from(teamInvites).where(eq(teamInvites.token, code)).limit(1);
+  if (!invite) return { error: "invalid invite code" };
+
+  const [user] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId));
+  if (!user) return { error: "user not found" };
+
+  await db.insert(teamMembers).values({ teamId: invite.teamId, email: user.email }).onConflictDoNothing();
+  const [team] = await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, invite.teamId));
+  return team ?? { error: "team not found" };
+}
+
+export async function getTeamMembers(teamId: string) {
+  return db.select({ email: teamMembers.email }).from(teamMembers).where(eq(teamMembers.teamId, teamId));
 }

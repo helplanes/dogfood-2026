@@ -29,6 +29,19 @@ export type ProjectInput = z.infer<typeof ProjectInput>;
 export const LoginInput = z.object({ email: z.string().email(), password: z.string().min(1) });
 export type LoginInput = z.infer<typeof LoginInput>;
 
+export const SignupInput = z.object({
+  email: z.string().email(),
+  password: z.string().min(8, "at least 8 characters"),
+  name: z.string().min(1).max(200),
+});
+export type SignupInput = z.infer<typeof SignupInput>;
+
+export const TeamInput = z.object({ eventId: z.string(), name: z.string().min(1).max(200) });
+export type TeamInput = z.infer<typeof TeamInput>;
+
+export const JoinTeamInput = z.object({ code: z.string().min(1) });
+export type JoinTeamInput = z.infer<typeof JoinTeamInput>;
+
 // Official fixtures: 3 criteria (functionality, quality, innovation), integer 1-5 scale.
 export const Criterion = z.enum(["functionality", "quality", "innovation"]);
 export type Criterion = z.infer<typeof Criterion>;

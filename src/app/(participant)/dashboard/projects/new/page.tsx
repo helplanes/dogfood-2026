@@ -15,17 +15,14 @@ export default function SubmitProjectPage() {
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Using a mock open event ID for successful flow
-  const demoEventId = "evt_open_demo"; 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
 
-    // Validate with contract
-    const result = ProjectInput.safeParse({
-      eventId: demoEventId,
+    // eventId is intentionally omitted: the API resolves it to the current event server-side
+    // (there is only ever one open event), so the client never has to know or guess its id.
+    const result = ProjectInput.omit({ eventId: true }).safeParse({
       title: formData.title,
       summary: formData.summary,
       repoUrl: formData.repoUrl || null,
@@ -77,7 +74,7 @@ export default function SubmitProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0e13] text-stone-100 p-4 lg:p-12">
+    <div className="min-h-screen bg-background text-stone-100 p-4 lg:p-12">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight font-serif tracking-tight">Submit Project</h2>
@@ -85,15 +82,15 @@ export default function SubmitProjectPage() {
         </div>
 
         {success ? (
-          <div className="rounded-2xl shadow-xl bg-[#11141c] border border-stone-800 p-8 text-white text-center">
+          <div className="rounded-2xl shadow-xl bg-surface border border-stone-800 p-8 text-white text-center">
             <h3 className="text-xl font-bold uppercase tracking-tight mb-4">Project Submitted!</h3>
             <p className="text-stone-400 mb-6">Your project has been successfully recorded for judging.</p>
-            <Link href="/dashboard" className="bg-[#fe330a] hover:bg-[#ff4922] text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors inline-block">
+            <Link href="/dashboard" className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors inline-block">
               Return to Dashboard
             </Link>
           </div>
         ) : (
-          <div className="rounded-2xl shadow-xl bg-[#11141c] border border-stone-800 p-6 lg:p-8 text-white">
+          <div className="rounded-2xl shadow-xl bg-surface border border-stone-800 p-6 lg:p-8 text-white">
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <div className="rounded-xl bg-red-950/40 p-4 text-sm text-red-300 border border-red-800">
@@ -111,7 +108,7 @@ export default function SubmitProjectPage() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className={`mt-1 block w-full rounded-xl border bg-[#0c0e13] py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm ${error ? 'border-red-800' : 'border-stone-800'}`}
+                  className={`mt-1 block w-full rounded-xl border bg-background py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] sm:text-sm ${error ? 'border-red-800' : 'border-stone-800'}`}
                   placeholder="e.g. Project Apollo"
                 />
               </div>
@@ -125,7 +122,7 @@ export default function SubmitProjectPage() {
                   rows={4}
                   value={formData.summary}
                   onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                  className="mt-1 block w-full rounded-xl border border-stone-800 bg-[#0c0e13] py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm"
+                  className="mt-1 block w-full rounded-xl border border-stone-800 bg-background py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] sm:text-sm"
                   placeholder="What does your project do?"
                 />
               </div>
@@ -140,7 +137,7 @@ export default function SubmitProjectPage() {
                     type="url"
                     value={formData.repoUrl}
                     onChange={(e) => setFormData({ ...formData, repoUrl: e.target.value })}
-                    className="mt-1 block w-full rounded-xl border border-stone-800 bg-[#0c0e13] py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm"
+                    className="mt-1 block w-full rounded-xl border border-stone-800 bg-background py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] sm:text-sm"
                     placeholder="https://github.com/..."
                   />
                 </div>
@@ -154,7 +151,7 @@ export default function SubmitProjectPage() {
                     type="text"
                     value={formData.track}
                     onChange={(e) => setFormData({ ...formData, track: e.target.value })}
-                    className="mt-1 block w-full rounded-xl border border-stone-800 bg-[#0c0e13] py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a] sm:text-sm"
+                    className="mt-1 block w-full rounded-xl border border-stone-800 bg-background py-2 px-3 text-white placeholder:text-stone-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] sm:text-sm"
                     placeholder="e.g. Developer Tools"
                   />
                 </div>
@@ -167,7 +164,7 @@ export default function SubmitProjectPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 rounded-xl bg-[#fe330a] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-[#ff4922] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#fe330a] disabled:opacity-70"
+                  className="flex-1 rounded-xl bg-[var(--color-primary)] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--color-primary)] disabled:opacity-70"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Project"}
                 </button>

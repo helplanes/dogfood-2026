@@ -51,7 +51,7 @@ export default async function PublicProjectGalleryPage({
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8 space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-4 py-2.5 px-4 rounded-xl bg-surface/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
           <div className="flex items-center gap-3">
-            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_#fe330a]" />
+            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
             <span className="text-stone-300 font-medium">PROJECT GALLERY</span>
           </div>
         </div>

@@ -67,7 +67,7 @@ const SCORE_COLORS: Record<number, { bg: string; border: string; text: string }>
   2: { bg: "bg-[#f59e0b]", border: "border-[#f59e0b]", text: "text-white" },
   3: { bg: "bg-[#64748b]", border: "border-[#64748b]", text: "text-white" },
   4: { bg: "bg-[#22c55e]", border: "border-[#22c55e]", text: "text-white" },
-  5: { bg: "bg-[#fe330a]", border: "border-[#fe330a]", text: "text-white" },
+  5: { bg: "bg-[var(--color-primary)]", border: "border-[var(--color-primary)]", text: "text-white" },
 };
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -183,7 +183,7 @@ export function ScoringForm({
             {/* Mini bar */}
             <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden ml-2">
               <div
-                className="h-full bg-[#fe330a] rounded-full transition-all duration-300"
+                className="h-full bg-[var(--color-primary)] rounded-full transition-all duration-300"
                 style={{ width: `${(weightedScore / 5) * 100}%` }}
               />
             </div>
@@ -232,10 +232,10 @@ export function ScoringForm({
                       className={[
                         "flex flex-col items-center justify-center w-14 h-14 rounded-lg border-2 cursor-pointer",
                         "text-sm font-bold transition-all duration-150",
-                        "focus-within:ring-2 focus-within:ring-[#fe330a] focus-within:ring-offset-1",
+                        "focus-within:ring-2 focus-within:ring-[var(--color-primary)] focus-within:ring-offset-1",
                         isSelected
                           ? `${c.bg} ${c.border} ${c.text}`
-                          : "bg-white border-[#e2e8f0] text-[#111318] hover:border-[#fe330a] hover:scale-105",
+                          : "bg-white border-[#e2e8f0] text-[#111318] hover:border-[var(--color-primary)] hover:scale-105",
                       ].join(" ")}
                       title={SCORE_LABELS[score]}
                     >
@@ -286,7 +286,7 @@ export function ScoringForm({
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             placeholder="Add reasoning, observations, or flags for your own reference…"
-            className="w-full rounded-lg border border-[#e2e8f0] bg-[#f8f9fc] px-4 py-3 text-sm text-[#111318] placeholder:text-slate-400 resize-y focus:outline-none focus:ring-2 focus:ring-[#fe330a] focus:border-transparent transition-all"
+            className="w-full rounded-lg border border-[#e2e8f0] bg-[#f8f9fc] px-4 py-3 text-sm text-[#111318] placeholder:text-slate-400 resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all"
             maxLength={2000}
           />
           <span className="text-[10px] font-mono text-slate-400 text-right tabular-nums">
@@ -304,9 +304,9 @@ export function ScoringForm({
             disabled={!allScored || status === "saving"}
             className={[
               "px-6 py-2.5 rounded-lg text-sm font-bold uppercase tracking-widest transition-all duration-200",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fe330a]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]",
               allScored && status !== "saving"
-                ? "bg-[#fe330a] text-white hover:bg-[#ff4d26] active:bg-[#e02d07] shadow-sm hover:shadow-md"
+                ? "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] active:bg-[#e02d07] shadow-sm hover:shadow-md"
                 : "bg-[#e2e8f0] text-slate-400 cursor-not-allowed",
             ].join(" ")}
             aria-busy={status === "saving"}

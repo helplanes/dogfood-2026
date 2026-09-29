@@ -69,6 +69,13 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// A single-use-forever link per team; regenerable. `/team/join?code=<token>` is the invite link.
+export const teamInvites = pgTable("team_invites", {
+  token: text("token").primaryKey(),
+  teamId: text("team_id").notNull().references(() => teams.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const scores = pgTable(
   "scores",
   {

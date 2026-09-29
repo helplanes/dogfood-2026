@@ -22,7 +22,7 @@ export default async function JudgeDashboardPage() {
       <div className="max-w-7xl mx-auto space-y-10">
         <div className="flex flex-wrap items-center justify-between gap-4 py-3 px-5 rounded-xl bg-surface/90 border border-stone-800/80 text-xs font-mono tracking-wider text-stone-400">
           <div className="flex items-center gap-3">
-            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_#fe330a]" />
+            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
             <span className="text-stone-300 font-semibold">JUDGE DASHBOARD</span>
           </div>
         </div>

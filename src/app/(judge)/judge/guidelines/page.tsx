@@ -10,7 +10,7 @@ const CRITERIA = [
     key: "functionality",
     label: "Functionality",
     weight: 40,
-    color: "#fe330a",
+    color: "var(--color-primary)",
     description:
       "Does the project work as described in its submission? Are the core features complete and stable? Can a reviewer reproduce the primary use-case without significant friction?",
     levels: [
@@ -71,7 +71,7 @@ export default function JudgeGuidelinesPage() {
         <div className="max-w-3xl mx-auto">
           <Link
             href="/judge/dashboard"
-            className="inline-flex items-center gap-1 text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-[#fe330a] transition-colors mb-5"
+            className="inline-flex items-center gap-1 text-xs font-mono uppercase tracking-widest text-slate-500 hover:text-[var(--color-primary)] transition-colors mb-5"
           >
             ← Back to Dashboard
           </Link>
@@ -218,7 +218,7 @@ export default function JudgeGuidelinesPage() {
                 key={i}
                 className="flex items-start gap-3 bg-[#191c20] border border-white/[0.08] rounded-lg px-5 py-4"
               >
-                <span className="shrink-0 w-5 h-5 rounded-full bg-[#fe330a] text-white text-[10px] font-black flex items-center justify-center mt-0.5">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-[var(--color-primary)] text-white text-[10px] font-black flex items-center justify-center mt-0.5">
                   {i + 1}
                 </span>
                 <p className="text-sm text-slate-300 leading-relaxed">{tip}</p>
@@ -243,7 +243,7 @@ export default function JudgeGuidelinesPage() {
         <div className="flex items-center justify-between gap-4 pt-2">
           <Link
             href="/judge/dashboard"
-            className="px-6 py-3 bg-[#fe330a] text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-[#ff4d26] transition-colors"
+            className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-[var(--color-primary-hover)] transition-colors"
           >
             ← Back to My Projects
           </Link>

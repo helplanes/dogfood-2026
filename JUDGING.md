@@ -7,10 +7,10 @@
 - Visitors and participants never see scores. Organizers see all via `/api/organizer/*` and `/api/export.csv`.
 
 ## Normalization
-Judges use the 1-5 scale differently. For each judge we take the mean over criteria per project review, then z-score it against that judge's own mean and standard deviation. A project's normalized score is the mean of its z-scores; raw mean is shown alongside. Ranking sorts by normalized score, then raw mean.
+Judges use the 1-5 scale differently. For each judge we take the mean over criteria per project review, then normalize against that judge's own **median and MAD** (median absolute deviation), not mean/std: `z = 0.6745 * (x - median) / MAD` (Iglewicz & Hoaglin, ASQC 1993 — the 0.6745 constant scales MAD to be a consistent estimator of std under normality). MAD is a robust statistic: a single outlier review from a judge who mostly reviewed 1-2 projects doesn't distort their whole scale the way a mean/std z-score would. A project's normalized score is the mean of its z-scores; raw mean is shown alongside. Ranking sorts by normalized score, then raw mean. Implementation: `src/domain/normalize.ts`.
 
 Edge cases from the fixtures:
-- **Zero variance** (`jdg_01`: one review, all 2s; `jdg_07`: all 4s): the std is 0, so we cannot scale. That judge contributes z = 0 (neutral) rather than NaN/Infinity, and affected projects carry `variance_warning = true` in the leaderboard and CSV.
+- **Zero spread** (`jdg_01`: one review, all 2s; `jdg_07`: all 4s): MAD is 0, so we cannot scale. That judge contributes z = 0 (neutral) rather than NaN/Infinity, and affected projects carry `variance_warning = true` in the leaderboard and CSV.
 - **Uneven review counts** (2 to 5 per project): normalized score is a mean, so counts do not inflate totals; `n_reviews` is exposed.
 - **Duplicates** (`prj_41` duplicates `prj_07`): flagged via `duplicate_of`, never deleted.
 

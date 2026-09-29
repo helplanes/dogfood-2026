@@ -2,11 +2,11 @@ import Link from "next/link";
 
 /* DESIGN SYSTEM TOKENS — Obsidian Kinetic / Editorial Serif */
 const tokens = {
-  canvas: "min-h-screen bg-[#0c0e13] text-stone-100 antialiased selection:bg-[#fe330a]/30 selection:text-white font-sans flex flex-col",
+  canvas: "min-h-screen bg-background text-stone-100 antialiased selection:bg-[var(--color-primary)]/30 selection:text-white font-sans flex flex-col",
   container: "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8",
-  card: "bg-[#11141c] border border-stone-800/80 rounded-2xl p-6 sm:p-7 shadow-xl transition-all duration-200 hover:border-stone-700 hover:shadow-[#fe330a]/5",
-  btnPrimary: "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#fe330a] hover:bg-[#ff4922] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[#fe330a]/25",
-  btnSecondary: "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#141822] hover:bg-[#1a202c] text-stone-300 hover:text-white border border-stone-800 text-xs font-mono font-semibold uppercase tracking-wider transition-all",
+  card: "bg-surface border border-stone-800/80 rounded-2xl p-6 sm:p-7 shadow-xl transition-all duration-200 hover:border-stone-700 hover:shadow-[var(--color-primary)]/5",
+  btnPrimary: "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-md shadow-[var(--color-primary)]/25",
+  btnSecondary: "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-surface-hover hover:bg-surface-hover text-stone-300 hover:text-white border border-stone-800 text-xs font-mono font-semibold uppercase tracking-wider transition-all",
   serifHeading: "font-serif text-white tracking-tight leading-[1.1]",
 };
 
@@ -62,17 +62,17 @@ export default function HelpAndHowItWorksPage() {
   return (
     <div className={tokens.canvas}>
       {/* GLOBAL TOP NAVIGATION */}
-      <header className="sticky top-0 z-50 bg-[#0c0e13]/90 backdrop-blur-md border-b border-stone-800/80 px-4 sm:px-8 py-3.5">
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-stone-800/80 px-4 sm:px-8 py-3.5">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+            <span className="h-3 w-3 rounded-full bg-[var(--color-primary)] shadow-[0_0_8px_var(--color-primary)]" />
             <span className="font-mono font-bold tracking-tight text-white text-base">DOGFOOD</span>
-            <span className="font-serif italic font-bold text-[#fe330a] text-base">2026</span>
+            <span className="font-serif italic font-bold text-[var(--color-primary)] text-base">2026</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-stone-400">
-            <Link href="/" className="hover:text-[#fe330a] transition-colors">Overview</Link>
-            <Link href="/projects" className="hover:text-[#fe330a] transition-colors">Public Gallery</Link>
-            <Link href="/help" className="text-[#fe330a] font-bold">Help & Guide</Link>
+            <Link href="/" className="hover:text-[var(--color-primary)] transition-colors">Overview</Link>
+            <Link href="/projects" className="hover:text-[var(--color-primary)] transition-colors">Public Gallery</Link>
+            <Link href="/help" className="text-[var(--color-primary)] font-bold">Help & Guide</Link>
           </nav>
         </div>
       </header>
@@ -81,11 +81,11 @@ export default function HelpAndHowItWorksPage() {
         {/* 1. PAGE HEADER */}
         <section className={tokens.container}>
           <div className="space-y-4 max-w-3xl">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block">
+            <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-primary)] block">
                PLATFORM MANUAL
             </span>
             <h1 className={`${tokens.serifHeading} text-4xl sm:text-5xl lg:text-6xl`}>
-              How It <span className="italic text-[#fe330a]">Works</span>
+              How It <span className="italic text-[var(--color-primary)]">Works</span>
             </h1>
             <p className="text-stone-400 text-base sm:text-lg leading-relaxed">
               A transparent overview of the DOGFOOD 2026 platform, participant intake, and juror scoring rubrics.
@@ -97,7 +97,7 @@ export default function HelpAndHowItWorksPage() {
         <section id="roles" className={tokens.container}>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-800/80 mb-8">
             <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block mb-1">
+              <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-primary)] block mb-1">
                 01 // ECOSYSTEM ROLES
               </span>
               <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
@@ -111,7 +111,7 @@ export default function HelpAndHowItWorksPage() {
               <div key={idx} className={`${tokens.card} flex flex-col justify-between`}>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-[#fe330a] font-semibold">{role.tag}</span>
+                    <span className="text-[var(--color-primary)] font-semibold">{role.tag}</span>
                   </div>
                   <div>
                     <h3 className="text-xl font-serif text-white font-semibold">{role.title}</h3>
@@ -121,7 +121,7 @@ export default function HelpAndHowItWorksPage() {
                     {role.specs.map((spec, i) => (
                       <div key={i} className="space-y-1">
                         <span className="font-mono text-[11px] font-bold text-white flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#fe330a]" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
                           {spec.label}
                         </span>
                         <p className="text-stone-500 pl-3 text-[11px] leading-relaxed">{spec.detail}</p>
@@ -138,7 +138,7 @@ export default function HelpAndHowItWorksPage() {
         <section id="faq" className={tokens.container}>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-800/80 mb-8">
             <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-[#fe330a] block mb-1">
+              <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-primary)] block mb-1">
                 02 // KNOWLEDGE BASE
               </span>
               <h2 className={`${tokens.serifHeading} text-3xl sm:text-4xl`}>
@@ -150,8 +150,8 @@ export default function HelpAndHowItWorksPage() {
             {FAQS.map((faq, idx) => (
               <details key={idx} className={`${tokens.card} group cursor-pointer marker:content-['']`}>
                 <summary className="flex items-center justify-between gap-4 font-serif text-base text-white hover:text-stone-300 list-none">
-                  <span><span className="text-[#fe330a] font-mono text-sm shrink-0 mr-2">Q.</span>{faq.q}</span>
-                  <span className="text-xs font-mono text-[#fe330a] group-open:rotate-45 transition-transform">+</span>
+                  <span><span className="text-[var(--color-primary)] font-mono text-sm shrink-0 mr-2">Q.</span>{faq.q}</span>
+                  <span className="text-xs font-mono text-[var(--color-primary)] group-open:rotate-45 transition-transform">+</span>
                 </summary>
                 <p className="text-xs text-stone-400 font-sans leading-relaxed mt-4 pt-3 border-t border-stone-800">
                   {faq.a}
@@ -163,9 +163,9 @@ export default function HelpAndHowItWorksPage() {
         
         {/* 4. GALLERY CTA */}
         <section className={tokens.container}>
-          <div className="p-8 sm:p-10 rounded-3xl bg-[#11141c] border border-stone-800 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="p-8 sm:p-10 rounded-3xl bg-surface border border-stone-800 text-white flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-2 text-center md:text-left">
-              <span className="text-[11px] font-mono text-[#fe330a] uppercase tracking-wider block font-bold">
+              <span className="text-[11px] font-mono text-[var(--color-primary)] uppercase tracking-wider block font-bold">
                  PUBLIC GALLERY
               </span>
               <h3 className="text-2xl sm:text-3xl font-serif">
