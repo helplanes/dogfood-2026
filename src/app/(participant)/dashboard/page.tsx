@@ -20,6 +20,7 @@ interface OwnedProject {
   id: string;
   title: string;
   status: string;
+  repoUrl: string | null;
 }
 
 export default function ParticipantDashboard() {
@@ -27,6 +28,8 @@ export default function ParticipantDashboard() {
   const [team, setTeam] = useState<Team | null | undefined>(undefined); // undefined = loading
   const [event, setEvent] = useState<EventStatus | null>(null);
   const [projects, setProjects] = useState<OwnedProject[]>([]);
+  const hasRepository = projects.some((project) => Boolean(project.repoUrl));
+  const hasSubmitted = projects.some((project) => project.status === "submitted");
 
   useEffect(() => {
     fetch("/api/teams/me")
@@ -216,14 +219,14 @@ export default function ParticipantDashboard() {
                     <p className="text-sm font-mono text-stone-200">Form or join a team</p>
                   </div>
                 </li>
-                <li className="flex items-start gap-3 opacity-50">
-                  <span className="mt-0.5 text-stone-600 font-bold">○</span>
+                <li className={`flex items-start gap-3 ${hasRepository ? "" : "opacity-50"}`}>
+                  <span className={`mt-0.5 font-bold ${hasRepository ? "text-emerald-500" : "text-stone-600"}`}>{hasRepository ? "✓" : "○"}</span>
                   <div>
-                    <p className="text-sm font-mono text-stone-200">Include a public GitHub repository link</p>
+                    <p className="text-sm font-mono text-stone-200">Include a repository link</p>
                   </div>
                 </li>
-                <li className="flex items-start gap-3 opacity-50">
-                  <span className="mt-0.5 text-stone-600 font-bold">○</span>
+                <li className={`flex items-start gap-3 ${hasSubmitted ? "" : "opacity-50"}`}>
+                  <span className={`mt-0.5 font-bold ${hasSubmitted ? "text-emerald-500" : "text-stone-600"}`}>{hasSubmitted ? "✓" : "○"}</span>
                   <div>
                     <p className="text-sm font-mono text-stone-200">Submit before the deadline</p>
                   </div>

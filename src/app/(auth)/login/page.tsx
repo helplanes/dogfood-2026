@@ -46,15 +46,28 @@ export default function LoginPage() {
     }
   };
 
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleRoleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setSelectedRole(val);
     if (!val) return;
-    document.cookie = `session=${val}; path=/`;
-    if (val === "org_7f2a") router.push("/organizer/dashboard");
-    else if (val.startsWith("jdg")) router.push("/judge/dashboard");
-    else router.push("/dashboard");
-    router.refresh();
+    setSubmitting(true);
+    setError(null);
+    try {
+      // A real password login leaves an HttpOnly session cookie. Clear it server-side before
+      // setting the documented demo cookie; document.cookie cannot replace an HttpOnly cookie.
+      const logout = await fetch("/api/auth/logout", { method: "POST" });
+      if (!logout.ok) throw new Error("Could not switch demo profile.");
+      document.cookie = `session=${val}; path=/`;
+      if (val === "org_7f2a") router.push("/organizer/dashboard");
+      else if (val.startsWith("jdg")) router.push("/judge/dashboard");
+      else router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setSelectedRole("");
+      setError("Could not switch demo profile. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -244,6 +257,7 @@ export default function LoginPage() {
                     <select
                       value={selectedRole}
                       onChange={handleRoleChange}
+                      disabled={submitting}
                       className="w-full appearance-none bg-background border border-stone-800 text-stone-300 text-xs font-mono px-4 py-3 rounded-xl focus:outline-none focus:border-[var(--color-primary)] transition-all cursor-pointer hover:border-stone-700 font-medium"
                     >
                       <option value="">Pick the role</option>
