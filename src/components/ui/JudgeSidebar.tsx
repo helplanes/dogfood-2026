@@ -19,13 +19,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-stone-200"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-stone-200"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
         <rect x="14" y="3" width="7" height="7" rx="1.5" />
         <rect x="14" y="14" width="7" height="7" rx="1.5" />
@@ -40,13 +40,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-amber-400"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-amber-400"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -65,12 +65,12 @@ export function JudgeSidebar() {
       {/* ─── 1. Brand Header ─── */}
       <div className="px-6 py-5 border-b border-stone-800/60 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-lg bg-[#fe330a]/15 border border-[#fe330a]/40 flex items-center justify-center">
-            <span className="h-2 w-2 rounded-sm bg-[#fe330a] shadow-[0_0_10px_#fe330a]" />
+          <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/40 flex items-center justify-center">
+            <span className="h-2 w-2 rounded-sm bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]" />
           </div>
           <div className="flex items-center gap-1.5 font-mono font-bold tracking-tight text-white text-base">
             <span>DOGFOOD</span>
-            <span className="text-[#fe330a]">2026</span>
+            <span className="text-[var(--color-primary)]">2026</span>
           </div>
         </Link>
         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-950/40 border border-emerald-800/50 text-[10px] font-mono text-emerald-400">
@@ -90,13 +90,13 @@ export function JudgeSidebar() {
                 href={item.href}
                 className={`w-full group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer ${
                   isActive
-                    ? "bg-[#141822] border border-stone-700/80 text-white shadow-sm"
-                    : "text-stone-400 hover:text-stone-100 hover:bg-[#11141c] border border-transparent hover:border-stone-800/60"
+                    ? "bg-surface-hover border border-stone-700/80 text-white shadow-sm"
+                    : "text-stone-400 hover:text-stone-100 hover:bg-surface border border-transparent hover:border-stone-800/60"
                 }`}
               >
                 {/* Active Accent Highlighter Bar */}
                 {isActive && (
-                  <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#fe330a] rounded-r-full shadow-[0_0_10px_#fe330a]" />
+                  <span className="absolute left-0 top-2 bottom-2 w-1 bg-[var(--color-primary)] rounded-r-full shadow-[0_0_10px_var(--color-primary)]" />
                 )}
                 <div className="flex items-center gap-3">
                   <span>{item.icon(isActive)}</span>
@@ -110,7 +110,7 @@ export function JudgeSidebar() {
                 </div>
                 {/* Subtle active glow pill */}
                 {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_8px_var(--color-primary)]" />
                 )}
               </Link>
             );
@@ -122,7 +122,7 @@ export function JudgeSidebar() {
       <div className="p-4 border-t border-stone-800/60 bg-[#0a0c10]/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#181c26] border border-stone-700/70 flex items-center justify-center text-xs font-mono font-bold text-stone-300">
+            <div className="w-8 h-8 rounded-lg bg-surface-hover border border-stone-700/70 flex items-center justify-center text-xs font-mono font-bold text-stone-300">
               JD
             </div>
             <div className="flex flex-col">
@@ -136,7 +136,7 @@ export function JudgeSidebar() {
               title="Lock Session"
               className="p-1.5 rounded-lg hover:bg-stone-800 hover:text-red-400 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </Link>

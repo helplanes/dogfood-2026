@@ -213,7 +213,7 @@ export default function Home() {
               <h2 className="font-syne text-5xl md:text-7xl font-bold text-white mb-8 drop-shadow-lg">
                 Ready to build?
               </h2>
-              <Link href="/projects" className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-10 py-5 text-sm font-mono font-bold uppercase tracking-wider text-black transition-all hover:scale-105 hover:bg-[#ff4922] hover:shadow-[0_0_40px_rgba(254,51,10,0.3)]">
+              <Link href="/projects" className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-10 py-5 text-sm font-mono font-bold uppercase tracking-wider text-black transition-all hover:scale-105 hover:bg-[var(--color-primary-hover)] hover:shadow-[0_0_40px_rgba(254,51,10,0.3)]">
                 Enter The Portal
               </Link>
             </ScrollReveal>

@@ -19,13 +19,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-stone-200"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-stone-200"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
         <rect x="14" y="3" width="7" height="7" rx="1.5" />
         <rect x="14" y="14" width="7" height="7" rx="1.5" />
@@ -40,13 +40,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-amber-400"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-amber-400"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -68,13 +68,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-sky-400"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-sky-400"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -90,13 +90,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-purple-400"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-purple-400"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -112,13 +112,13 @@ const navItems: NavItem[] = [
     icon: (active) => (
       <svg
         className={`w-4 h-4 transition-colors ${
-          active ? "text-[#fe330a]" : "text-stone-400 group-hover:text-[#fe330a]"
+          active ? "text-[var(--color-primary)]" : "text-stone-400 group-hover:text-[var(--color-primary)]"
         }`}
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
         viewBox="0 0 24 24"
-      >
+       aria-hidden="true">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -137,12 +137,12 @@ export function OrganizerSidebar() {
       {/* ─── 1. Brand Header ─── */}
       <div className="px-6 py-5 border-b border-stone-800/60 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-lg bg-[#fe330a]/15 border border-[#fe330a]/40 flex items-center justify-center">
-            <span className="h-2 w-2 rounded-sm bg-[#fe330a] shadow-[0_0_10px_#fe330a]" />
+          <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/40 flex items-center justify-center">
+            <span className="h-2 w-2 rounded-sm bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]" />
           </div>
           <div className="flex items-center gap-1.5 font-mono font-bold tracking-tight text-white text-base">
             <span>DOGFOOD</span>
-            <span className="text-[#fe330a]">2026</span>
+            <span className="text-[var(--color-primary)]">2026</span>
           </div>
         </Link>
         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-950/40 border border-emerald-800/50 text-[10px] font-mono text-emerald-400">
@@ -162,13 +162,13 @@ export function OrganizerSidebar() {
                 href={item.href}
                 className={`w-full group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer ${
                   isActive
-                    ? "bg-[#141822] border border-stone-700/80 text-white shadow-sm"
-                    : "text-stone-400 hover:text-stone-100 hover:bg-[#11141c] border border-transparent hover:border-stone-800/60"
+                    ? "bg-surface-hover border border-stone-700/80 text-white shadow-sm"
+                    : "text-stone-400 hover:text-stone-100 hover:bg-surface border border-transparent hover:border-stone-800/60"
                 }`}
               >
                 {/* Active Accent Highlighter Bar */}
                 {isActive && (
-                  <span className="absolute left-0 top-2 bottom-2 w-1 bg-[#fe330a] rounded-r-full shadow-[0_0_10px_#fe330a]" />
+                  <span className="absolute left-0 top-2 bottom-2 w-1 bg-[var(--color-primary)] rounded-r-full shadow-[0_0_10px_var(--color-primary)]" />
                 )}
                 <div className="flex items-center gap-3">
                   <span>{item.icon(isActive)}</span>
@@ -182,7 +182,7 @@ export function OrganizerSidebar() {
                 </div>
                 {/* Subtle active glow pill */}
                 {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#fe330a] shadow-[0_0_8px_#fe330a]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] shadow-[0_0_8px_var(--color-primary)]" />
                 )}
               </Link>
             );
@@ -194,7 +194,7 @@ export function OrganizerSidebar() {
       <div className="p-4 border-t border-stone-800/60 bg-[#0a0c10]/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#181c26] border border-stone-700/70 flex items-center justify-center text-xs font-mono font-bold text-stone-300">
+            <div className="w-8 h-8 rounded-lg bg-surface-hover border border-stone-700/70 flex items-center justify-center text-xs font-mono font-bold text-stone-300">
               OA
             </div>
             <div className="flex flex-col">
@@ -208,7 +208,7 @@ export function OrganizerSidebar() {
               title="Lock Session"
               className="p-1.5 rounded-lg hover:bg-stone-800 hover:text-red-400 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </Link>
@@ -216,7 +216,7 @@ export function OrganizerSidebar() {
               title="Settings"
               className="p-1.5 rounded-lg hover:bg-stone-800 hover:text-white transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>

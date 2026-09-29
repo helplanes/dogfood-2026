@@ -101,7 +101,7 @@ export default function LoginPage() {
               <div className="max-w-lg space-y-5 px-2 -mt-12">
                 <div className="w-10 h-0.5 bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]" />
                 <h3 className="text-2xl xl:text-3xl font-serif text-white leading-[1.4] font-medium drop-shadow-xl">
-                  "Build the ultimate offline experience. No crutches, no cloud, just pure engineering."
+                  &ldquo;Build the ultimate offline experience. No crutches, no cloud, just pure engineering.&rdquo;
                 </h3>
                 <p className="text-[10px] font-mono text-stone-400 uppercase tracking-widest">
                   — The Dogfood 2026 Mandate
